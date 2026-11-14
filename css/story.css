@@ -1,0 +1,376 @@
+/* =============================================================
+ * STORY TOUR PAGE  -  source: ui/src/story/  (React + GSAP)
+ *
+ *   1. page & sections        .story-container, .story-section
+ *   (hero, section 1)         css/hero.css
+ *   2. cards (sections 2-6)   #secPlanetX, #secDiff, #secBenchmarks, #secSpectro, #secCitizen
+ *   3. paging                 html.story-paged (useSectionPager.ts): every section is exactly one screen
+ *   4. progress navigation    section markers on the header's progress line (ProgressNav.tsx)
+ *
+ * Plain CSS: edit and refresh, no build step needed. Loaded after css/intro.css, before css/hero.css.
+ * ============================================================= */
+
+/* ---- 1. page & sections ---- */
+.story-container {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  pointer-events: auto;
+  transition: opacity 0.35s ease;
+}
+
+body.free-look-active .story-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.story-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 24px 100px;
+  box-sizing: border-box;
+}
+
+/* ---- 2. cards: sections 2-6 (ShowcaseSection.tsx; entrance: useSectionReveal.ts) ---- */
+.showcase-card {
+  width: 100%;
+  max-width: 1080px;
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.92) 0%, rgba(8, 12, 22, 0.96) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  padding: 38px 44px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(32px);
+}
+
+.showcase-header {
+  margin-bottom: 26px;
+}
+.feature-tag {
+  display: inline-block;
+  padding: 5px 14px;
+  background: rgba(143, 211, 255, 0.13);
+  border: 1px solid rgba(143, 211, 255, 0.42);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #b9e4ff;
+  margin-bottom: 12px;
+}
+.showcase-header h2 {
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 10px;
+}
+.showcase-desc {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #dde5f5;
+  max-width: 78ch;
+  margin: 0;
+}
+
+/* shared controls, brighter and slightly larger on the story page than in the dialogs */
+.story-container .small { font-size: 14px; line-height: 1.5; color: #b8c3da; }
+.story-container button.b { font-size: 14px; padding: 9px 16px; }
+
+.showcase-interactive {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 36px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.preview-media {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.preview-media canvas { display: block; width: 100%; height: auto; }
+.preview-overlay-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  padding: 5px 12px;
+  background: rgba(3, 5, 8, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+/* Planet X position marker (viewer/story/planetx.js moves it) */
+.target-marker {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--warm);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: markerPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1), top 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  top: 50%;
+  left: 37.9%;
+}
+@keyframes markerPulse {
+  0% { transform: translate(-50%, -50%) scale(0.9); box-shadow: 0 0 0 0 rgba(255, 184, 107, 0.7); }
+  70% { transform: translate(-50%, -50%) scale(1.3); box-shadow: 0 0 0 14px rgba(255, 184, 107, 0); }
+  100% { transform: translate(-50%, -50%) scale(0.9); box-shadow: 0 0 0 0 rgba(255, 184, 107, 0); }
+}
+
+.showcase-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.control-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.metric-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.metric-pill span {
+  font-size: 11.5px;
+  color: #aab6d0;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+.metric-pill strong {
+  font-size: 14.5px;
+  color: #fff;
+}
+
+/* section 4: benchmark cards (filled by viewer/story/benchmarks.js) */
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.benchmark-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 18px;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, background 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.benchmark-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 175, 55, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
+.benchmark-card h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #fff;
+}
+.benchmark-card .bm-type {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--cool);
+}
+.benchmark-card .bm-desc {
+  font-size: 13px;
+  color: #aab6d0;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* section 6: citizen science boxes */
+.citizen-actions-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+.citizen-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 22px;
+}
+.citizen-box h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .showcase-interactive,
+  .citizen-actions-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- 3. paging: one section = one screen (html.story-paged, set by useSectionPager.ts) ----
+ * Every scroll gesture moves exactly one section, so each one must fit the screen: padding just clear of the
+ * header and the section markers, more compact cards on short screens, and a card that still does not fit
+ * scrolls inside itself instead of making the section taller. */
+html.story-paged .feature-section {
+  min-height: 0;
+  height: 100vh;
+  height: 100svh;
+  padding: 120px 24px 28px;
+}
+html.story-paged .hero-section {
+  min-height: 0;
+  height: 100vh;
+  height: 100svh;
+}
+html.story-paged .feature-section .showcase-card {
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain; /* reaching the card's end never scrolls the page by itself */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+/* media never makes a card taller than the screen: it shrinks (keeping its shape, so the Planet X marker
+   stays on target) instead of the card scrolling */
+html.story-paged .preview-media { justify-self: center; max-width: 100%; }
+html.story-paged #secPlanetX .preview-media { width: min(100%, calc((100svh - 390px) * 720 / 540)); }  /* image 720x540 */
+html.story-paged #secDiff .preview-media { width: min(100%, calc((100svh - 390px) * 540 / 400)); }     /* canvas 540x400 */
+html.story-paged #secSpectro .preview-media { width: min(100%, calc(100svh - 390px)); }                 /* image 1:1 */
+
+@media (max-height: 900px) {
+  html.story-paged .feature-section { padding-top: 116px; padding-bottom: 18px; }
+  html.story-paged .showcase-card { padding: 26px 36px; }
+  html.story-paged .showcase-header { margin-bottom: 14px; }
+  html.story-paged .showcase-header h2 { font-size: clamp(24px, 2.8vw, 34px); margin-bottom: 8px; }
+  html.story-paged .showcase-desc { font-size: 15px; line-height: 1.5; }
+  html.story-paged .showcase-interactive { margin-top: 14px; gap: 28px; }
+  /* citizen science: three boxes in one screen */
+  html.story-paged .citizen-actions-panel { gap: 12px; margin-top: 10px; }
+  html.story-paged .citizen-box { padding: 14px 18px; }
+  html.story-paged .citizen-box h3 { font-size: 16px; margin-bottom: 4px; }
+  html.story-paged .citizen-box .small { font-size: 13.5px; line-height: 1.4; }
+  html.story-paged .citizen-box .search-inputs { margin-top: 8px !important; }   /* inline margins in Citizen.tsx */
+  html.story-paged #storyCoordSearchBtn { margin-top: 10px !important; }
+  html.story-paged #storyFlagBtn { margin-top: 12px !important; }
+  html.story-paged .citizen-box > div:last-child { margin-top: 8px !important; }
+}
+@media (max-height: 820px) {
+  /* tighter benchmark grid and citizen boxes */
+  html.story-paged .benchmark-grid { margin-top: 12px; gap: 10px; }
+  html.story-paged .benchmark-card { padding: 12px 14px; gap: 5px; }
+  html.story-paged .benchmark-card .bm-desc { font-size: 12.5px; line-height: 1.35; }
+  html.story-paged .citizen-actions-panel { gap: 10px; margin-top: 8px; }
+  html.story-paged .citizen-box { padding: 12px 16px; }
+  html.story-paged .citizen-box h3 { font-size: 15.5px; }
+  html.story-paged .citizen-box .small { font-size: 13px; line-height: 1.35; }
+}
+@media (max-height: 780px) {
+  html.story-paged .feature-section { padding-top: 114px; padding-bottom: 12px; }
+  html.story-paged .showcase-card { padding: 22px 32px; }
+  html.story-paged .showcase-desc { font-size: 14.5px; }
+}
+@media (max-height: 730px) {
+  html.story-paged .showcase-card { padding: 16px 30px; }
+  html.story-paged .showcase-header { margin-bottom: 8px; }
+  html.story-paged .showcase-header h2 { font-size: clamp(22px, 2.5vw, 30px); }
+  html.story-paged .showcase-interactive { margin-top: 8px; gap: 24px; }
+}
+@media (max-width: 900px) {
+  html.story-paged .feature-section { padding-top: 112px; } /* the header has two rows on phones */
+  html.story-paged .hero-section { padding-top: 120px; }
+}
+
+/* ---- 4. progress navigation: one marker + name per section on the header's progress line ----
+ * Only the stage you have reached shows (star + name); the others are tiny ticks, still clickable,
+ * their name appears on hover. The line itself: css/header.css. */
+#top .scroll-progress.has-nav { left: clamp(36px, 7vw, 130px); right: clamp(36px, 7vw, 130px); }
+.sp-nav { position: absolute; inset: 0; pointer-events: none; transition: opacity 0.4s ease; }
+body:not(.hero-mode) .sp-nav, body.embedded .sp-nav { opacity: 0; }
+body:not(.hero-mode) .sp-nav .sp-mark { pointer-events: none; }
+.sp-mark {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  color: inherit;
+}
+.sp-mark:focus-visible { outline: none; }
+.sp-mark-star {
+  width: 7px;
+  height: 7px;
+  margin-top: 15px;                     /* centres the star on the line (label hangs below) */
+  fill: rgba(255, 255, 255, 0.28);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), fill 0.3s, filter 0.3s;
+}
+.sp-mark-label {
+  font: 600 10.5px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.35s ease, transform 0.35s ease, color 0.25s ease;
+}
+.sp-mark:hover .sp-mark-star, .sp-mark:focus-visible .sp-mark-star { transform: scale(1.25) rotate(45deg); fill: #fff; }
+.sp-mark:hover .sp-mark-label, .sp-mark:focus-visible .sp-mark-label { color: #fff; opacity: 0.85; transform: none; }
+.sp-mark.is-passed .sp-mark-star { fill: rgba(143, 211, 255, 0.55); }
+.sp-mark.is-active .sp-mark-star {
+  width: 14px;
+  height: 14px;
+  margin-top: 12px;
+  fill: #fff;
+  transform: scale(1.5);
+  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px rgba(143, 211, 255, 0.9));
+}
+.sp-mark.is-active .sp-mark-label { opacity: 1; transform: none; color: #fff; }
+@media (max-width: 900px) {
+  .sp-mark-label { display: none; }     /* phones: just the stars */
+  .sp-mark { padding: 6px; }
+  .sp-mark-star,
+  .sp-mark.is-active .sp-mark-star { margin-top: 0; }
+}

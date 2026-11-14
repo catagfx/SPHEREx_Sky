@@ -1,11 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // One config, two modes:
 //   dev   (`npm run dev`)  Vite serves index.html with HMR for ui/src and proxies /api to the Python backend.
 //   build (`npm run build`) one classic IIFE script -> js/ui.bundle.js (committed), so plain
 //                          `python server.py` keeps working with no npm.
 const API = process.env.API_TARGET || 'http://127.0.0.1:8080';
+// `npm run dev:vr`: https on the local network with a self-signed certificate. WebXR only runs on https:// (or
+// localhost), so this is how a headset (Quest, Pico, Vision Pro, ...) opens the page over Wi-Fi.
+const HTTPS = !!process.env.SPX_HTTPS;
 
 // dev only: index.html loads the committed bundle; in dev the module entry replaces it. It is started after the
 // first paint: otherwise the browser runs all that JS before it ever draws, and the page stays blank for seconds
@@ -33,7 +37,7 @@ function devHtml() {
 }
 
 export default defineConfig(({ command }) => ({
-  plugins: [react(), devHtml()],
+  plugins: [react(), devHtml(), ...(HTTPS ? [basicSsl({ name: 'spherex-sky' })] : [])],
   publicDir: false,
   // the module entry is started by the dev loader above, so tell Vite where to pre-bundle deps from
   optimizeDeps: { entries: ['ui/src/main.tsx'] },
@@ -43,7 +47,7 @@ export default defineConfig(({ command }) => ({
     strictPort: false,
     open: false,
     proxy: { '/api': { target: API, changeOrigin: true } },
-    watch: { ignored: ['**/data/**', '**/assets/**', '**/js/ui.bundle.js', '**/.playwright*/**'] },
+    watch: { ignored: ['**/ui/src/data/field/**', '**/assets/**', '**/js/ui.bundle.js', '**/.playwright*/**'] },
   },
   build: {
     lib: { entry: 'ui/src/main.tsx', name: 'SpherexUIBundle', formats: ['iife'], fileName: () => 'ui.bundle.js' },

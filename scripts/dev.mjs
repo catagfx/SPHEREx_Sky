@@ -3,6 +3,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import os from 'node:os';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const isWin = process.platform === 'win32';
@@ -42,6 +43,15 @@ const stop = (code = 0) => {
 process.on('SIGINT', () => stop(0));
 process.on('SIGTERM', () => stop(0));
 
-console.log(`[dev] open http://localhost:5173/   (backend API on :${apiPort}, Ctrl+C stops both)`);
+// --vr (`npm run dev:vr`): https on every network interface, so a VR headset on the same Wi-Fi can open it
+const vr = process.argv.includes('--vr');
+if (vr) {
+  process.env.SPX_HTTPS = '1';
+  const ips = Object.values(os.networkInterfaces()).flat().filter((i) => i && i.family === 'IPv4' && !i.internal).map((i) => i.address);
+  console.log('[dev] VR: in the headset browser open ' + ips.map((ip) => `https://${ip}:5173/`).join('  or  '));
+  console.log('[dev]     (self-signed certificate: choose "Advanced" -> "Proceed" once, then the VR button appears)');
+} else {
+  console.log(`[dev] open http://localhost:5173/   (backend API on :${apiPort}, Ctrl+C stops both)`);
+}
 run('server', isWin ? 'python' : 'python3', ['server.py', apiPort], root);
-run('vite', npm, ['exec', '--', 'vite', '--host', '127.0.0.1'], root);
+run('vite', npm, ['exec', '--', 'vite', '--host', vr ? '0.0.0.0' : '127.0.0.1'], root);

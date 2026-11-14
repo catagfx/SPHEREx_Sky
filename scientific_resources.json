@@ -1,0 +1,34 @@
+[
+  {
+    "id": "neossat-mission",
+    "title": "NEOSSat: Observing Asteroids, Space Debris and Exoplanets",
+    "description": "Learn about NEOSSat, the world's first space telescope dedicated to detecting and tracking asteroids, comets, satellites, and space debris. This CSA resource highlights how Canada helps protect near-Earth space by monitoring objects that could pose risks to Earth or spacecraft.",
+    "details": "Launched by the Canadian Space Agency (CSA) and Defence Research and Development Canada (DRDC), the Near-Earth Object Surveillance Satellite (NEOSSat) orbits at an altitude of roughly 800 kilometers in a sun-synchronous orbit. Operating above Earth's atmosphere with a 15-centimeter f/5.8 Maksutov optical telescope, it continuously scans regions near the Sun where ground-based observatories are blinded by daylight to discover interior-to-Earth (Atira and Aten) asteroids. Beyond planetary defense and high-altitude orbital debris tracking, NEOSSat has been upgraded to perform high-precision transit photometry of bright exoplanet host stars and study cometary coma evolution. Its multi-role observations complement wide-field infrared sky surveys like NASA's SPHEREx by providing rapid optical follow-up and orbital astrometry for newly detected solar system bodies.",
+    "source": "CSA (Canadian Space Agency)",
+    "url": "https://www.asc-csa.gc.ca/eng/satellites/neossat/"
+  },
+  {
+    "id": "cadc-archive",
+    "title": "Canadian Astronomy Data Centre (CADC)",
+    "description": "The CADC provides open access to a vast collection of astronomical observations from Canadian and international ground-based telescopes and space missions. Through this archive, researchers and participants can explore real scientific data used to study stars, galaxies, exoplanets, and asteroids.",
+    "details": "Established in 1986 by the National Research Council of Canada (NRC) at the Herzberg Astronomy and Astrophysics Research Centre, the Canadian Astronomy Data Centre serves as one of the world's premier astronomical science archives. It hosts petabytes of calibrated imaging, spectroscopy, and time-series datasets from major facilities including the Canada-France-Hawaii Telescope (CFHT), Gemini Observatory, James Clerk Maxwell Telescope (JCMT), MOST, and NEOSSat, alongside partner holdings from Hubble and JWST. Built on International Virtual Observatory Alliance (IVOA) standards such as TAP, SIA, and ADQL, the platform enables astronomers to cross-match multi-wavelength catalogs across the entire celestial sphere. Researchers can combine CADC optical and submillimeter imagery with all-sky spectral surveys to investigate stellar kinematics, galactic evolution, and planetary systems.",
+    "source": "NRC / Canadian Astronomy Data Centre (CADC) & CSA",
+    "url": "https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/"
+  },
+  {
+    "id": "neossat-tutorial",
+    "title": "NEOSSat Data Tutorial",
+    "description": "This interactive tutorial demonstrates how to use Python to access, process, and visualize astronomical FITS data from Canada's NEOSSat mission. Follow step-by-step instructions to query spacecraft observations, generate sky plots, and analyze real space telescope imagery.",
+    "details": "Hosted officially by the Canadian Space Agency on GitHub, the NEOSSat Data Tutorial provides reproducible Jupyter Notebooks and Python workflows built around the scientific Astropy ecosystem. Users learn how to read standard FITS (Flexible Image Transport System) headers, inspect spacecraft attitude and exposure metadata, and convert pixel coordinates into World Coordinate System (WCS) right ascension and declination. The guide walks step-by-step through background subtraction, cosmic-ray artifact removal, and contrast stretching to reveal faint moving asteroids, artificial satellites, and stellar fields. By completing the exercises, developers and citizen scientists gain practical skills for building automated photometric pipelines and time-lapse animations directly from spaceborne CCD exposures.",
+    "source": "CSA (Canadian Space Agency) — Official GitHub Repository",
+    "url": "https://github.com/asc-csa/NEOSSAT_Tutorial"
+  },
+  {
+    "id": "neossat-dataset",
+    "title": "NEOSSat Dataset",
+    "description": "This open government dataset contains real FITS observations collected by NEOSSat, Canada's Near-Earth Object Surveillance Satellite. The data supports the detection and tracking of asteroids, comets, satellites, and space debris in near-Earth space.",
+    "details": "Published through the Canadian Space Agency's Open Data Portal, the NEOSSat Dataset provides public access to raw and calibrated 16-bit CCD exposures captured since the spacecraft's commissioning. Each observation record includes comprehensive FITS metadata detailing exposure timestamps, pointing coordinates (RA/Dec), tracking modes (rate-track versus sidereal stare), and detector temperature telemetry. Scientists and students can filter observations covering near-Earth asteroids, bright comets, exoplanet transit light curves, and geostationary or deep-space orbital debris belts. All files are freely downloadable in standard astronomical formats compatible with DS9, Astroquery, and Python analysis tools for orbital determination and photometric research.",
+    "source": "CSA Open Data Portal (Canadian Space Agency)",
+    "url": "https://data.asc-csa.gc.ca/dataset/neossat"
+  }
+]

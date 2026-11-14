@@ -3,6 +3,7 @@ import benchmarkField from './field/benchmarks.json';
 import cometEpochs from './comet-epochs.json';
 import cometColors from './comet-colors.json';
 import landmarks from './landmarks.json';
+import constellations from './constellations.json';
 
 /** All-sky textures of the globe: stars & galaxies, dust & gas. */
 export const SKY_STARS = 'assets/sky_stars.jpg';
@@ -22,6 +23,9 @@ export const COLORS = cometColors;
 
 /** Landmarks on the globe: [label, galactic l, galactic b, card title, card text, tour narration]. */
 export const LANDMARKS = landmarks;
+
+/** 20 SPHEREx Constellations (J2000 equatorial & Galactic centroids): [{ code, name, ra, dec, l, b, stars, edges, info }]. */
+export const CONSTELLATIONS = constellations;
 
 export const ABOUT = [
   'About SPHEREx',

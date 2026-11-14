@@ -24,6 +24,14 @@ from .jobs import execute_irsa_cutout_job
 from .mailer import load_smtp_config, save_smtp_config_in_memory
 from .state import JOBS, JOBS_LOCK, check_rate_limit, utc_now_iso
 from .telemetry import extract_fits_archive_telemetry
+try:
+    from .constellations import get_constellations_payload
+except ImportError:
+    get_constellations_payload = None
+try:
+    from .vr import get_vr_config_payload
+except ImportError:
+    get_vr_config_payload = None
 
 LOCALHOST = ("127.0.0.1", "::1", "localhost")
 
@@ -82,6 +90,12 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
             with JOBS_LOCK:
                 recent = list(JOBS.values())[-10:]
             return self.send_json({"jobs": recent})
+
+        if path == "/api/constellations" and get_constellations_payload is not None:
+            return self.send_json(get_constellations_payload())
+
+        if path == "/api/vr-config" and get_vr_config_payload is not None:
+            return self.send_json(get_vr_config_payload())
 
         if path == "/api/fits-telemetry":
             telemetry = extract_fits_archive_telemetry()

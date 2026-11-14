@@ -1,0 +1,1394 @@
+[
+  {
+    "code": "DRA",
+    "name": "Draco",
+    "category": "deep-field",
+    "targetId": "rdraconis",
+    "ra": 246.77,
+    "dec": 64.99,
+    "l": 96.69,
+    "b": 39.41,
+    "info": "In the sky, a giant dragon winds its way between the two Bears. In Greek myth, it guarded the golden apples until Heracles defeated it. Five thousand years ago, one of its stars, Thuban, was the North Star of the Egyptians, in the age of the pyramids. Draco also hides an important position: the north ecliptic pole, the point around which the whole plane of the Solar System turns. That is where the SPHEREx telescope looks most often and deepest.",
+    "stars": [
+      [
+        "Gianfar",
+        172.85,
+        69.33
+      ],
+      [
+        "Kappa Dra",
+        189.02,
+        69.79
+      ],
+      [
+        "Thuban",
+        211.1,
+        64.38
+      ],
+      [
+        "Edasich",
+        231.23,
+        58.97
+      ],
+      [
+        "Nodus II",
+        288.14,
+        67.66
+      ],
+      [
+        "Grumium",
+        268.38,
+        56.87
+      ],
+      [
+        "Rastaban",
+        262.61,
+        52.3
+      ],
+      [
+        "Eltanin",
+        269.15,
+        51.49
+      ],
+      [
+        "Nu Draconis",
+        263.55,
+        55.18
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        7,
+        5
+      ]
+    ]
+  },
+  {
+    "code": "DOR",
+    "name": "Dorado",
+    "category": "deep-field",
+    "targetId": null,
+    "ra": 73.78,
+    "dec": -58.72,
+    "l": 267.82,
+    "b": -37.9,
+    "info": "Dorado is a tropical fish leaping out of the water, placed in the sky by Dutch navigators more than four hundred years ago. Most of the Large Magellanic Cloud, a galaxy neighboring ours, lies here. Within it shines the Tarantula Nebula, one of the most active star factories nearby. In nineteen eighty-seven, the closest supernova seen with the naked eye in modern times exploded here. The south ecliptic pole is also here, the mirror image of Draco.",
+    "stars": [
+      [
+        "Gamma Dor",
+        64.01,
+        -51.49
+      ],
+      [
+        "Alpha Dor",
+        68.5,
+        -55.04
+      ],
+      [
+        "Zeta Dor",
+        73.02,
+        -57.47
+      ],
+      [
+        "Beta Dor",
+        83.41,
+        -62.49
+      ],
+      [
+        "Delta Dor",
+        86.2,
+        -65.74
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ]
+    ]
+  },
+  {
+    "code": "OPH",
+    "name": "Ophiuchus",
+    "category": "benchmark-host",
+    "targetId": "barnard",
+    "ra": 254.11,
+    "dec": -1.18,
+    "l": 17.77,
+    "b": 24.74,
+    "info": "A man holds an enormous snake in his hands. He is said to be Asclepius, the god of healing. Ophiuchus has a secret: the Sun passes through it every year, between the end of November and the middle of December, so it would be the thirteenth zodiac sign. Barnard's Star is here too, almost six light-years from us, the star that moves fastest across the sky. Here, in sixteen oh four, a new star appeared, a supernova, which Kepler studied.",
+    "stars": [
+      [
+        "Rasalhague",
+        263.73,
+        12.56
+      ],
+      [
+        "Cebalrai",
+        265.87,
+        4.57
+      ],
+      [
+        "Sabik",
+        257.59,
+        -15.72
+      ],
+      [
+        "Zeta Oph",
+        249.29,
+        -10.57
+      ],
+      [
+        "Yed Posterior",
+        244.58,
+        -4.69
+      ],
+      [
+        "Yed Prior",
+        243.59,
+        -3.69
+      ],
+      [
+        "Kappa Oph",
+        254.42,
+        9.38
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        6
+      ],
+      [
+        6,
+        5
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "IND",
+    "name": "Indus",
+    "category": "benchmark-host",
+    "targetId": "epsindi",
+    "ra": 315.53,
+    "dec": -53.44,
+    "l": 344.36,
+    "b": -40.73,
+    "info": "Indus is a discreet constellation, born from the maps of navigators four centuries ago. It has no bright stars, but it has one with a beautiful story: Epsilon Indi, about twelve light-years away. Two brown dwarfs orbit it, failed stars, too small to ignite hydrogen. The southern sky does not only put on grand shows. Sometimes it hides quiet neighbors.",
+    "stars": [
+      [
+        "Alpha Ind",
+        309.39,
+        -47.29
+      ],
+      [
+        "Eta Ind",
+        309.63,
+        -51.93
+      ],
+      [
+        "Beta Ind",
+        312.82,
+        -58.45
+      ],
+      [
+        "Theta Ind",
+        318.63,
+        -53.45
+      ],
+      [
+        "Delta Ind",
+        328.48,
+        -54.99
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "HYA",
+    "name": "Hydra",
+    "category": "benchmark-host",
+    "targetId": "wise0855",
+    "ra": 154.24,
+    "dec": -7.82,
+    "l": 250.41,
+    "b": 38.81,
+    "info": "Hydra is the largest constellation in the sky. It stretches like a snake across nearly a quarter of the sky's circumference. The myth says it was the many-headed monster of Lerna, defeated by Heracles in his second labor. Its brightest star is called Alphard, the Solitary One, because the sky around it is almost empty. You do not see it at a glance. You have to follow it slowly.",
+    "stars": [
+      [
+        "Epsilon Hya",
+        130.81,
+        6.42
+      ],
+      [
+        "Zeta Hya",
+        136.63,
+        5.95
+      ],
+      [
+        "Sigma Hya",
+        131.68,
+        3.4
+      ],
+      [
+        "Delta Hya",
+        130.81,
+        5.7
+      ],
+      [
+        "Alphard",
+        141.9,
+        -8.66
+      ],
+      [
+        "Nu Hya",
+        162.41,
+        -16.19
+      ],
+      [
+        "Gamma Hya",
+        207.41,
+        -23.17
+      ],
+      [
+        "Pi Hya",
+        219.74,
+        -26.68
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        3
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ]
+    ]
+  },
+  {
+    "code": "AUR",
+    "name": "Auriga",
+    "category": "benchmark-host",
+    "targetId": "rwaur",
+    "ra": 82.78,
+    "dec": 38.15,
+    "l": 170.6,
+    "b": 2.37,
+    "info": "Auriga is the driver of a chariot, and in his arms he holds a goat with her kids. Capella, his main star, is the sixth brightest star in the night sky. It looks like a single star, but it is really four, in two pairs. Auriga lies in the direction opposite the center of the Milky Way, toward its edge, from where we look out into the darkness between galaxies.",
+    "stars": [
+      [
+        "Capella",
+        79.17,
+        46.0
+      ],
+      [
+        "Menkalinan",
+        89.88,
+        44.95
+      ],
+      [
+        "Theta Aur",
+        89.93,
+        37.21
+      ],
+      [
+        "Elnath",
+        81.57,
+        28.61
+      ],
+      [
+        "Iota Aur",
+        74.25,
+        33.17
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "TAU",
+    "name": "Taurus",
+    "category": "benchmark-host",
+    "targetId": "planetx",
+    "ra": 73.67,
+    "dec": 20.42,
+    "l": 180.55,
+    "b": -14.34,
+    "info": "The Bull seems to charge, with the red eye of the star Aldebaran. On his back shine the Pleiades, the Seven Sisters, a group of stars that every civilization has seen. Right beside one horn lies the Crab Nebula, the remains of a star that exploded in the year ten fifty-four. Chinese astronomers saw it even in daytime for several weeks. At its center beats a pulsar that spins thirty times per second.",
+    "stars": [
+      [
+        "Aldebaran",
+        68.98,
+        16.51
+      ],
+      [
+        "Elnath",
+        81.57,
+        28.61
+      ],
+      [
+        "Zeta Tauri",
+        84.41,
+        21.14
+      ],
+      [
+        "Theta Tauri",
+        67.17,
+        15.87
+      ],
+      [
+        "Epsilon Tauri",
+        67.15,
+        19.18
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        0,
+        3
+      ],
+      [
+        3,
+        4
+      ]
+    ]
+  },
+  {
+    "code": "SGR",
+    "name": "Sagittarius",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 281.01,
+    "dec": -28.71,
+    "l": 6.26,
+    "b": -11.18,
+    "info": "The Archer aims at the heart of the Milky Way. Right in his direction, twenty-six thousand light-years away, lies the center of our galaxy. There lives Sagittarius A-star, a black hole four million times heavier than the Sun. In twenty twenty-two, we saw its first image. On your map, the point with longitude zero and latitude zero is exactly this: the center of the galaxy.",
+    "stars": [
+      [
+        "Kaus Borealis",
+        276.99,
+        -25.42
+      ],
+      [
+        "Kaus Media",
+        275.25,
+        -29.83
+      ],
+      [
+        "Kaus Australis",
+        276.99,
+        -34.38
+      ],
+      [
+        "Ascella",
+        285.65,
+        -29.88
+      ],
+      [
+        "Nunki",
+        283.82,
+        -26.3
+      ],
+      [
+        "Phi Sgr",
+        281.41,
+        -27.03
+      ],
+      [
+        "Tau Sgr",
+        286.73,
+        -27.67
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        5,
+        1
+      ],
+      [
+        5,
+        3
+      ]
+    ]
+  },
+  {
+    "code": "ORI",
+    "name": "Orion",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 83.96,
+    "dec": 0.3,
+    "l": 203.78,
+    "b": -16.62,
+    "info": "Orion is perhaps the easiest constellation to recognize. Three stars in a line form his belt, and from there you can find the rest of him. His red shoulder, Betelgeuse, is a huge star near the end of its life. In twenty nineteen it suddenly dimmed, and many thought it would explode. Below the belt, a patch of mist is the Orion Nebula, a stellar nursery about thirteen hundred light-years away. You can see it with the naked eye.",
+    "stars": [
+      [
+        "Betelgeuse",
+        88.79,
+        7.41
+      ],
+      [
+        "Bellatrix",
+        81.28,
+        6.35
+      ],
+      [
+        "Mintaka",
+        83.0,
+        -0.3
+      ],
+      [
+        "Alnilam",
+        84.05,
+        -1.2
+      ],
+      [
+        "Alnitak",
+        85.19,
+        -1.94
+      ],
+      [
+        "Saiph",
+        86.94,
+        -9.67
+      ],
+      [
+        "Rigel",
+        78.63,
+        -8.2
+      ],
+      [
+        "Meissa",
+        83.78,
+        9.93
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        4
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        7,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "CYG",
+    "name": "Cygnus",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 301.81,
+    "dec": 38.71,
+    "l": 75.26,
+    "b": 3.42,
+    "info": "A swan flies along the Milky Way. Cygnus is also called the Northern Cross. Its star Deneb is part of the Summer Triangle, together with Vega and Altair. One of the first proven black holes was found in Cygnus: Cygnus X-one. If you have a small telescope, look for the star Albireo. It is actually a pair, one gold and one blue, like a necklace in the sky.",
+    "stars": [
+      [
+        "Deneb",
+        310.36,
+        45.28
+      ],
+      [
+        "Sadr",
+        305.56,
+        40.26
+      ],
+      [
+        "Gienah",
+        305.55,
+        33.97
+      ],
+      [
+        "Delta Cygni",
+        296.24,
+        45.13
+      ],
+      [
+        "Albireo",
+        292.68,
+        27.96
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ]
+  },
+  {
+    "code": "CAR",
+    "name": "Carina",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 133.46,
+    "dec": -63.61,
+    "l": 279.91,
+    "b": -11.95,
+    "info": "Carina is the keel of an enormous ship that once existed in the sky, Argo, the ship of the Argonauts. Later, astronomers split it into three: Carina, Vela, and Puppis. Canopus, the second brightest star in the night, shines here. Eta Carinae is also here, a star that in eighteen forty-three briefly became one of the brightest in the sky, and which will explode one day. Around it, the Carina Nebula is bigger than the one in Orion.",
+    "stars": [
+      [
+        "Canopus",
+        95.99,
+        -52.7
+      ],
+      [
+        "Avior",
+        125.63,
+        -59.51
+      ],
+      [
+        "Aspidiske",
+        139.27,
+        -59.28
+      ],
+      [
+        "Miaplacidus",
+        138.3,
+        -69.72
+      ],
+      [
+        "Theta Car",
+        160.74,
+        -64.39
+      ],
+      [
+        "Upsilon Car",
+        155.58,
+        -65.07
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        4
+      ]
+    ]
+  },
+  {
+    "code": "TUC",
+    "name": "Tucana",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 354.74,
+    "dec": -63.25,
+    "l": 316.07,
+    "b": -51.99,
+    "info": "A toucan, the tropical bird with the big beak, was placed in the southern sky by navigators of the sixteenth century. Part of the Small Magellanic Cloud, another neighboring galaxy, lies here. 47 Tucanae is here too, one of the most beautiful star clusters in the sky, a globe of hundreds of thousands of ancient stars packed together. Through a small telescope, it looks like a ball of sparks.",
+    "stars": [
+      [
+        "Alpha Tuc",
+        334.63,
+        -60.26
+      ],
+      [
+        "Gamma Tuc",
+        352.15,
+        -58.24
+      ],
+      [
+        "Delta Tuc",
+        352.61,
+        -64.97
+      ],
+      [
+        "Epsilon Tuc",
+        358.95,
+        -65.58
+      ],
+      [
+        "Zeta Tuc",
+        6.55,
+        -64.88
+      ],
+      [
+        "Beta1 Tuc",
+        6.55,
+        -62.96
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        1
+      ]
+    ]
+  },
+  {
+    "code": "SCO",
+    "name": "Scorpius",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 250.31,
+    "dec": -32.04,
+    "l": 349.34,
+    "b": 9.44,
+    "info": "The Scorpion has a red star in its heart, Antares, whose name means rival of Mars. It is a supergiant several hundred times larger than the Sun. The myth says the scorpion killed Orion, and ever since, the two constellations have stood on opposite sides of the sky: when one sets, the other rises, so they never meet. Scorpius lies near the center of the galaxy, so it is full of stars and nebulae.",
+    "stars": [
+      [
+        "Antares",
+        247.35,
+        -26.43
+      ],
+      [
+        "Dschubba",
+        240.08,
+        -22.62
+      ],
+      [
+        "Pi Sco",
+        239.71,
+        -26.11
+      ],
+      [
+        "Sigma Sco",
+        245.3,
+        -25.59
+      ],
+      [
+        "Tau Sco",
+        248.97,
+        -28.22
+      ],
+      [
+        "Epsilon Sco",
+        252.54,
+        -34.29
+      ],
+      [
+        "Mu Sco",
+        253.49,
+        -38.05
+      ],
+      [
+        "Zeta Sco",
+        253.98,
+        -42.36
+      ],
+      [
+        "Shaula",
+        263.4,
+        -37.1
+      ],
+      [
+        "Lesath",
+        262.69,
+        -37.3
+      ]
+    ],
+    "edges": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        0,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        9
+      ]
+    ]
+  },
+  {
+    "code": "CAS",
+    "name": "Cassiopeia",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 14.85,
+    "dec": 60.36,
+    "l": 123.92,
+    "b": -2.49,
+    "info": "Cassiopeia is the letter W in the northern sky. She was a queen who boasted of her beauty, and the gods punished her by making her sit on her throne upside down, circling the celestial pole. From Romania, you can see her on almost any clear night. Hidden inside is Cassiopeia A, the remains of a supernova, one of the strongest sources of radio waves outside the Solar System.",
+    "stars": [
+      [
+        "Segin",
+        28.6,
+        63.67
+      ],
+      [
+        "Ruchbah",
+        21.45,
+        60.24
+      ],
+      [
+        "Gamma Cas",
+        14.18,
+        60.72
+      ],
+      [
+        "Schedar",
+        10.13,
+        56.54
+      ],
+      [
+        "Caph",
+        2.29,
+        59.15
+      ]
+    ],
+    "edges": [
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "VEL",
+    "name": "Vela",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 139.95,
+    "dec": -51.43,
+    "l": 273.1,
+    "b": -1.26,
+    "info": "Vela is the sail of the ship Argo. In its direction, a star exploded about eleven thousand years ago. People of the Stone Age saw a new light in the sky, bright as a small moon. Today, the explosion has left a delicate nebula and a pulsar, a dead star that spins eleven times per second. It is a monument to a night our ancestors witnessed.",
+    "stars": [
+      [
+        "Gamma Vel",
+        122.38,
+        -47.34
+      ],
+      [
+        "Delta Vel",
+        131.18,
+        -54.71
+      ],
+      [
+        "Kappa Vel",
+        140.53,
+        -55.01
+      ],
+      [
+        "Mu Vel",
+        161.69,
+        -49.42
+      ],
+      [
+        "Phi Vel",
+        148.19,
+        -54.57
+      ],
+      [
+        "Lambda Vel",
+        137.0,
+        -43.43
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "CEN",
+    "name": "Centaurus",
+    "category": "galactic-ices",
+    "targetId": null,
+    "ra": 207.87,
+    "dec": -48.62,
+    "l": 313.06,
+    "b": 13.07,
+    "info": "The Centaur is the wise son of the myth, Chiron, teacher of heroes. In him lies the closest neighbor of the Sun: the Alpha Centauri system, a little over four light-years away. Its small red star, Proxima, has at least one planet. Omega Centauri is here too, the largest star cluster in our galaxy, with almost ten million stars. Unfortunately, it cannot be seen from Romania.",
+    "stars": [
+      [
+        "Rigil Kentaurus",
+        219.9,
+        -60.83
+      ],
+      [
+        "Hadar",
+        210.96,
+        -60.37
+      ],
+      [
+        "Epsilon Cen",
+        204.97,
+        -53.47
+      ],
+      [
+        "Zeta Cen",
+        208.89,
+        -47.29
+      ],
+      [
+        "Gamma Cen",
+        190.38,
+        -48.96
+      ],
+      [
+        "Iota Cen",
+        200.15,
+        -36.71
+      ],
+      [
+        "Theta Cen",
+        211.67,
+        -36.37
+      ],
+      [
+        "Eta Cen",
+        218.88,
+        -42.16
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "AND",
+    "name": "Andromeda",
+    "category": "cosmology",
+    "targetId": null,
+    "ra": 14.21,
+    "dec": 36.57,
+    "l": 124.14,
+    "b": -26.28,
+    "info": "Andromeda is the princess chained to a rock, saved by Perseus. The constellation hides something extraordinary: the Andromeda Galaxy, two and a half million light-years away. It is the most distant object you can see with the naked eye: a faint patch of light. The light you receive left when there were not even humans on Earth. The galaxy is approaching ours, and one day, in billions of years, it may collide with the Milky Way.",
+    "stars": [
+      [
+        "Alpheratz",
+        2.1,
+        29.09
+      ],
+      [
+        "Delta And",
+        9.83,
+        30.86
+      ],
+      [
+        "Mirach",
+        17.43,
+        35.62
+      ],
+      [
+        "Mu And",
+        17.02,
+        38.5
+      ],
+      [
+        "Nu And",
+        10.52,
+        41.08
+      ],
+      [
+        "Almach",
+        30.98,
+        42.33
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ]
+    ]
+  },
+  {
+    "code": "COM",
+    "name": "Coma Berenices",
+    "category": "cosmology",
+    "targetId": null,
+    "ra": 193.82,
+    "dec": 24.68,
+    "l": 322.56,
+    "b": 87.41,
+    "info": "Queen Berenice of Egypt cut off her long hair and offered it to the gods so that her husband would return alive from war. The hair vanished from the temple, and the court astronomer said the gods had placed it in the sky. On your map, the galactic latitude is almost ninety degrees: here lies the north pole of the galaxy, a window free of dust. That is why so many distant galaxies can be seen, in the Coma Cluster, with thousands of galaxies.",
+    "stars": [
+      [
+        "Alpha Com",
+        197.97,
+        17.53
+      ],
+      [
+        "Beta Com",
+        197.92,
+        27.88
+      ],
+      [
+        "Gamma Com",
+        185.18,
+        28.27
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        0
+      ]
+    ]
+  },
+  {
+    "code": "VIR",
+    "name": "Virgo",
+    "category": "cosmology",
+    "targetId": null,
+    "ra": 192.48,
+    "dec": 0.33,
+    "l": 302.08,
+    "b": 63.2,
+    "info": "The Maiden holds an ear of wheat in her hand, the star Spica. She was the goddess of the harvest, or of justice. But the true treasure of the constellation is the Virgo Cluster, a gathering of more than a thousand galaxies, about fifty-five million light-years away. At its center stands the galaxy M eighty-seven. In twenty nineteen, its black hole became the first ever photographed by humans. You are looking at a city of galaxies.",
+    "stars": [
+      [
+        "Spica",
+        201.3,
+        -11.16
+      ],
+      [
+        "Zeta Vir",
+        203.67,
+        -0.6
+      ],
+      [
+        "Porrima",
+        190.42,
+        -1.45
+      ],
+      [
+        "Zavijava",
+        177.67,
+        1.77
+      ],
+      [
+        "Vindemiatrix",
+        195.54,
+        10.96
+      ],
+      [
+        "Eta Vir",
+        184.98,
+        -0.67
+      ],
+      [
+        "Delta Vir",
+        193.9,
+        3.4
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        6
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "code": "FOR",
+    "name": "Fornax",
+    "category": "cosmology",
+    "targetId": null,
+    "ra": 40.33,
+    "dec": -30.43,
+    "l": 227.31,
+    "b": -65.76,
+    "info": "Fornax is a small, faint constellation, named after a chemist's furnace. It has no stars that capture the eye. But in a dark corner of it, the Hubble Telescope pointed its lens for many days at a patch of sky the size of a grain of sand held at arm's length. It found almost ten thousand galaxies. It is proof that even the emptiness of the sky is full of worlds.",
+    "stars": [
+      [
+        "Alpha For",
+        48.02,
+        -28.99
+      ],
+      [
+        "Beta For",
+        42.28,
+        -32.41
+      ],
+      [
+        "Nu For",
+        30.71,
+        -29.3
+      ]
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ]
+  }
+]

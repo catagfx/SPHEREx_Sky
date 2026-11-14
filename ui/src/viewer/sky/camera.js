@@ -4,6 +4,7 @@ import { dir } from './scene';
 import { view, setSpin } from './view';
 import { gyro, gyroOff, applyGyro } from './gyro';
 import { pulseLandmark, projectLandmarks } from './landmarks';
+import { updateConstellationLabels } from './constellations';
 import { updateCompare } from './layers';
 import { isTourOn } from '../panels/tour';
 
@@ -102,6 +103,29 @@ export function fly(h, zoom) {
   pulseLandmark(h);
 }
 
+/**
+ * Fly directly to a saved camera pose (yaw/pit/fov) — used to return to the spot the user left when
+ * closing an immersive focus view such as a selected constellation.
+ */
+export function flyToView(yaw, pit, fov) {
+  if (gyro.on) gyroOff();
+  let d = yaw - view.yaw;
+  d = Math.atan2(Math.sin(d), Math.cos(d));
+  const y1 = view.yaw + d;
+  const dist = (Math.hypot(d * Math.cos((view.pit + pit) / 2), pit - view.pit) * 180) / Math.PI;
+  if (reduce) {
+    view.yaw = view.ty = y1;
+    view.pit = view.tp = pit;
+    view.fov = view.tf = fov;
+    view.anim = null;
+  } else {
+    view.anim = {
+      t0: performance.now(), dur: Math.max(600, Math.min(1500, 500 + dist * 8)),
+      y0: view.yaw, p0: view.pit, f0: view.fov, y1, p1: pit, f1: fov, bump: Math.min(20, dist * 0.3),
+    };
+  }
+}
+
 /** Ease back out to the default field of view after a close-up (not during the guided tour). */
 export function zoomBack() {
   if (!view.anim && view.tf < 70 && !isTourOn()) {
@@ -154,6 +178,9 @@ export function startRenderLoop() {
     const inXR = ren.xr.isPresenting;
     if (!inXR) stepCamera(cam);
     projectLandmarks(cam, inXR);
+    updateConstellationLabels(cam, inXR);
+    // VR module (viewer/sky/xr/index.js) ticks its hand-tracking + UI update here.
+    if (inXR && typeof sky.onXRFrame === 'function') sky.onXRFrame();
     ren.render(scene, cam);
   });
 }

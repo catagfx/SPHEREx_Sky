@@ -6,6 +6,7 @@ import { showToast } from './ui/toast';
 import { setActiveNav, closeDropdowns } from './ui/header';
 import { setSpin } from './sky/view';
 import { hideCard } from './sky/card';
+import { setConstellationsVisible } from './sky/constellations';
 import { openChange, closeChange } from './explorer';
 import { closeGallery } from './panels/gallery';
 import { isTourOn, endTour, toggleTour } from './panels/tour';
@@ -15,26 +16,35 @@ import { isTourOn, endTour, toggleTour } from './panels/tour';
 //   free-look (body.free-look-active): the story hides, the globe is yours (Explore ▸ Free-Look / Landmarks)
 // plus the header shortcuts, the hero buttons, the brand (= home) and the Esc key.
 
-export function setFreeLook(active, withLandmarks, navId) {
+export function setFreeLook(active, mode, navId) {
   const body = document.body;
+  const landmarks = mode === 'landmarks';
+  const constellations = mode === 'constellations';
   body.classList.toggle('free-look-active', active);
-  body.classList.toggle('landmarks-active', active && !!withLandmarks);
+  body.classList.toggle('landmarks-active', active && landmarks);
   body.classList.toggle('hero-mode', !active);
+  setConstellationsVisible(active && constellations);
   const banner = $('#freeLookBanner');
   if (banner) {
     banner.hidden = !active;
     const text = banner.querySelector('span:not(.live-dot)');
-    if (text) text.textContent = withLandmarks ? '360° Celestial Observatory · 11 Landmarks Active' : '360° Free-Look Celestial Observatory';
+    if (text) {
+      text.textContent = landmarks
+        ? '360° Celestial Observatory · 11 Landmarks Active'
+        : constellations
+        ? `360° Celestial Observatory · Constellations (${/* count */ document.querySelectorAll('.const-tag').length})`
+        : '360° Free-Look Celestial Observatory';
+    }
   }
   if (active) getLenis()?.stop();
   else getLenis()?.start();
-  setActiveNav(active ? (withLandmarks ? 'landmarks' : 'sky') : navId || 'story');
-  setSpin(active); // free-look starts with a slow auto-orbit
+  setActiveNav(active ? (landmarks ? 'landmarks' : constellations ? 'constellations' : 'sky') : navId || 'story');
+  setSpin(active && !constellations); // constellations mode stays still so hover is predictable
 }
 
 /** Back on the story page, glide to a section (or the top) like the section pager does. */
 function showStory(sectionId, navId) {
-  setFreeLook(false, false, navId);
+  setFreeLook(false, null, navId);
   setActiveNav(navId);
   getLenis()?.resize(); // the story was hidden in free-look: page height changed
   requestAnimationFrame(() => {
@@ -52,7 +62,7 @@ function goHome() {
   showStory(null, 'story');
 }
 
-const freeLook = () => { setFreeLook(true, false); showToast('360° Free-Look Mode · Clean Sky View'); };
+const freeLook = () => { setFreeLook(true); showToast('360° Free-Look Mode · Clean Sky View'); };
 
 // Esc closes the topmost dialog (one per press), then dropdowns and the explorer.
 const ESC_DIALOGS = [
@@ -80,7 +90,11 @@ export function initNavigation() {
   $('#tabStory').onclick = () => showStory(null, 'story');
   $('#tabPlanetX').onclick = () => showStory('secPlanetX', 'planetx');
   $('#tabSky').onclick = freeLook;
-  $('#tabLandmarks').onclick = () => { setFreeLook(true, true); showToast('11 Celestial Landmarks Active'); };
+  $('#tabLandmarks').onclick = () => { setFreeLook(true, 'landmarks'); showToast('11 Celestial Landmarks Active'); };
+  $('#tabConstellations').onclick = () => {
+    setFreeLook(true, 'constellations');
+    showToast(`Constellations · hover a figure, click to open details`);
+  };
   $('#tabColors').onclick = () => openChange('C');
   $('#planetxMenuBtn').onclick = () => { closeDropdowns(); openChange('M', 'planetx'); };
 

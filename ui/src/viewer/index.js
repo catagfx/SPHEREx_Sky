@@ -6,6 +6,7 @@ import { initLayers } from './sky/layers';
 import { initCamera, startRenderLoop } from './sky/camera';
 import { initCard } from './sky/card';
 import { initLandmarks } from './sky/landmarks';
+import { initConstellations } from './sky/constellations';
 import { initGyro } from './sky/gyro';
 import { initXR } from './sky/xr';
 import { initHeader } from './ui/header';
@@ -57,6 +58,7 @@ export function startViewer() {
   initCamera(sky);
   initCard();
   initLandmarks();
+  initConstellations(sky);
   initGyro();
   initTour();
   initXR(sky);

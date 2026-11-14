@@ -1,0 +1,405 @@
+/* =============================================================
+ * DIALOGS  -  the glass modal shell shared by every dialog (viewer/ui/modal.js) and the dialogs' own parts:
+ * gallery, embed code, search / data releases / anomaly report, the IRSA cutout studio; plus the toast.
+ * ============================================================= */
+
+/* ---- shell: full-screen backdrop + glass box + header ---- */
+#chg, #gal, #how, #embedModal, .glass-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: rgba(2, 3, 8, 0.88);
+  overflow-y: auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  backdrop-filter: blur(28px);
+}
+
+#cwrap, .gw, #hw2, #modalBox, .modal-dialog {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.88) 0%, rgba(8, 12, 22, 0.94) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(32px);
+  will-change: transform, opacity;
+}
+
+#cwrap { max-width: 1180px; margin: 0 auto; }
+.gw { max-width: 1180px; margin: 0 auto; }
+#hw2 { max-width: 820px; margin: 0 auto; }
+#modalBox, .modal-dialog { max-width: 680px; margin: 8vh auto; }
+
+#chh, .gh, .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 16px;
+}
+
+#chh h2, .gh h2, #hw2 h2, #modalBox h2 {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: clamp(24px, 3.5vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+#hw2 .doi-link { color: #ffd29d; }
+
+/* ---- gallery (#gal) ---- */
+.gw .gal-intro { max-width: 70ch; margin: 0 0 20px; }
+
+#gf {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 20px;
+}
+
+#gg {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.gc {
+  background: rgba(14, 20, 38, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gc:hover {
+  border-color: var(--warm);
+  transform: translateY(-4px);
+  background: rgba(25, 34, 58, 0.85);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.gc .th {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #000;
+}
+
+.gc .th img {
+  position: absolute;
+  max-width: none;
+}
+
+.gc .tx {
+  padding: 12px 16px 16px;
+}
+
+.gc .kd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm);
+}
+
+.gc h3 {
+  margin: 4px 0 6px;
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.gc p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+/* ---- embed code (#embedModal) ---- */
+.embed-code {
+  width: 100%;
+  height: 90px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--cool);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  resize: none;
+  margin: 14px 0 18px;
+}
+#modalBox .embed-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ---- coordinate search (#searchModal) ---- */
+#searchToIrsaMailBtn { border-color: rgba(255, 168, 87, 0.45); color: #ffd29d; }
+
+/* ---- data releases (#releaseModal) and anomaly report (#anomalyModal) ---- */
+.release-select-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+#releaseModal .sync-row { margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#syncFitsArchiveBtn { font-size: 12px; }
+#syncFitsMsg { color: var(--cool); }
+#anomalyModal .notes-field { margin-top: 12px; }
+#observerNotes { height: 70px; }
+
+.custom-ingest-section h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  color: #fff;
+}
+
+.anomaly-summary {
+  background: rgba(143, 211, 255, 0.06);
+  border: 1px solid rgba(143, 211, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 14px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ---- IRSA cutout & email studio (#irsaModal, viewer/panels/irsa.js) ---- */
+.irsa-dialog {
+  max-width: 760px !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#irsaModal .irsa-presets { margin-bottom: 14px; }
+#irsaModal .search-inputs.stacked { margin-top: 10px; }
+#irsaModal .smtp-config-body .search-inputs.stacked { margin-top: 8px; }
+#irsaModal .synth-opt { margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #c7d1e8; }
+#irsaModal .synth-opt label { cursor: pointer; }
+#irsaModal .smtp-note { margin-bottom: 10px; }
+#irsaModal .smtp-status { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#smtpStatusBadge { color: var(--dim); } /* set by viewer/panels/irsa.js once the SMTP status is known */
+#saveSmtpBtn { padding: 6px 14px; font-size: 12px; }
+#irsaModal .irsa-run { margin-top: 14px; }
+#runIrsaCutoutBtn { flex: 1; justify-content: center; }
+#runIrsaCutoutBtn svg { margin-right: 6px; }
+#irsaProgressBar { width: 0%; } /* progress: set by viewer/panels/irsa.js */
+#irsaResultView .strip-label { margin-top: 12px; margin-bottom: 6px; }
+#irsaResultView .irsa-result-actions { margin-top: 14px; flex-wrap: wrap; gap: 8px; }
+#irsaPreviewEmailLink, #irsaDownloadEmlLink { text-decoration: none; display: inline-flex; align-items: center; }
+
+.smtp-config-drawer {
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.smtp-config-drawer summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cool);
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.smtp-config-body {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.irsa-pipeline-box {
+  margin-top: 16px;
+  background: rgba(6, 9, 18, 0.92);
+  border: 1px solid rgba(143, 211, 255, 0.22);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.irsa-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.irsa-stage-text {
+  color: #fff;
+  font-weight: 600;
+}
+
+.irsa-percent-text {
+  color: var(--warm);
+  font-weight: 700;
+}
+
+.irsa-progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.irsa-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8fd3ff 0%, #ffb86b 100%);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.irsa-console-log {
+  margin: 0;
+  max-height: 115px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+  color: #9ec0e8;
+  background: rgba(2, 4, 9, 0.8);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  white-space: pre-wrap;
+}
+
+.irsa-result-view {
+  margin-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 16px;
+}
+
+.irsa-email-banner {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  background: rgba(57, 229, 140, 0.1);
+  border: 1px solid rgba(57, 229, 140, 0.35);
+  color: #d4ffe6;
+}
+
+.irsa-visual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.irsa-visual-card {
+  background: #060913;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+
+.irsa-visual-card img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #000;
+  display: block;
+}
+
+.irsa-card-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cool);
+  margin-bottom: 6px;
+}
+
+.irsa-frames-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.irsa-frame-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 11px;
+}
+
+.irsa-frame-item img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.irsa-frame-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #c7d1e8;
+  line-height: 1.4;
+}
+
+.irsa-frame-links {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+}
+
+.irsa-frame-links a {
+  color: var(--warm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.irsa-frame-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .irsa-visual-grid,
+  .irsa-frames-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- toast (viewer/ui/toast.js) ---- */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: #fff;
+  color: #030508;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 999;
+}
+
+#toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.reduce-motion #toast { transition: none; }

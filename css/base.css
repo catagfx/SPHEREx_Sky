@@ -1,0 +1,380 @@
+/* =============================================================
+ * BASE  -  design tokens, page reset, the sky canvas, shared controls
+ *
+ * Load order (index.html): base, header, sky, explorer, dialogs, intro, story, hero.
+ * Plain CSS: edit and refresh, no build step needed.
+ * ============================================================= */
+
+:root {
+  --bg: #030508;
+  --bg-deep: #020306;
+  --ink: #f0f3fa;
+  --dim: #8b96b0;
+  --muted: #535d75;
+  --warm: #ffb86b;
+  --warm-glow: rgba(255, 184, 107, 0.35);
+  --cool: #8fd3ff;
+  --cool-glow: rgba(143, 211, 255, 0.3);
+  --accent: #4f8df9;
+  --panel: rgba(10, 14, 26, 0.82);
+  --panel-solid: #0d1222;
+  --panel-border: rgba(255, 255, 255, 0.11);
+  --panel-border-hover: rgba(255, 255, 255, 0.28);
+  --font-main: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Space Grotesk", system-ui, monospace;
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: initial;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.55 var(--font-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* a dialog or the free-look globe owns the screen */
+body.modal-open, body.free-look-active {
+  overflow: hidden !important;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- Lenis smooth scrolling (from lenis/dist/lenis.css; the classes are set by Lenis) ---- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+/* ---- the 360° sky (WebGL canvas behind everything; interactive only in free-look) ---- */
+#c {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  touch-action: none;
+  cursor: grab;
+  z-index: 1;
+  pointer-events: none;
+}
+
+body.free-look-active #c {
+  pointer-events: auto !important;
+}
+
+#c:active {
+  cursor: grabbing;
+}
+
+/* faint "SPHEREx" watermark over the sky (mouse parallax: viewer/ui/chrome.js) */
+.bg-watermark {
+  position: fixed;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-main);
+  font-size: clamp(80px, 17vw, 240px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.035);
+  text-shadow: 0 0 120px rgba(79, 141, 249, 0.12);
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+/* ---- scrollbars ---- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(10, 14, 26, 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.5);
+}
+
+/* ---- buttons ---- */
+button.b {
+  pointer-events: auto;
+  background: rgba(14, 20, 38, 0.82);
+  color: var(--ink);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  backdrop-filter: blur(12px);
+}
+
+button.b:hover {
+  background: rgba(25, 34, 58, 0.95);
+  border-color: var(--panel-border-hover);
+  color: #fff;
+}
+
+button.b[aria-pressed=true] {
+  border-color: var(--warm);
+  color: var(--warm);
+  background: rgba(255, 184, 107, 0.12);
+}
+
+button.pri {
+  background: linear-gradient(135deg, #ff9d4a, #ffb86b);
+  color: #120900;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+button.pri:hover {
+  background: linear-gradient(135deg, #ffa85c, #ffc482);
+}
+
+button.full-width {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pill-btn {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 14, 26, 0.75);
+  color: var(--ink);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 7px 14px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+  background: rgba(25, 34, 58, 0.9);
+  border-color: var(--panel-border-hover);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.icon-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.icon-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* buttons with GSAP hover springs (viewer/ui/chrome.js) */
+.hero-btn, .pill-btn, .mode-tab, .b {
+  will-change: transform;
+}
+
+/* small uppercase label above dialog titles */
+.eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cool);
+}
+
+/* ---- form fields (dialogs and the citizen-science section) ---- */
+.search-inputs {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.input-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-field label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cool);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.input-field input, .styled-select {
+  background: rgba(10, 14, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field input:focus, .styled-select:focus, .code-textarea:focus {
+  border-color: var(--cool);
+  box-shadow: 0 0 14px rgba(143, 211, 255, 0.25);
+}
+
+.code-textarea {
+  width: 100%;
+  height: 120px;
+  background: rgba(8, 11, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #a4b4d8;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.preset-section {
+  margin: 18px 0;
+}
+
+.preset-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.preset-chip {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(143, 211, 255, 0.08);
+  border: 1px solid rgba(143, 211, 255, 0.2);
+  color: #d8e5ff;
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.preset-chip:hover {
+  background: rgba(143, 211, 255, 0.22);
+  border-color: var(--cool);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.preset-chip:active {
+  transform: translateY(0);
+}
+
+.search-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.search-msg {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--warm);
+  margin-top: 10px;
+  min-height: 16px;
+}
+
+/* ---- embed mode (?embed=true): only the explorer, no page chrome ---- */
+body.embedded #top,
+body.embedded #bot,
+body.embedded #credit,
+body.embedded #cornerBadge {
+  display: none !important;
+}
+
+body.embedded #chg {
+  padding-top: 10px;
+  background: #030508;
+}

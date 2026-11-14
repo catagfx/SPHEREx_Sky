@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    /* Paints before anything else: no white flash while CSS/JS load */
+    html, body { background: #05070f; margin: 0; }
+  </style>
+  <script>
+    // One-time reset of old service workers / caches. Reloads only if a stale worker actually controlled this page.
+    (function(){
+      try{
+        var V = 'ui-react-6';
+        if(localStorage.getItem('spx_build') !== V){
+          localStorage.setItem('spx_build', V);
+          var controlled = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+          var jobs = [];
+          if('serviceWorker' in navigator) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }));
+          if(window.caches) jobs.push(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }));
+          Promise.all(jobs).then(function(){ if(controlled) location.reload(); });
+        }
+      }catch(e){}
+    })();
+  </script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SPHEREx | NASA 2026</title>
+  <meta name="description" content="Explore NASA's SPHEREx all-sky infrared survey. Watch comets, asteroids, proper-motion stars, and variable stars move and change across time and wavelength.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="css/base.css?v=2">
+  <link rel="stylesheet" href="css/header.css?v=2">
+  <link rel="stylesheet" href="css/sky.css?v=2">
+  <link rel="stylesheet" href="css/explorer.css?v=2">
+  <link rel="stylesheet" href="css/dialogs.css?v=2">
+  <link rel="stylesheet" href="css/intro.css?v=8">
+  <link rel="stylesheet" href="css/story.css?v=13">
+  <link rel="stylesheet" href="css/hero.css?v=1">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a0e1a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%2305070f'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%238fd3ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23ffb86b'/%3E%3C/svg%3E">
+</head>
+<body class="hero-mode ui-intro">
+  <div id="ui-boot" aria-hidden="true" style="position:fixed;inset:0;z-index:998;background:#05070f"></div>
+  <!-- WebGL Canvas for 360 Sky Globe -->
+  <canvas id="c" aria-label="360 degree infrared map of the whole sky"></canvas>
+  
+  <!-- Atmospheric 3D Background Typographic Watermark -->
+  <div class="bg-watermark" aria-hidden="true">SPHEREx</div>
+  
+  <!-- Projected 3D Hotspot Overlays -->
+  <div id="hs"></div>
+  
+  <!-- Top Header Bar: brand text left, all categories centred in one glass pill, coordinate search right -->
+  <header class="bar" id="top">
+    <div id="brand">
+      <button class="brand-btn" id="home" title="Return to start">
+        <span class="brand-text">
+          <span class="brand-name">SPHEREx</span>
+          <span class="brand-badge">NASA 2026</span>
+        </span>
+      </button>
+    </div>
+
+    <nav class="hdr-nav" aria-label="Main">
+      <div class="dd">
+        <button class="dd-btn" aria-expanded="false" aria-haspopup="true"><span>Explore</span><svg class="dd-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="dd-menu dd-left" hidden data-autoclose>
+          <button class="dd-item nav-tab active" id="tabStory" data-nav="story">Story Tour</button>
+          <button class="dd-item nav-tab" id="tabSky" data-nav="sky">Free-Look 360°</button>
+          <button class="dd-item nav-tab" id="tabLandmarks" data-nav="landmarks">Landmarks (11)</button>
+          <button class="dd-item nav-tab" id="tbtn" data-nav="tour">Guided Tour</button>
+        </div>
+      </div>
+      <div class="dd">
+        <button class="dd-btn" aria-expanded="false" aria-haspopup="true"><span>Science</span><svg class="dd-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="dd-menu dd-left" hidden data-autoclose>
+          <button class="dd-item nav-tab" id="tabPlanetX" data-nav="planetx">Planet X</button>
+          <button class="dd-item nav-tab" id="chb" data-nav="change">Time-Domain</button>
+          <button class="dd-item nav-tab" id="tabColors" data-nav="colors">Spectroscopy</button>
+          <button class="dd-item nav-tab" id="galb" data-nav="gallery">Gallery</button>
+        </div>
+      </div>
+      <div class="dd">
+        <button class="dd-btn" aria-expanded="false" aria-haspopup="true"><span>Data</span><svg class="dd-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="dd-menu" hidden data-autoclose>
+          <button class="dd-item" id="irsaRequestBtn" title="Process coordinates from NASA IRSA IPAC & receive cutouts by email">IRSA Cutout → Mail</button>
+          <button class="dd-item" id="releaseMenuBtn">Data Releases & JSON Ingest</button>
+        </div>
+      </div>
+      <div class="dd">
+        <button class="dd-btn" aria-expanded="false" aria-haspopup="true"><span>Share</span><svg class="dd-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="dd-menu" hidden data-autoclose>
+          <button class="dd-item" id="shareBtn" title="Share link to view">Share link</button>
+          <button class="dd-item" id="embedBtn" title="Get embed code">Embed</button>
+          <button class="dd-item" id="flagAnomalyBtn" title="Flag candidate or report anomaly">Flag Candidate</button>
+        </div>
+      </div>
+      <div class="dd" id="tw">
+        <button class="dd-btn" id="tools" aria-expanded="false" aria-controls="tm" aria-haspopup="true"><span>Tools</span><svg class="dd-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="dd-menu" id="tm" hidden>
+          <button class="dd-item" id="planetxMenuBtn">Planet X Candidate (450 AU)</button>
+          <button class="dd-item" id="cmp" aria-pressed="false">Sky layers & compare</button>
+          <button class="dd-item" id="grid" aria-pressed="false">Coordinate grid</button>
+          <button class="dd-item" id="gyro" aria-pressed="false" hidden>Motion / Gyro look</button>
+          <button class="dd-item" id="spin" aria-pressed="false">Auto-orbit</button>
+          <button class="dd-item" id="hw">How this was made</button>
+          <button class="dd-item" id="about">About SPHEREx</button>
+          <button class="dd-item" id="vr" hidden>Enter VR</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="hdr-side hdr-right">
+      <button class="dd-btn solo" id="searchBtn" title="Search sky coordinates (RA & Dec)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Search RA/Dec</span>
+      </button>
+    </div>
+
+    <!-- Scroll progress: glowing line ending in a star -->
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="sp-fill" id="spFill"><span class="sp-star"></span></div>
+    </div>
+  </header>
+
+    <!-- Bottom Quick Hotspot Strip -->
+  <footer class="bar" id="bot"></footer>
+  
+  <!-- Minimalist Corner Footnote -->
+  <div id="cornerBadge">
+    <span>Designed for Explorers</span>
+    <span class="dot">·</span>
+    <span>NASA Space Apps 2026</span>
+  </div>
+  
+  <!-- Attribution and Credits -->
+  <div id="credit">Whole sky in infrared, from NASA's SPHEREx all-sky maps: stars & galaxies, and dust & gas. Credit: NASA/JPL-Caltech & NASA/IPAC IRSA.</div>
+  
+  <!-- Sky Compare Split Divider & Chips -->
+  <div id="dv" hidden></div>
+  <div class="split-chip" id="cl" hidden>Stars and galaxies</div>
+  <div class="split-chip" id="cr" hidden>Dust and gas</div>
+  
+  <!-- Sky Layers Brightness & Compare Panel -->
+  <div class="pn" id="cmpp" hidden>
+    <p>NASA's sky map is two layers laid on top of each other. Fade each layer or compare them with an interactive slider (stars and galaxies on left, dust and gas on right).</p>
+    <div class="r">
+      <label><input type="checkbox" id="l1" checked> Stars and galaxies</label>
+      <input type="range" id="s1" min="0" max="150" value="40" aria-label="Stars and galaxies brightness">
+    </div>
+    <div class="r pn-row">
+      <label><input type="checkbox" id="l2" checked> Dust and gas</label>
+      <input type="range" id="s2" min="0" max="150" value="120" aria-label="Dust and gas brightness">
+    </div>
+    <div class="r pn-row pn-actions">
+      <button class="b" id="cmpb" aria-pressed="false">Compare with divider</button>
+      <button class="b" id="cmpr">Reset to defaults</button>
+    </div>
+  </div>
+  
+  <!-- Guided Tour Control Bar -->
+  <div id="tour" hidden>
+    <div class="tour-status">
+      <span class="pulse-indicator"></span>
+      <span id="tn">Stop 1 of 12</span>
+    </div>
+    <button class="b" id="tpa">Pause</button>
+    <button class="b" id="tsk">Skip</button>
+    <button class="b" id="tmu" aria-pressed="false">Mute voice</button>
+    <button class="b" id="tst">End tour</button>
+  </div>
+  
+  <!-- Hotspot Detail Info Card -->
+  <div id="card" role="dialog" hidden>
+    <h2></h2>
+    <p></p>
+    <button class="b" id="x">Close</button>
+  </div>
+  
+  <!-- Floating Free-Look Banner -->
+  <div id="freeLookBanner" class="free-look-banner" hidden>
+    <div class="banner-pill">
+      <span class="live-dot"></span>
+      <span>360° Free-Look Celestial Observatory · 11 Landmarks Active</span>
+      <button class="pill-btn primary" id="btnResumeStory">Resume Story Tour ↓</button>
+    </div>
+  </div>
+
+  <!-- Story Tour page (hero + 5 sections). Rendered by React: ui/src/story/  (styles: css/story.css) -->
+  <main id="storyContainer" class="story-container"></main>
+
+  <!-- Change Explorer Modal (Glassmorphic) -->
+  <div id="chg" role="dialog" aria-labelledby="cht" hidden>
+    <div id="cwrap" data-lenis-prevent>
+      <div id="chh">
+        <div>
+          <p class="eyebrow">Time-Domain Astronomical Explorer</p>
+          <h2 id="cht">Multi-Epoch Target Analysis</h2>
+        </div>
+        <div class="header-actions">
+          <button class="icon-close-btn" id="chx" aria-label="Close dialog">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      
+      <div id="cg">
+        <!-- Main Interactive Visualizer Frame -->
+        <div>
+          <!-- Mode S: Swipe Comparison -->
+          <div id="sw">
+            <div class="ly" id="lyB"><img id="imB" alt=""><i class="rg" id="rgB"></i></div>
+            <div class="ly" id="lyA"><img id="imA" alt=""><i class="rg" id="rgA"></i></div>
+            <div id="hd"></div>
+            <span class="tg" id="tgA"></span>
+            <span class="tg" id="tgB"></span>
+          </div>
+          
+          <!-- Mode C: Spectral Color Scan -->
+          <div id="cs" hidden>
+            <img id="csI" alt="SPHEREx infrared spectral image">
+            <i class="rg" id="csR"></i>
+            <span class="tg" id="csT"></span>
+          </div>
+          
+          <!-- Mode M: Watch it move (Fixed Star Field) -->
+          <div id="mv" hidden>
+            <img id="mvI" alt="SPHEREx field with fixed stars">
+            <svg id="mvS" viewBox="0 0 720 540" aria-hidden="true"></svg>
+            <span class="tg" id="mvT"></span>
+          </div>
+
+          <!-- Mode D: Difference Subtraction (Epoch B - Epoch A) -->
+          <div id="diffView" hidden>
+            <canvas id="diffC" width="720" height="540"></canvas>
+            <div class="diff-hud">DIFFERENCE SUBTRACTION: EPOCH B − EPOCH A</div>
+            <span class="tg" id="diffT">Digital Image Subtraction</span>
+          </div>
+          
+          <!-- Mode Selector Toolbar -->
+          <div class="row mode-toolbar">
+            <button class="mode-tab active" id="mS" aria-pressed="true">Swipe two dates</button>
+            <button class="mode-tab" id="mF" aria-pressed="false">Flip timeline</button>
+            <button class="mode-tab" id="mM" aria-pressed="false">Watch it move</button>
+            <button class="mode-tab" id="mD" aria-pressed="false">Difference (B − A)</button>
+            <button class="mode-tab" id="mC" aria-pressed="false">Scan colors (CO₂)</button>
+            <label id="rgl" class="toggle-pill"><input type="checkbox" id="rgk" checked> Target ring</label>
+          </div>
+          
+          <!-- Mode Controls -->
+          <div class="row" id="grS">
+            <label for="sa">Epoch A</label><select id="sa"></select>
+            <label for="sb">Epoch B</label><select id="sb"></select>
+            <label for="spos" class="small">Divider</label><input type="range" id="spos" min="0" max="100" value="50">
+          </div>
+          <div class="row" id="grD" hidden>
+            <label for="sda">Epoch A</label><select id="sda"></select>
+            <label for="sdb">Epoch B</label><select id="sdb"></select>
+            <label for="diffGain" class="small">Contrast</label><input type="range" id="diffGain" min="1" max="5" value="2" step="0.5">
+            <button class="b sec" id="invDiff">Invert Polarity</button>
+          </div>
+          <div class="row" id="grC" hidden>
+            <label for="cw">Band</label><input type="range" id="cw" min="0" value="0">
+            <button class="b pri" id="cp" aria-pressed="false">Play Scan</button>
+            <button class="b sec" id="downloadSpectrumCsvBtn" type="button">Download Spectrum (.csv)</button>
+          </div>
+          <div class="row" id="grM" hidden>
+            <label for="ms">Pass</label><input type="range" id="ms" min="0" value="0">
+            <button class="b pri" id="mp" aria-pressed="false">Play Motion</button>
+            <label class="toggle-pill"><input type="checkbox" id="mk" checked> Orbit trail</label>
+            <label class="toggle-pill" id="coaddWrap" title="Co-add repeated passes in the active detector band to boost Signal-to-Noise Ratio by √N"><input type="checkbox" id="coaddToggle"> <span>Band Co-Add (SNR ×√N)</span></label>
+            <label class="toggle-pill" title="Overlay Gaia DR3 proper-motion &amp; AllWISE infrared catalog sources detected in FITS field"><input type="checkbox" id="gaiaWiseOverlayToggle"> <span>Gaia + WISE Overlay</span></label>
+            <label class="toggle-pill" title="Highlight SPHEREx Level 2 bitmask contamination &amp; saturated stellar core NaN masks"><input type="checkbox" id="contamMaskToggle"> <span>Contamination Mask</span></label>
+          </div>
+          <div class="row" id="grF" hidden>
+            <label for="fs">Date</label><input type="range" id="fs" min="0" value="0">
+            <button class="b pri" id="fp" aria-pressed="false">Play</button>
+          </div>
+
+          <!-- Cutout Field of View (FOV) Selector & Contamination / Archive Cross-Match Bar -->
+          <div class="row fov-crossmatch-bar" id="contamCrossmatchBar">
+            <div class="xm-fov">
+              <label for="cutoutFovSelect">Cutout FOV:</label>
+              <select id="cutoutFovSelect" class="styled-select">
+                <option value="0.15">0.15° × 0.11° (9′ Deep Zoom)</option>
+                <option value="0.30" selected>0.30° × 0.23° (18′ Standard)</option>
+                <option value="0.50">0.50° × 0.38° (30′ Wide Field)</option>
+              </select>
+              <span id="contamFlagBadge">FLAG 0x00: CLEAN L2</span>
+            </div>
+            <div id="externalCrossmatchLinks">
+              <button type="button" id="aladinEmbedBtn" class="b sec">Toggle Live Aladin / WISE View</button>
+              <span class="xm-label">Cross-Match:</span>
+              <a id="xrefSimbad" href="#" target="_blank" rel="noopener">SIMBAD ↗</a>
+              <a id="xrefAladin" href="#" target="_blank" rel="noopener">Aladin (Gaia/WISE) ↗</a>
+              <a id="xrefIrsa" href="#" target="_blank" rel="noopener">NASA IRSA ↗</a>
+            </div>
+          </div>
+
+          <!-- Embedded Interactive Aladin Lite (Gaia DR3 + AllWISE + 2MASS) Survey Comparison Drawer -->
+          <div id="aladinEmbedBox" hidden>
+            <div class="aladin-head">
+              <strong>CDS ALADIN LITE MULTI-SURVEY OVERLAY (AllWISE / 2MASS / Gaia DR3)</strong>
+              <span id="aladinCoordReadout">RA 0.00°, Dec 0.00°</span>
+            </div>
+            <iframe id="aladinIframe" title="Aladin Lite Multi-Survey Overlay" loading="lazy"></iframe>
+          </div>
+        </div>
+        
+        <!-- Aside Information & Scientific Charts Panel -->
+        <aside id="cr1">
+          <div id="cap2" aria-live="polite"></div>
+          
+          <!-- Comet Brightness Bar Chart -->
+          <div id="asE">
+            <h3>Observation Timeline</h3>
+            <p class="small">Interactive timeline of SPHEREx observations. Notice the 4-month survey gap.</p>
+            <div id="tlx"></div>
+            <h3>Integrated Flux Density</h3>
+            <div id="chart"></div>
+            <p class="small">Calibrated flux in MJy/sr with zodiacal-light model and background level subtracted.</p>
+          </div>
+          
+          <!-- Spectroscopy Chart -->
+          <div id="asC" hidden>
+            <h3>Spectral Energy Distribution</h3>
+            <div id="cch"></div>
+            <p class="small">Narrow-band photometry from 3.79 to 4.34 µm across detector D5. The emission peaks sharply at <strong>4.26 microns</strong>, confirming the carbon dioxide gas coma.</p>
+          </div>
+          
+          <!-- Fixed-Field Close-ups, Proper Motion & Variable Light Curves -->
+          <div id="asM" hidden>
+            <h3 id="asT">Multi-Pass Close-Ups</h3>
+            <div id="strip"></div>
+            <div id="asN"></div>
+          </div>
+          
+          <button class="b full-width" id="fly2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg>
+            Locate in 360° Sky
+          </button>
+        </aside>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Gallery Modal (Glassmorphic) -->
+  <div id="gal" role="dialog" aria-labelledby="gt" hidden>
+    <div class="gw" data-lenis-prevent>
+      <div class="gh">
+        <div>
+          <p class="eyebrow">Cataloged Moving & Variable Targets</p>
+          <h2 id="gt">Gallery of Shifting Celestial Bodies</h2>
+        </div>
+        <button class="icon-close-btn" id="gx" aria-label="Close gallery">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <p class="small gal-intro">SPHEREx maps the entire sky every six months in 102 infrared bands. Explore our 6 target fields: Barnard's Star, Epsilon Indi B, WISE 0855-0714, RW Aurigae, R Draconis, and the Planet X search field.</p>
+      <div id="gf" role="group" aria-label="Filter the gallery"></div>
+      <div id="gg"></div>
+    </div>
+  </div>
+  
+  <!-- How This Was Made Modal -->
+  <div id="how" role="dialog" aria-labelledby="hwt" hidden>
+    <div id="hw2" data-lenis-prevent>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Methodology & Calibration</p>
+          <h2 id="hwt">How This Was Made</h2>
+        </div>
+        <button class="icon-close-btn" id="hx" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      
+      <p>This project transforms scientific NASA SPHEREx mission data into an interactive, real-time time-domain observatory for citizen science.</p>
+      
+      <h3>Data Provenance</h3>
+      <ul>
+        <li><b>360° All-Sky Skybox:</b> Re-projected from NASA/JPL-Caltech SPHEREx survey maps into dual equirectangular textures: stars & galaxies ($0.75 - 1.6\,\mu\text{m}$) and warm dust & gas ($2.4 - 5.0\,\mu\text{m}$). Real-time multi-layer blending via custom WebGL GLSL shaders.</li>
+        <li><b>Brown Dwarfs &amp; Fast Movers:</b> SPHEREx Level 2 Quick Release spectral images from the NASA/IPAC Infrared Science Archive (IRSA) for WISE 0855-0714 ($8.1''/\text{yr}$) and the binary brown dwarf pair Epsilon Indi B ($4.7''/\text{yr}$).</li>
+        <li><b>High Proper-Motion Stars:</b> Multi-epoch scans verified against ESA Gaia DR3 astrometry (Barnard's Star, $10.36''/\text{yr}$).</li>
+        <li><b>Variable Stars:</b> Time-domain light curves and multi-epoch cutouts (RW Aurigae dust eclipses and R Draconis Mira pulsations, $P=245.6\text{ days}$).</li>
+      </ul>
+      
+      <h3>Photometric & Astrometric Processing</h3>
+      <ul>
+        <li><b>Zodiacal Light Model Subtraction:</b> The interplanetary dust emission model was subtracted from each raw frame, followed by median local sky background removal.</li>
+        <li><b>Centroid Registration:</b> Multi-epoch frames in "Watch it move" mode are re-projected to fixed celestial coordinates, keeping distant background stars stationary while target displacement becomes immediately evident.</li>
+        <li><b>Dynamic Range Compression:</b> Asinh (inverse hyperbolic sine) scaling preserves both faint diffuse features and bright stellar cores without clipping.</li>
+      </ul>
+      
+      <h3>Credits, Data Citation &amp; Scientific Honesty</h3>
+      <ul>
+        <li><b>NASA / IPAC IRSA Official Citation:</b> SPHEREx Level 2 Quick Release Archive (<a class="doi-link" href="https://doi.org/10.26131/IRSA629" target="_blank" rel="noopener">DOI: 10.26131/IRSA629</a>) and NASA/JPL-Caltech.</li>
+        <li><b>Scientific Honesty:</b> All benchmark stars and brown dwarfs (Barnard's Star, Epsilon Indi B, WISE 0855, RW Aurigae, R Draconis) use real SPHEREx Level 2 FITS cutouts (`data/movers_cutouts/*.fits`, 6 epochs per target). The Planet X (450 AU) target uses real Taurus background FITS with an explicitly labeled <i>Hypothetical 450 AU Model</i> ($458.4''$ annual parallax loop, $\sim 40\text{--}47\text{ K}$ internal core heat).</li>
+        <li>Built by Team PP.AP for the 2026 NASA Space Apps Challenge ("Planet X and SPHEREx").</li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- Embed Code Modal -->
+  <div id="embedModal" role="dialog" hidden>
+    <div id="modalBox" data-lenis-prevent>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Classroom & Planetarium Integration</p>
+          <h2>Embed This View</h2>
+        </div>
+        <button class="icon-close-btn" id="closeEmbed" aria-label="Close embed modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <p>Embed the current SPHEREx view directly into your educational site, museum kiosk, or blog:</p>
+      <textarea id="embedText" class="embed-code" readonly></textarea>
+      <div class="embed-actions">
+        <button class="b pri" id="copyEmbed">Copy Embed Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sky Coordinate Search Modal -->
+  <div id="searchModal" class="glass-modal" role="dialog" aria-labelledby="stitle" hidden>
+    <div class="modal-dialog" data-lenis-prevent>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Astrometric Coordinate Navigation</p>
+          <h2 id="stitle">Sky Coordinate Search</h2>
+        </div>
+        <button class="icon-close-btn" id="closeSearch" aria-label="Close search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <p class="small">Input Right Ascension (RA) and Declination (Dec) in decimal degrees or sexagesimal notation (hh:mm:ss / ±dd:mm:ss):</p>
+      
+      <div class="search-inputs">
+        <div class="input-field">
+          <label for="raInput">Right Ascension (RA)</label>
+          <input type="text" id="raInput" placeholder="e.g. 133.795° or 08h 55m 10s">
+        </div>
+        <div class="input-field">
+          <label for="decInput">Declination (Dec)</label>
+          <input type="text" id="decInput" placeholder="e.g. -7.245° or -07° 14′ 43″">
+        </div>
+        <div class="input-field">
+          <label for="searchFovSelect">Cutout FOV</label>
+          <select id="searchFovSelect" class="styled-select">
+            <option value="0.15">0.15° × 0.11° (Deep Zoom)</option>
+            <option value="0.30" selected>0.30° × 0.23° (Standard)</option>
+            <option value="0.50">0.50° × 0.38° (Wide Field)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="preset-section">
+        <span class="preset-label">NASA Benchmark Targets:</span>
+        <div class="preset-chips">
+          <button class="preset-chip" data-ra="63.0" data-dec="18.5" data-id="planetx">Planet X Candidate (450 AU)</button>
+          <button class="preset-chip" data-ra="133.795" data-dec="-7.245" data-id="wise0855">WISE 0855 (Brown Dwarf)</button>
+          <button class="preset-chip" data-ra="331.044" data-dec="-56.783" data-id="epsindi">Epsilon Indi B (Binary)</button>
+          <button class="preset-chip" data-ra="269.452" data-dec="4.693" data-id="barnard">Barnard's Star (Proper Motion)</button>
+          <button class="preset-chip" data-ra="76.956" data-dec="30.401" data-id="rwaur">RW Aurigae (Dust Eclipse)</button>
+          <button class="preset-chip" data-ra="248.168" data-dec="66.755" data-id="rdraconis">R Draconis (Mira Variable)</button>
+          <button class="preset-chip" data-ra="266.42" data-dec="-29.01">Galactic Center (Sgr A*)</button>
+        </div>
+      </div>
+
+      <div class="search-actions">
+        <button class="b sec" id="jumpSkyBtn">Pan 360° Sky Globe</button>
+        <button class="b pri" id="inspectCutoutBtn">Inspect SPHEREx Multi-Pass Data</button>
+        <button class="b sec" id="searchToIrsaMailBtn">Process IRSA Cutout → Email</button>
+      </div>
+      <div id="searchMsg" class="search-msg"></div>
+    </div>
+  </div>
+
+  <!-- Data Releases & Custom Ingestion Modal -->
+  <div id="releaseModal" class="glass-modal" role="dialog" aria-labelledby="rtitle" hidden>
+    <div class="modal-dialog" data-lenis-prevent>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Survey Ingestion & Extensibility</p>
+          <h2 id="rtitle">Data Releases & Target Ingestion</h2>
+        </div>
+        <button class="icon-close-btn" id="closeRelease" aria-label="Close release modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      
+      <div class="release-select-section">
+        <label for="surveyReleaseSelect">Active SPHEREx Survey Data Release:</label>
+        <select id="surveyReleaseSelect" class="styled-select">
+          <option value="rel2" selected>Release 2: Passes 1–6 (All-Sky Multi-Epoch Survey)</option>
+          <option value="rel1">Release 1: Passes 1–2 (6-Month Quick Release)</option>
+        </select>
+        <p class="small">Filters available observation passes across all 102 infrared spectral channels.</p>
+        <div class="sync-row">
+          <button class="b sec" id="syncFitsArchiveBtn" type="button">Sync Local FITS Archive (data/movers_cutouts/)</button>
+          <span id="syncFitsMsg" class="small">36 Level 2 FITS cutouts indexed across 6 targets.</span>
+        </div>
+      </div>
+
+      <div class="custom-ingest-section">
+        <h3>Ingest Custom SPHEREx Candidate JSON</h3>
+        <p class="small">Paste a custom SPHEREx cutout target JSON to test pipeline classification or citizen science discoveries:</p>
+        <textarea id="ingestJson" class="code-textarea" placeholder='{
+  "id": "my_candidate_01",
+  "label": "My Candidate Object",
+  "name": "Candidate 2026-X1",
+  "ra": 142.50,
+  "dec": 19.30,
+  "frames": [ ... ]
+}'></textarea>
+        <div class="search-actions">
+          <button class="b sec" id="exportCatalogBtn">Download Catalog JSON</button>
+          <button class="b pri" id="loadCustomBtn">Load & Inspect Candidate</button>
+        </div>
+        <div id="ingestMsg" class="search-msg"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Citizen Science Discovery / Anomaly Reporting Modal -->
+  <div id="anomalyModal" class="glass-modal" role="dialog" aria-labelledby="anomTitle" hidden>
+    <div class="modal-dialog" data-lenis-prevent>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Citizen Science Discovery Pipeline</p>
+          <h2 id="anomTitle">Flag Candidate / Anomaly Report</h2>
+        </div>
+        <button class="icon-close-btn" id="closeAnomaly" aria-label="Close anomaly modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      
+      <p class="small">Record and export an official citizen science candidate discovery report for verification against the SPHEREx mission science team database.</p>
+      
+      <div class="anomaly-summary" id="anomalySummaryCard"></div>
+
+      <div class="search-inputs">
+        <div class="input-field">
+          <label for="candidateClassification">Candidate Classification</label>
+          <select id="candidateClassification" class="styled-select">
+            <option value="planet_x" selected>Potential Outer Planet (Planet X / Planet 9)</option>
+            <option value="brown_dwarf">High Proper-Motion Sub-Brown Dwarf</option>
+            <option value="neo_asteroid">Near-Earth Asteroid / Fast Mover</option>
+            <option value="interstellar_comet">Interstellar Comet / Outgassing Coma</option>
+            <option value="transient_variable">Infrared Transient / Eruptive Variable</option>
+            <option value="unknown">Uncataloged Anomaly</option>
+          </select>
+        </div>
+        <div class="input-field">
+          <label for="candidateConfidence">Detection Confidence</label>
+          <select id="candidateConfidence" class="styled-select">
+            <option value="5">Level 5: Definitive Multi-Epoch Detection</option>
+            <option value="4" selected>Level 4: Strong Multi-Pass Candidate</option>
+            <option value="3">Level 3: Probable Motion Anomaly</option>
+            <option value="2">Level 2: Possible Low-SNR Transient</option>
+            <option value="1">Level 1: Speculative / Artifact Candidate</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-field notes-field">
+        <label for="observerNotes">Observer Notes & Astrometric Hypothesis</label>
+        <textarea id="observerNotes" class="code-textarea" placeholder="Describe displacement rate, morphology, or anomalous 3.5–5.0 µm infrared excess..."></textarea>
+      </div>
+
+      <div class="search-actions">
+        <button class="b sec" id="copyAnomalyReport">Copy Report JSON</button>
+        <button class="b pri" id="downloadAnomalyReport">Download Official Report (.json)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- On-Demand NASA IRSA IPAC Cutout & Email Delivery Studio Modal -->
+  <div id="irsaModal" class="glass-modal" role="dialog" aria-labelledby="irsaTitle" hidden>
+    <div class="modal-dialog irsa-dialog" data-lenis-prevent>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">NASA / IPAC Infrared Science Archive (IRSA) Pipeline</p>
+          <h2 id="irsaTitle">On-Demand IRSA Cutout &amp; Email Delivery</h2>
+        </div>
+        <button class="icon-close-btn" id="closeIrsa" aria-label="Close IRSA modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <p class="small">Enter sky coordinates (RA / Dec in degrees or HMS/DMS) and your email address. Our backend executes <code>find_and_cut_movers.py</code> against NASA IRSA IPAC Level 2 SPHEREx science frames, WCS-reprojects 3 multi-epoch passes onto a common tangent plane, generates an animated blink GIF, digital difference map (Pass 3 − Pass 1), and sends the full telemetry package to your email.</p>
+
+      <div class="preset-section irsa-presets">
+        <span class="preset-label">Quick-Fill Real IRSA IPAC Targets:</span>
+        <div class="preset-chips" id="irsaPresetChips">
+          <button class="preset-chip irsa-preset" data-ra="269.4521" data-dec="4.6934" data-name="Barnard's Star" data-det="1">Barnard's Star (269.45°, +4.69°)</button>
+          <button class="preset-chip irsa-preset" data-ra="133.7862" data-dec="-7.2443" data-name="WISE 0855-0714" data-det="2">WISE 0855 (133.79°, -7.24°)</button>
+          <button class="preset-chip irsa-preset" data-ra="331.0758" data-dec="-56.7938" data-name="Epsilon Indi B" data-det="2">Epsilon Indi B (331.08°, -56.79°)</button>
+          <button class="preset-chip irsa-preset" data-ra="63.0052" data-dec="18.5008" data-name="Planet X Candidate" data-det="6">Planet X Field (63.01°, +18.50°)</button>
+          <button class="preset-chip irsa-preset" data-ra="76.9565" data-dec="30.4014" data-name="RW Aurigae" data-det="3">RW Aurigae (76.96°, +30.40°)</button>
+          <button class="preset-chip irsa-preset" data-ra="248.1707" data-dec="66.7556" data-name="R Draconis" data-det="2">R Draconis (248.17°, +66.76°)</button>
+        </div>
+      </div>
+
+      <div class="search-inputs">
+        <div class="input-field">
+          <label for="irsaRaInput">Right Ascension (RA)</label>
+          <input type="text" id="irsaRaInput" placeholder="e.g. 269.4521 or 17h 57m 48.5s" value="269.4521">
+        </div>
+        <div class="input-field">
+          <label for="irsaDecInput">Declination (Dec)</label>
+          <input type="text" id="irsaDecInput" placeholder="e.g. +4.6934 or +04° 41′ 36″" value="4.6934">
+        </div>
+      </div>
+
+      <div class="search-inputs stacked">
+        <div class="input-field">
+          <label for="irsaTargetInput">Target Label / Object Name</label>
+          <input type="text" id="irsaTargetInput" placeholder="e.g. Barnard's Star or Candidate-01" value="Barnard's Star">
+        </div>
+        <div class="input-field">
+          <label for="irsaDetSelect">Preferred SPHEREx Detector Array</label>
+          <select id="irsaDetSelect" class="styled-select">
+            <option value="">Auto-Select Best Coverage (D1–D6)</option>
+            <option value="1">Detector D1 (0.75–1.10 µm Near-IR)</option>
+            <option value="2">Detector D2 (1.10–1.63 µm J/H-Band)</option>
+            <option value="3">Detector D3 (1.63–2.42 µm K-Band)</option>
+            <option value="4">Detector D4 (2.42–3.82 µm Water Ice / PAH)</option>
+            <option value="5">Detector D5 (3.82–4.42 µm CO₂ / CO Gas)</option>
+            <option value="6">Detector D6 (4.42–5.00 µm Thermal IR)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="search-inputs stacked">
+        <div class="input-field">
+          <label for="irsaFovSelect">Cutout Angular Field of View (FOV)</label>
+          <select id="irsaFovSelect" class="styled-select">
+            <option value="0.15">0.15° × 0.11° (9′ × 6.7′ Deep Zoom)</option>
+            <option value="0.30" selected>0.30° × 0.23° (18′ × 13.5′ Standard)</option>
+            <option value="0.50">0.50° × 0.38° (30′ × 22.5′ Wide Field)</option>
+          </select>
+        </div>
+        <div class="input-field">
+          <label for="irsaEmailInput">Optional Recipient Email (Leave blank for On-Page Only)</label>
+          <input type="email" id="irsaEmailInput" placeholder="Optional: scientist@university.edu">
+        </div>
+      </div>
+
+      <div class="synth-opt">
+        <input type="checkbox" id="irsaAllowSynthetic">
+        <label for="irsaAllowSynthetic">Allow clearly labeled <strong>Illustrative Synthetic Simulation</strong> if live NASA IRSA FITS download is offline for uncached coordinates</label>
+      </div>
+
+      <!-- Optional SMTP Configuration Drawer -->
+      <details class="smtp-config-drawer" id="smtpConfigDrawer">
+        <summary>Configure Outgoing SMTP Relay (Optional — session-only in memory or via local .env)</summary>
+        <div class="smtp-config-body">
+          <p class="small smtp-note">For security, SMTP credentials are read from environment variables (<code>.env</code>, git-ignored) or held in process memory only — <strong>never written to disk or git</strong>:</p>
+          <div class="search-inputs">
+            <div class="input-field">
+              <label for="smtpHostInput">SMTP Host</label>
+              <input type="text" id="smtpHostInput" value="smtp.gmail.com" placeholder="smtp.gmail.com">
+            </div>
+            <div class="input-field">
+              <label for="smtpPortInput">SMTP Port</label>
+              <input type="number" id="smtpPortInput" value="587" placeholder="587">
+            </div>
+          </div>
+          <div class="search-inputs stacked">
+            <div class="input-field">
+              <label for="smtpUserInput">SMTP Username / Email</label>
+              <input type="text" id="smtpUserInput" placeholder="your.account@gmail.com">
+            </div>
+            <div class="input-field">
+              <label for="smtpPassInput">SMTP Password / Gmail App Password</label>
+              <input type="password" id="smtpPassInput" placeholder="16-char Gmail App Password">
+            </div>
+          </div>
+          <div class="smtp-status">
+            <span id="smtpStatusBadge" class="small">Checking SMTP configuration...</span>
+            <button class="b sec" id="saveSmtpBtn" type="button">Set Session SMTP</button>
+          </div>
+        </div>
+      </details>
+
+      <div class="search-actions irsa-run">
+        <button class="b pri" id="runIrsaCutoutBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+          Process NASA IRSA Cutouts on Page (&amp; Optional Email)
+        </button>
+      </div>
+
+      <!-- Live Pipeline Progress & Console -->
+      <div id="irsaPipelineBox" class="irsa-pipeline-box" hidden>
+        <div class="irsa-progress-header">
+          <span id="irsaStageText" class="irsa-stage-text">Initializing NASA IRSA IPAC TAP query...</span>
+          <span id="irsaPercentText" class="irsa-percent-text">0%</span>
+        </div>
+        <div class="irsa-progress-track">
+          <div id="irsaProgressBar" class="irsa-progress-fill"></div>
+        </div>
+        <pre id="irsaConsoleLog" class="irsa-console-log"></pre>
+      </div>
+
+      <!-- Processed Cutout & Email Results View -->
+      <div id="irsaResultView" class="irsa-result-view" hidden>
+        <div id="irsaEmailBanner" class="irsa-email-banner"></div>
+
+        <div class="irsa-visual-grid">
+          <div class="irsa-visual-card">
+            <div class="irsa-card-label">3-Epoch Blink Animation (GIF)</div>
+            <img id="irsaBlinkGif" src="" alt="3-Epoch Blink Animation">
+          </div>
+          <div class="irsa-visual-card">
+            <div class="irsa-card-label">Digital Difference Map (Pass 3 − Pass 1)</div>
+            <img id="irsaDiffImg" src="" alt="Digital Difference Map">
+          </div>
+        </div>
+
+        <div class="irsa-card-label strip-label">Processed Multi-Epoch SPHEREx Level 2 Cutouts (Annotated &amp; Raw FITS)</div>
+        <div id="irsaFramesStrip" class="irsa-frames-strip"></div>
+
+        <div class="search-actions irsa-result-actions">
+          <button class="b pri" id="irsaInspectInViewerBtn" type="button">Inspect in 5-Mode Interactive Viewer</button>
+          <a id="irsaPreviewEmailLink" href="#" target="_blank" rel="noopener" class="b sec">Preview Sent HTML Email</a>
+          <a id="irsaDownloadEmlLink" href="#" download class="b sec">Download Email Package (.eml)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="toast">Link copied to clipboard!</div>
+
+  <!-- The whole app (React intro + story, 3D viewer): built from ui/src/ by `npm run build` -->
+  <script src="js/ui.bundle.js?v=26"></script>
+  <script>
+    // The intro removes the #ui-boot cover as soon as it starts; if the bundle never ran, do not leave it there.
+    window.addEventListener('load', function(){
+      setTimeout(function(){
+        var b = document.getElementById('ui-boot');
+        if(b){ b.remove(); document.body.classList.remove('ui-intro'); }
+      }, 6000);
+    });
+  </script>
+  <script>
+    if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0 && !window.__SPX_DEV){
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('sw.js?v=50').then(function(reg){
+          if(reg.update) reg.update();
+        }).catch(function(err){
+          console.warn('Service worker registration:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

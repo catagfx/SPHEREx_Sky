@@ -1,0 +1,161 @@
+/* =============================================================
+ * INTRO  —  source: ui/src/intro/Intro.tsx   (React + GSAP)
+ *
+ *   #ui-boot          static dark cover in index.html (paints before any JS)
+ *   #load             dark cover with the flying stars (.intro-warp); fades into the sky when it is ready
+ *   #introType        big SPHEREx title over the sky
+ *   .intro-cue        "Scroll to explore": the first scroll ends the intro
+ *   html.intro-lock   page scrolling is locked while the title is shown
+ *   body.ui-intro     hides the header / watermark until the intro reveals the page
+ *
+ * Plain CSS: edit and refresh, no build step needed.
+ * ============================================================= */
+
+/* ---- dark cover (same background in both, so the hand-over is seamless) ---- */
+#ui-boot,
+#load {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, #0a1226 0%, var(--bg-deep) 62%);
+}
+#ui-boot { z-index: 998; }
+#load { z-index: 999; overflow: hidden; }
+
+/* flying stars inside #load (ui/src/intro/Warp.tsx, raw WebGL) */
+.intro-warp {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* CSS-only fallback when WebGL is unavailable */
+.intro-stars {
+  position: absolute;
+  inset: -10%;
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 18%, #cfeaff 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 34% 74%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 66%, #ffd9a8 50%, transparent 51%),
+    radial-gradient(1px 1px at 58% 38%, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 22% 52%, #cfeaff 50%, transparent 51%),
+    radial-gradient(1px 1px at 66% 86%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 46% 10%, #fff 50%, transparent 51%);
+  opacity: 0;
+  animation: introStars 1.6s ease-out forwards, introDrift 12s linear infinite;
+}
+@keyframes introStars { to { opacity: 0.85; } }
+@keyframes introDrift { to { transform: translate3d(-2%, 1.5%, 0); } }
+.reduce-motion .intro-stars { animation: introStars 1.2s ease-out forwards; }
+
+/* ---- page scroll locked while the title screen is up ---- */
+html.intro-lock,
+html.intro-lock body {
+  overflow: hidden;
+}
+
+/* ---- big title ---- */
+#introType {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  padding-left: 0.1em; /* balances the trailing letter-spacing so the word is optically centred */
+  z-index: 1000;       /* above the cover while it fades */
+  pointer-events: none;
+  visibility: hidden;  /* GSAP reveals it */
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(56px, 14vw, 230px);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+#introType .ch {
+  display: inline-block;
+  color: #fff;
+  opacity: 0;
+  text-shadow: 0 0 60px rgba(143, 211, 255, 0.35), 0 0 4px rgba(255, 255, 255, 0.25);
+}
+#introType .intro-caret {
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 0.05em;
+  height: 80%;
+  background: #fff;
+  visibility: hidden;  /* GSAP shows it while typing */
+  animation: caretBlink 0.9s steps(1, end) infinite;
+}
+@keyframes caretBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ---- scroll cue under the title ---- */
+.intro-cue {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(28px, 7vh, 64px);
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  visibility: hidden; /* GSAP reveals it after the title */
+  color: rgba(255, 255, 255, 0.75);
+}
+.intro-cue-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.intro-cue:hover .intro-cue-text,
+.intro-cue:focus-visible .intro-cue-text { color: #fff; }
+.intro-cue:focus-visible { outline: 1px solid rgba(255, 255, 255, 0.4); outline-offset: 4px; border-radius: 10px; }
+/* .cue-mouse / .cue-wheel come from css/hero.css (same as the hero's cue) */
+
+/* ---- smooth fade-in for page chrome when intro ends ----
+ * Full motion: the viewer (viewer/ui/chrome.js, playChromeEntrance) tweens #top and .bg-watermark itself; a CSS
+ * opacity transition on top of that tween makes the header lag (~2 s instead of 0.7 s). Calm mode: no tween, so CSS
+ * fades them. #credit / #cornerBadge already fade via their own transition in css/sky.css (bottom + opacity). */
+.reduce-motion #top,
+.reduce-motion .bg-watermark {
+  transition: opacity 0.8s ease;
+}
+
+/* ---- header / watermark stay hidden until the intro reveals the page ---- */
+body.ui-intro #top,
+body.ui-intro .bg-watermark,
+body.ui-intro #credit,
+body.ui-intro #cornerBadge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ---- scene error notice (three.js / WebGL unavailable) ---- */
+.ui-error-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 90;
+  max-width: min(560px, 90vw);
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(12, 17, 32, 0.95);
+  border: 1px solid rgba(255, 184, 107, 0.5);
+  color: var(--warm);
+  font: 13px/1.4 var(--font-main);
+  text-align: center;
+}
+
+/* calm mode (html.reduce-motion, set by ui/src/core/env.ts): no caret blink, no bouncing wheel */
+.reduce-motion #introType .intro-caret { display: none; }
+.reduce-motion .intro-cue .cue-wheel { animation: none; }

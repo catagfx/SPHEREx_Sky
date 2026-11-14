@@ -1,0 +1,424 @@
+/* =============================================================
+ * SKY OVERLAYS  -  everything drawn over the globe (viewer/sky/, viewer/panels/tour.js):
+ * corner badge + credit, landmark labels (#hs) and strip (#bot), layer panel + compare divider,
+ * info card, tour bar, free-look banner.
+ * ============================================================= */
+
+/* ---- corner badge (left) and sky credit (right) ---- */
+#cornerBadge {
+  position: fixed;
+  left: 28px;
+  bottom: 20px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
+  text-shadow: 0 0 8px #000;
+  transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+#cornerBadge .dot {
+  color: var(--warm);
+}
+
+#credit {
+  position: fixed;
+  right: 28px;
+  bottom: 22px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #fff;
+  text-align: right;
+  max-width: min(42ch, 30vw); /* never reaches the centred scroll cue */
+  pointer-events: none;
+  z-index: 6; /* above the story page (z 5) and its dark hero gradient */
+  text-shadow: 0 0 10px #000, 0 0 2px #000;
+  transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+/* landmarks mode: lift the badge and the credit above the landmark strip */
+body.landmarks-active #cornerBadge,
+body.landmarks-active #credit {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 88px) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ---- landmark strip along the bottom (only in Explore ▸ Landmarks) ---- */
+#bot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 24px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  scrollbar-width: none;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+#bot::-webkit-scrollbar {
+  display: none;
+}
+
+#bot button {
+  flex: none;
+  white-space: nowrap !important;
+}
+
+body.landmarks-active #bot {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* on the story page the strip and the badge stay out of the way */
+body.hero-mode #bot,
+body.hero-mode #cornerBadge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: opacity 0.3s ease;
+}
+
+/* ---- landmark labels projected onto the globe (viewer/sky/landmarks.js) ---- */
+#hs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 6;
+  display: none !important;
+}
+
+body.landmarks-active #hs {
+  display: block !important;
+}
+
+.hp {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: none !important;
+  border: 0 !important;
+  color: var(--ink);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 8px;
+  text-shadow: 0 0 6px #000, 0 0 12px #000;
+  white-space: nowrap !important;
+  will-change: transform;
+  user-select: none;
+}
+
+.hp:hover {
+  color: #fff;
+}
+
+.hp span {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+  transition: color 0.18s ease, text-shadow 0.18s ease;
+}
+
+.hp:hover span {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(143, 211, 255, 0.6);
+}
+
+.hp i {
+  position: relative;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--cool);
+  box-shadow: 0 0 10px var(--cool);
+  flex: none;
+  animation: tw 2.4s ease-in-out infinite;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.hp:hover i {
+  border-color: #fff;
+  box-shadow: 0 0 16px var(--cool), 0 0 24px var(--cool-glow);
+  transform: scale(1.08);
+}
+
+.hp.me:hover i {
+  border-color: #fff;
+  box-shadow: 0 0 16px var(--warm), 0 0 24px var(--warm-glow);
+  transform: scale(1.08);
+}
+
+/* the two comet landmarks */
+.hp.me i {
+  border-color: var(--warm);
+  box-shadow: 0 0 10px var(--warm);
+}
+
+/* label on the left of its marker */
+.hp.lf {
+  flex-direction: row-reverse;
+}
+
+@keyframes tw {
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* "target lock" when the camera flies to a landmark */
+@keyframes landmarkTargetLock {
+  0% {
+    border-color: #fff;
+    box-shadow: 0 0 0 0 rgba(255, 184, 107, 0.9), 0 0 14px var(--warm);
+    transform: scale(1);
+  }
+  50% {
+    border-color: var(--warm);
+    box-shadow: 0 0 6px 3px rgba(255, 184, 107, 0.6), 0 0 22px var(--warm-glow);
+    transform: scale(1.1);
+  }
+  100% {
+    border-color: var(--warm);
+    box-shadow: 0 0 0 0 rgba(255, 184, 107, 0), 0 0 10px var(--warm-glow);
+    transform: scale(1);
+  }
+}
+
+.hp.hit i {
+  border-color: var(--warm) !important;
+  animation: landmarkTargetLock 0.75s ease-in-out 3 !important;
+}
+
+.hp.hit span {
+  color: #fff !important;
+  text-shadow: 0 0 8px var(--warm), 0 0 16px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* ---- Tools ▸ Sky layers & compare: divider (#dv), its labels, the layer panel (.pn) ---- */
+#dv {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  margin-left: -22px;
+  z-index: 8;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+#dv::before {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+}
+
+#dv::after {
+  content: "<>";
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  margin-top: -15px;
+  border-radius: 50%;
+  background: #fff;
+  color: #030508;
+  font: 700 11px/30px var(--font-mono);
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+
+.split-chip {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 90px);
+  z-index: 8;
+  background: rgba(10, 14, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+}
+
+.pn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid rgba(255, 184, 107, 0.35);
+  border-radius: 20px;
+  padding: 16px 20px;
+  backdrop-filter: blur(24px);
+  z-index: 8;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 90px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.pn p {
+  margin: 0 0 12px;
+  color: var(--dim);
+  font-size: 12px;
+}
+
+.pn .r {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pn label {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.pn input[type=range] {
+  flex: 1;
+  min-width: 130px;
+  accent-color: var(--warm);
+}
+
+.pn .pn-row { margin-top: 8px; }
+.pn .pn-actions { margin-top: 12px; justify-content: space-between; }
+
+/* ---- guided tour control bar ---- */
+#tour {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  z-index: 9;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid rgba(143, 211, 255, 0.35);
+  border-radius: 30px;
+  padding: 8px 18px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+}
+
+.tour-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 6px;
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cool);
+  box-shadow: 0 0 10px var(--cool);
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+#tn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--cool);
+}
+
+/* ---- info card (landmark, tour stop, About) ---- */
+#card {
+  position: fixed;
+  left: 28px;
+  top: calc(env(safe-area-inset-top, 0px) + 92px);
+  width: min(360px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid rgba(143, 211, 255, 0.3);
+  border-radius: 18px;
+  padding: 20px;
+  backdrop-filter: blur(24px);
+  z-index: 8;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+#card h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#card p {
+  margin: 0 0 16px;
+  color: #cfd7eb;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ---- free-look banner ("Resume Story Tour") ---- */
+.free-look-banner {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  pointer-events: auto;
+}
+.banner-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  background: rgba(8, 12, 22, 0.9);
+  border: 1px solid rgba(143, 211, 255, 0.35);
+  border-radius: 40px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 13px;
+}
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #39e58c;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #39e58c;
+}
+
+@media (max-width: 820px) {
+  #credit { display: none; }
+}
+
+/* calm mode (html.reduce-motion, set by ui/src/core/env.ts) */
+.reduce-motion .hp i { animation: none; }
+.reduce-motion .pulse-indicator { animation: none; }

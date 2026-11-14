@@ -1,0 +1,26 @@
+# Secrets & Local Environment Configuration (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+smtp_config.json
+*emaildetails*
+*.eml
+
+# Runtime Generated Cutout Jobs & Temporary Backups
+assets/custom_cutouts/*
+!assets/custom_cutouts/.gitkeep
+assets_backup/
+_full_*.fits
+
+# Python & Playwright Caches
+__pycache__/
+*.py[cod]
+.agents/
+.playwright/
+.playwright-cli/
+
+# JS tooling
+node_modules/
+
+# local test baselines (tests/snapshot-*.mjs save)
+tests/.baselines/

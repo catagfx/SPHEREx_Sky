@@ -1,0 +1,553 @@
+[
+  {
+    "id": "barnard",
+    "label": "Barnard's Star (Proper Motion)",
+    "name": "Barnard's Star",
+    "kind": "High Proper-Motion Star",
+    "lab": "dt",
+    "crop": 24,
+    "r": 18,
+    "closeTitle": "Close-ups on Barnard's Star",
+    "tags": [
+      "nasa-benchmark",
+      "proper-motion",
+      "star"
+    ],
+    "ra": 269.4521,
+    "dec": 4.6934,
+    "pmra": -801.5,
+    "pmdec": 10362.4,
+    "blurb": "The fastest-moving star in our sky. Drifts ~10.3 arcsec/year across SPHEREx scans.",
+    "span": "6 passes over 18 months",
+    "caption": "The distant background stars stay fixed, while Barnard's Star drifts across the detector between each 6-month SPHEREx all-sky scan. Cutouts from NASA IRSA IPAC Level 2 archive.",
+    "aside": "<p class=\"small\">Barnard's Star is a red dwarf 5.96 light-years away in Ophiuchus. With proper motion of 10.3 arcseconds/year, SPHEREx detects its displacement between all-sky survey passes.</p><p class=\"small\">Real SPHEREx science frames from NASA IRSA IPAC. Detector D2 (1.12\u20131.50 \u00b5m).</p>",
+    "frames": [
+      {
+        "d": "2025-08-24",
+        "t": "11:46",
+        "b": "Pass 1: SPHEREx D2 (1.12 \u00b5m). Obs 2025W34_2B_0557_1. RA 269.4521\u00b0, Dec +4.6934\u00b0 \u00b7 246.284 MJy/sr.",
+        "u": "assets/field_barnard_0.jpg",
+        "x": 0.4968,
+        "y": 0.5106,
+        "cov": 1.0,
+        "flux": 246.284,
+        "wl": 1.1225962978341044
+      },
+      {
+        "d": "2025-08-30",
+        "t": "16:10",
+        "b": "Pass 2: SPHEREx D2 (1.26 \u00b5m). Obs 2025W35_2A_0418_1. RA 269.4521\u00b0, Dec +4.6934\u00b0 \u00b7 463.63 MJy/sr.",
+        "u": "assets/field_barnard_1.jpg",
+        "x": 0.4968,
+        "y": 0.5104,
+        "cov": 0.999,
+        "flux": 463.63,
+        "wl": 1.265
+      },
+      {
+        "d": "2026-03-15",
+        "t": "00:46",
+        "b": "Pass 3: SPHEREx D2 (1.44 \u00b5m). Obs 2026W11_2A_0501_1. RA 269.4521\u00b0, Dec +4.6934\u00b0 \u00b7 489.961 MJy/sr.",
+        "u": "assets/field_barnard_2.jpg",
+        "x": 0.4972,
+        "y": 0.5036,
+        "cov": 1.0,
+        "flux": 489.961,
+        "wl": 1.4437750252637547
+      },
+      {
+        "d": "2026-03-22",
+        "t": "05:28",
+        "b": "Pass 4: SPHEREx D2 (1.44 \u00b5m). Obs 2026W12_2A_0496_1. RA 269.4521\u00b0, Dec +4.6934\u00b0 \u00b7 430.627 MJy/sr.",
+        "u": "assets/field_barnard_3.jpg",
+        "x": 0.4972,
+        "y": 0.5033,
+        "cov": 1.0,
+        "flux": 430.627,
+        "wl": 1.439
+      },
+      {
+        "d": "2026-08-18",
+        "t": "20:48",
+        "b": "Pass 5: SPHEREx D2 (1.50 \u00b5m). Obs 2026W34_1A_0363_1. RA 269.4521\u00b0, Dec +4.6934\u00b0 \u00b7 374.473 MJy/sr.",
+        "u": "assets/field_barnard_4.jpg",
+        "x": 0.4975,
+        "y": 0.4981,
+        "cov": 1.0,
+        "flux": 374.473,
+        "wl": 1.5037635263239295
+      },
+      {
+        "d": "2026-09-22",
+        "t": "15:04",
+        "b": "Pass 6: SPHEREx D2 (1.26 \u00b5m). Obs 2026W39_1A_0371_1. RA 269.4521\u00b0, Dec +4.6934\u00b0 \u00b7 295.178 MJy/sr.",
+        "u": "assets/field_barnard_5.jpg",
+        "x": 0.4976,
+        "y": 0.4969,
+        "cov": 0.999,
+        "flux": 295.178,
+        "wl": 1.264
+      }
+    ]
+  },
+  {
+    "id": "epsindi",
+    "label": "Epsilon Indi B (Binary Brown Dwarf)",
+    "name": "Epsilon Indi B",
+    "kind": "Binary Brown Dwarf",
+    "lab": "dt",
+    "crop": 24,
+    "r": 18,
+    "closeTitle": "Close-ups on Epsilon Indi B",
+    "tags": [
+      "binary",
+      "brown-dwarf",
+      "browndwarf",
+      "nasa-benchmark"
+    ],
+    "ra": 331.0758,
+    "dec": -56.7938,
+    "pmra": 3961.0,
+    "pmdec": -2538.0,
+    "blurb": "A cool pair of methane-rich brown dwarfs orbiting an orange dwarf star.",
+    "span": "6 passes over 18 months",
+    "caption": "Epsilon Indi B drifts against the background sky with a proper motion of 4.7 arcsec/year across SPHEREx observations.",
+    "aside": "<p class=\"small\">Epsilon Indi B is a T1 + T6 binary brown dwarf system located 11.8 light-years away. Real SPHEREx Level 2 observations from NASA IRSA IPAC (Detector D2, 1.10\u20131.63 \u00b5m).</p>",
+    "frames": [
+      {
+        "d": "2025-04-24",
+        "t": "20:31",
+        "b": "Pass 1: SPHEREx D2 (1.56 \u00b5m). Obs 2025W17_4B_0017_1. RA 331.0758\u00b0, Dec -56.7938\u00b0 \u00b7 2.051 MJy/sr.",
+        "u": "assets/field_epsindi_0.jpg",
+        "x": 0.4998,
+        "y": 0.5015,
+        "cov": 0.998,
+        "flux": 2.051,
+        "wl": 1.5620510342827845
+      },
+      {
+        "d": "2025-06-07",
+        "t": "12:55",
+        "b": "Pass 2: SPHEREx D2 (1.26 \u00b5m). Obs 2025W23_2B_0441_4. RA 331.0758\u00b0, Dec -56.7938\u00b0 \u00b7 1.071 MJy/sr.",
+        "u": "assets/field_epsindi_1.jpg",
+        "x": 0.4993,
+        "y": 0.5019,
+        "cov": 0.998,
+        "flux": 1.071,
+        "wl": 1.261
+      },
+      {
+        "d": "2025-10-01",
+        "t": "17:58",
+        "b": "Pass 3: SPHEREx D2 (1.46 \u00b5m). Obs 2025W40_1A_0603_3. RA 331.0758\u00b0, Dec -56.7938\u00b0 \u00b7 0.847 MJy/sr.",
+        "u": "assets/field_epsindi_2.jpg",
+        "x": 0.4982,
+        "y": 0.5029,
+        "cov": 0.999,
+        "flux": 0.847,
+        "wl": 1.463
+      },
+      {
+        "d": "2025-10-23",
+        "t": "14:45",
+        "b": "Pass 4: SPHEREx D2 (1.26 \u00b5m). Obs 2025W43_2A_0023_2. RA 331.0758\u00b0, Dec -56.7938\u00b0 \u00b7 1.162 MJy/sr.",
+        "u": "assets/field_epsindi_3.jpg",
+        "x": 0.498,
+        "y": 0.5031,
+        "cov": 0.999,
+        "flux": 1.162,
+        "wl": 1.261
+      },
+      {
+        "d": "2026-04-24",
+        "t": "21:20",
+        "b": "Pass 5: SPHEREx D2 (1.10 \u00b5m). Obs 2026W17_2A_0308_3. RA 331.0758\u00b0, Dec -56.7938\u00b0 \u00b7 0.822 MJy/sr.",
+        "u": "assets/field_epsindi_4.jpg",
+        "x": 0.4961,
+        "y": 0.5047,
+        "cov": 0.996,
+        "flux": 0.822,
+        "wl": 1.10204537585484
+      },
+      {
+        "d": "2026-09-28",
+        "t": "03:10",
+        "b": "Pass 6: SPHEREx D2 (1.13 \u00b5m). Obs 2026W40_1A_0031_1. RA 331.0758\u00b0, Dec -56.7938\u00b0 \u00b7 0.662 MJy/sr.",
+        "u": "assets/field_epsindi_5.jpg",
+        "x": 0.4946,
+        "y": 0.506,
+        "cov": 0.999,
+        "flux": 0.662,
+        "wl": 1.128460545062774
+      }
+    ]
+  },
+  {
+    "id": "wise0855",
+    "label": "WISE 0855-0714 (Cold Brown Dwarf)",
+    "name": "WISE 0855-0714",
+    "kind": "Sub-Freezing Brown Dwarf",
+    "lab": "dt",
+    "crop": 24,
+    "r": 18,
+    "closeTitle": "Close-ups on WISE 0855-0714",
+    "tags": [
+      "brown-dwarf",
+      "browndwarf",
+      "fast-mover",
+      "nasa-benchmark"
+    ],
+    "ra": 133.7862,
+    "dec": -7.2443,
+    "pmra": -8118.0,
+    "pmdec": 680.0,
+    "blurb": "The coldest known brown dwarf (-13\u00b0C) and fourth closest system to the Sun.",
+    "span": "6 passes over 18 months",
+    "caption": "Located only 7.5 light-years away, WISE 0855 drifts rapidly (8.1 arcsec/year) between SPHEREx survey passes.",
+    "aside": "<p class=\"small\">WISE 0855-0714 (RA 08h 55m 10.8s, Dec -07\u00b0 14\u2032 43\u2033) is a sub-stellar object with water-ice clouds. Real SPHEREx Level 2 observations from NASA IRSA IPAC.</p>",
+    "frames": [
+      {
+        "d": "2025-05-06",
+        "t": "02:33",
+        "b": "Pass 1: SPHEREx D2 (1.51 \u00b5m). Obs 2025W19_1B_0181_1. RA 133.7862\u00b0, Dec -7.2443\u00b0 \u00b7 0.081 MJy/sr.",
+        "u": "assets/field_wise0855_0.jpg",
+        "x": 0.4934,
+        "y": 0.5042,
+        "cov": 1.0,
+        "flux": 0.081,
+        "wl": 1.513501101230077
+      },
+      {
+        "d": "2025-11-07",
+        "t": "05:49",
+        "b": "Pass 2: SPHEREx D2 (1.12 \u00b5m). Obs 2025W45_2A_0164_2. RA 133.7862\u00b0, Dec -7.2443\u00b0 \u00b7 0.007 MJy/sr.",
+        "u": "assets/field_wise0855_1.jpg",
+        "x": 0.4971,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.007,
+        "wl": 1.1230506820359407
+      },
+      {
+        "d": "2025-11-10",
+        "t": "10:30",
+        "b": "Pass 3: SPHEREx D2 (1.40 \u00b5m). Obs 2025W46_1A_0108_1. RA 133.7862\u00b0, Dec -7.2443\u00b0 \u00b7 0.008 MJy/sr.",
+        "u": "assets/field_wise0855_2.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.008,
+        "wl": 1.402
+      },
+      {
+        "d": "2025-12-13",
+        "t": "08:50",
+        "b": "Pass 4: SPHEREx D2 (1.29 \u00b5m). Obs 2025W50_2A_0512_1. RA 133.7862\u00b0, Dec -7.2443\u00b0 \u00b7 0.002 MJy/sr.",
+        "u": "assets/field_wise0855_3.jpg",
+        "x": 0.4979,
+        "y": 0.5037,
+        "cov": 1.0,
+        "flux": 0.002,
+        "wl": 1.293
+      },
+      {
+        "d": "2026-05-01",
+        "t": "14:07",
+        "b": "Pass 5: SPHEREx D2 (1.13 \u00b5m). Obs 2026W18_2A_0247_2. RA 133.7862\u00b0, Dec -7.2443\u00b0 \u00b7 0.005 MJy/sr.",
+        "u": "assets/field_wise0855_4.jpg",
+        "x": 0.5007,
+        "y": 0.5034,
+        "cov": 1.0,
+        "flux": 0.005,
+        "wl": 1.1335560486996679
+      },
+      {
+        "d": "2026-05-14",
+        "t": "06:53",
+        "b": "Pass 6: SPHEREx D2 (1.22 \u00b5m). Obs 2026W20_1A_1166_1. RA 133.7862\u00b0, Dec -7.2443\u00b0 \u00b7 -0.013 MJy/sr.",
+        "u": "assets/field_wise0855_5.jpg",
+        "x": 0.501,
+        "y": 0.5034,
+        "cov": 1.0,
+        "flux": -0.013,
+        "wl": 1.22
+      }
+    ]
+  },
+  {
+    "id": "rwaur",
+    "label": "RW Aurigae (Dust Eclipse Variable)",
+    "name": "RW Aurigae",
+    "kind": "Young Variable Star",
+    "lab": "dt",
+    "crop": 24,
+    "r": 18,
+    "closeTitle": "Close-ups on RW Aurigae",
+    "tags": [
+      "nasa-benchmark",
+      "star",
+      "variable",
+      "young-star"
+    ],
+    "ra": 76.9565,
+    "dec": 30.4014,
+    "pmra": 4.0,
+    "pmdec": -24.0,
+    "blurb": "Young binary star undergoing catastrophic, prolonged dust-obscuration events.",
+    "span": "6 passes over 18 months",
+    "caption": "SPHEREx captures dramatic infrared flux variations as circumstellar tidal dust streams occult the primary star.",
+    "aside": "<p class=\"small\">RW Aurigae is a classical T Tauri star in Taurus-Auriga. Periodic deep occultations by tidal stream dust cause multi-magnitude dimming. Real NASA IRSA Level 2 data.</p>",
+    "frames": [
+      {
+        "d": "2025-09-08",
+        "t": "06:36",
+        "b": "Pass 1: SPHEREx D2 (1.44 \u00b5m). Obs 2025W37_1A_0068_1. RA 76.9565\u00b0, Dec +30.4014\u00b0 \u00b7 17.165 MJy/sr.",
+        "u": "assets/field_rwaur_0.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 17.165,
+        "wl": 1.435053500022155
+      },
+      {
+        "d": "2026-03-01",
+        "t": "04:55",
+        "b": "Pass 2: SPHEREx D2 (1.27 \u00b5m). Obs 2026W09_2A_0503_1. RA 76.9565\u00b0, Dec +30.4014\u00b0 \u00b7 23.255 MJy/sr.",
+        "u": "assets/field_rwaur_1.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 23.255,
+        "wl": 1.2681875906058246
+      },
+      {
+        "d": "2026-03-05",
+        "t": "05:05",
+        "b": "Pass 3: SPHEREx D2 (1.25 \u00b5m). Obs 2026W10_1A_0602_1. RA 76.9565\u00b0, Dec +30.4014\u00b0 \u00b7 33.847 MJy/sr.",
+        "u": "assets/field_rwaur_2.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 33.847,
+        "wl": 1.251
+      },
+      {
+        "d": "2026-03-09",
+        "t": "05:12",
+        "b": "Pass 4: SPHEREx D2 (1.40 \u00b5m). Obs 2026W11_1A_0042_1. RA 76.9565\u00b0, Dec +30.4014\u00b0 \u00b7 19.118 MJy/sr.",
+        "u": "assets/field_rwaur_3.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 19.118,
+        "wl": 1.402
+      },
+      {
+        "d": "2026-09-10",
+        "t": "09:05",
+        "b": "Pass 5: SPHEREx D2 (1.46 \u00b5m). Obs 2026W37_1A_0615_1. RA 76.9565\u00b0, Dec +30.4014\u00b0 \u00b7 24.203 MJy/sr.",
+        "u": "assets/field_rwaur_4.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 24.203,
+        "wl": 1.4552322356243796
+      },
+      {
+        "d": "2026-09-15",
+        "t": "08:04",
+        "b": "Pass 6: SPHEREx D2 (1.29 \u00b5m). Obs 2026W38_1A_0254_3. RA 76.9565\u00b0, Dec +30.4014\u00b0 \u00b7 28.084 MJy/sr.",
+        "u": "assets/field_rwaur_5.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 28.084,
+        "wl": 1.294
+      }
+    ]
+  },
+  {
+    "id": "rdraconis",
+    "label": "R Draconis (Pulsating Mira Variable)",
+    "name": "R Draconis",
+    "kind": "Pulsating Mira Variable",
+    "lab": "dt",
+    "crop": 24,
+    "r": 18,
+    "closeTitle": "Close-ups on R Draconis",
+    "tags": [
+      "mira",
+      "nasa-benchmark",
+      "star",
+      "variable"
+    ],
+    "ra": 248.1707,
+    "dec": 66.7556,
+    "pmra": -12.0,
+    "pmdec": -18.0,
+    "blurb": "Asymptotic giant branch star pulsating with a 245-day period.",
+    "span": "6 passes over 18 months",
+    "caption": "R Draconis pulsates rhythmically, shedding carbon and silicate dust into the interstellar medium.",
+    "aside": "<p class=\"small\">R Draconis is an oxygen-rich Mira variable star located ~2,200 light-years away. Real SPHEREx Level 2 multi-epoch spectrophotometry from NASA IRSA IPAC.</p>",
+    "frames": [
+      {
+        "d": "2025-06-08",
+        "t": "18:54",
+        "b": "Pass 1: SPHEREx D2 (1.40 \u00b5m). Obs 2025W23_2B_0696_1. RA 248.1707\u00b0, Dec +66.7556\u00b0 \u00b7 677.942 MJy/sr.",
+        "u": "assets/field_rdraconis_0.jpg",
+        "x": 0.4971,
+        "y": 0.5038,
+        "cov": 0.999,
+        "flux": 677.942,
+        "wl": 1.4017860855940683
+      },
+      {
+        "d": "2025-06-15",
+        "t": "10:48",
+        "b": "Pass 2: SPHEREx D2 (1.33 \u00b5m). Obs 2025W24_2D_0534_4. RA 248.1707\u00b0, Dec +66.7556\u00b0 \u00b7 0.0 MJy/sr.",
+        "u": "assets/field_rdraconis_1.jpg",
+        "x": 0.4971,
+        "y": 0.5038,
+        "cov": 0.999,
+        "flux": 0.0,
+        "wl": 1.331
+      },
+      {
+        "d": "2025-06-22",
+        "t": "15:36",
+        "b": "Pass 3: SPHEREx D2 (1.48 \u00b5m). Obs 2025W25_2A_0633_3. RA 248.1707\u00b0, Dec +66.7556\u00b0 \u00b7 0.0 MJy/sr.",
+        "u": "assets/field_rdraconis_2.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 0.999,
+        "flux": 0.0,
+        "wl": 1.477
+      },
+      {
+        "d": "2025-11-18",
+        "t": "17:35",
+        "b": "Pass 4: SPHEREx D2 (1.41 \u00b5m). Obs 2025W47_1A_0388_1. RA 248.1707\u00b0, Dec +66.7556\u00b0 \u00b7 465.03 MJy/sr.",
+        "u": "assets/field_rdraconis_3.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 0.999,
+        "flux": 465.03,
+        "wl": 1.4088492310357947
+      },
+      {
+        "d": "2025-12-03",
+        "t": "03:09",
+        "b": "Pass 5: SPHEREx D2 (1.31 \u00b5m). Obs 2025W49_1A_0473_1. RA 248.1707\u00b0, Dec +66.7556\u00b0 \u00b7 0.0 MJy/sr.",
+        "u": "assets/field_rdraconis_4.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 0.999,
+        "flux": 0.0,
+        "wl": 1.314
+      },
+      {
+        "d": "2026-06-21",
+        "t": "03:25",
+        "b": "Pass 6: SPHEREx D2 (1.26 \u00b5m). Obs 2026W25_2A_0573_1. RA 248.1707\u00b0, Dec +66.7556\u00b0 \u00b7 624.623 MJy/sr.",
+        "u": "assets/field_rdraconis_5.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 0.999,
+        "flux": 624.623,
+        "wl": 1.2600095972443257
+      }
+    ]
+  },
+  {
+    "id": "planetx",
+    "label": "Planet X Candidate (450 AU Model)",
+    "name": "Planet X Candidate (450 AU)",
+    "kind": "Hypothetical Outer Planet (Model)",
+    "lab": "dt",
+    "crop": 24,
+    "r": 18,
+    "closeTitle": "Close-ups on Planet X Search Field",
+    "tags": [
+      "nasa-benchmark",
+      "outer-solar-system",
+      "parallax",
+      "planet-x"
+    ],
+    "ra": 63.0,
+    "dec": 18.5,
+    "pmra": 0.0,
+    "pmdec": 0.0,
+    "blurb": "Real SPHEREx Level 2 Taurus background sky (RA 63.0\u00b0, Dec +18.5\u00b0) illustrating a 450 AU planet model (\u03c0 = 458.4\u2033, T \u2248 40\u201347 K).",
+    "span": "6 passes over 18 months",
+    "caption": "Real NASA IRSA IPAC SPHEREx Level 2 observations covering the RA 63.0\u00b0, Dec +18.5\u00b0 search field across 6 survey passes.",
+    "aside": "<p class=\"small\"><strong>Scientific Context:</strong> Reflected sunlight drops as 1/r\u2074, making a 450 AU planet (~40\u201347 K from internal Kelvin\u2013Helmholtz core heat vs. ~13 K solar equilibrium) faint in optical and detectable in infrared. At 450 AU, annual reflex parallax is \u03c0 = 458.4\u2033.</p><p class=\"small\">Real SPHEREx background science frames from NASA IRSA IPAC (Detector D2, 1.22\u20131.52 \u00b5m).</p>",
+    "frames": [
+      {
+        "d": "2025-08-23",
+        "t": "22:11",
+        "b": "Pass 1: SPHEREx D2 (1.51 \u00b5m). Obs 2025W34_2B_0454_1. RA 63.0000\u00b0, Dec +18.5000\u00b0 \u00b7 0.006 MJy/sr.",
+        "u": "assets/field_planetx_0.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.006,
+        "wl": 1.5092601794934069
+      },
+      {
+        "d": "2026-02-11",
+        "t": "13:19",
+        "b": "Pass 2: SPHEREx D2 (1.22 \u00b5m). Obs 2026W07_1A_0586_1. RA 63.0000\u00b0, Dec +18.5000\u00b0 \u00b7 0.015 MJy/sr.",
+        "u": "assets/field_planetx_1.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.015,
+        "wl": 1.2216164377122316
+      },
+      {
+        "d": "2026-02-15",
+        "t": "21:37",
+        "b": "Pass 3: SPHEREx D2 (1.28 \u00b5m). Obs 2026W07_2A_0633_1. RA 63.0000\u00b0, Dec +18.5000\u00b0 \u00b7 0.016 MJy/sr.",
+        "u": "assets/field_planetx_2.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.016,
+        "wl": 1.276
+      },
+      {
+        "d": "2026-02-20",
+        "t": "02:37",
+        "b": "Pass 4: SPHEREx D2 (1.44 \u00b5m). Obs 2026W08_2A_0121_1. RA 63.0000\u00b0, Dec +18.5000\u00b0 \u00b7 0.007 MJy/sr.",
+        "u": "assets/field_planetx_3.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.007,
+        "wl": 1.438
+      },
+      {
+        "d": "2026-02-26",
+        "t": "13:27",
+        "b": "Pass 5: SPHEREx D2 (1.42 \u00b5m). Obs 2026W09_2A_0016_1. RA 63.0000\u00b0, Dec +18.5000\u00b0 \u00b7 0.009 MJy/sr.",
+        "u": "assets/field_planetx_4.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.009,
+        "wl": 1.42
+      },
+      {
+        "d": "2026-08-22",
+        "t": "17:04",
+        "b": "Pass 6: SPHEREx D2 (1.52 \u00b5m). Obs 2026W34_2A_0471_1. RA 63.0000\u00b0, Dec +18.5000\u00b0 \u00b7 0.009 MJy/sr.",
+        "u": "assets/field_planetx_5.jpg",
+        "x": 0.4972,
+        "y": 0.5038,
+        "cov": 1.0,
+        "flux": 0.009,
+        "wl": 1.5248448552100635
+      }
+    ]
+  }
+]

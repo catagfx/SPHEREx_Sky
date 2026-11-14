@@ -1,0 +1,56 @@
+[
+  {
+    "d": "2025-08-24",
+    "b": "Pass 1: SPHEREx D2 (1.12 µm). Obs 2025W34_2B_0557_1. RA 269.4521°, Dec +4.6934° · 246.284 MJy/sr.",
+    "u": "assets/field_barnard_0.jpg",
+    "x": 0.4968,
+    "y": 0.5106,
+    "f": 246.284,
+    "note": "Barnard's Star (Proper Motion)"
+  },
+  {
+    "d": "2025-08-30",
+    "b": "Pass 2: SPHEREx D2 (1.26 µm). Obs 2025W35_2A_0418_1. RA 269.4521°, Dec +4.6934° · 463.63 MJy/sr.",
+    "u": "assets/field_barnard_1.jpg",
+    "x": 0.4968,
+    "y": 0.5104,
+    "f": 463.63,
+    "note": "Barnard's Star (Proper Motion)"
+  },
+  {
+    "d": "2026-03-15",
+    "b": "Pass 3: SPHEREx D2 (1.44 µm). Obs 2026W11_2A_0501_1. RA 269.4521°, Dec +4.6934° · 489.961 MJy/sr.",
+    "u": "assets/field_barnard_2.jpg",
+    "x": 0.4972,
+    "y": 0.5036,
+    "f": 489.961,
+    "note": "Barnard's Star (Proper Motion)"
+  },
+  {
+    "d": "2026-03-22",
+    "b": "Pass 4: SPHEREx D2 (1.44 µm). Obs 2026W12_2A_0496_1. RA 269.4521°, Dec +4.6934° · 430.627 MJy/sr.",
+    "u": "assets/field_barnard_3.jpg",
+    "x": 0.4972,
+    "y": 0.5033,
+    "f": 430.627,
+    "note": "Barnard's Star (Proper Motion)"
+  },
+  {
+    "d": "2026-08-18",
+    "b": "Pass 5: SPHEREx D2 (1.50 µm). Obs 2026W34_1A_0363_1. RA 269.4521°, Dec +4.6934° · 374.473 MJy/sr.",
+    "u": "assets/field_barnard_4.jpg",
+    "x": 0.4975,
+    "y": 0.4981,
+    "f": 374.473,
+    "note": "Barnard's Star (Proper Motion)"
+  },
+  {
+    "d": "2026-09-22",
+    "b": "Pass 6: SPHEREx D2 (1.26 µm). Obs 2026W39_1A_0371_1. RA 269.4521°, Dec +4.6934° · 295.178 MJy/sr.",
+    "u": "assets/field_barnard_5.jpg",
+    "x": 0.4976,
+    "y": 0.4969,
+    "f": 295.178,
+    "note": "Barnard's Star (Proper Motion)"
+  }
+]

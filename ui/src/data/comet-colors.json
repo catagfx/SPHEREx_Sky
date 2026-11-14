@@ -1,0 +1,68 @@
+[
+  {
+    "wl": 0.92,
+    "f": 182.4,
+    "u": "assets/field_barnard_0.jpg",
+    "x": 0.497,
+    "y": 0.489,
+    "d": "2025-08-24",
+    "t": "11:46",
+    "b": "Detector D1, 0.92 µm. Continuum photospheric emission.",
+    "det": "D1"
+  },
+  {
+    "wl": 1.35,
+    "f": 246.3,
+    "u": "assets/field_barnard_1.jpg",
+    "x": 0.497,
+    "y": 0.489,
+    "d": "2025-08-24",
+    "t": "11:46",
+    "b": "Detector D2, 1.35 µm. J/H-band infrared peak.",
+    "det": "D2"
+  },
+  {
+    "wl": 2.02,
+    "f": 218.1,
+    "u": "assets/field_barnard_2.jpg",
+    "x": 0.497,
+    "y": 0.489,
+    "d": "2025-08-24",
+    "t": "11:46",
+    "b": "Detector D3, 2.02 µm. K-band molecular absorption band.",
+    "det": "D3"
+  },
+  {
+    "wl": 3.12,
+    "f": 142.8,
+    "u": "assets/field_barnard_3.jpg",
+    "x": 0.497,
+    "y": 0.489,
+    "d": "2025-08-24",
+    "t": "11:46",
+    "b": "Detector D4, 3.12 µm. Water-ice and PAH spectral band.",
+    "det": "D4"
+  },
+  {
+    "wl": 4.18,
+    "f": 98.4,
+    "u": "assets/field_barnard_4.jpg",
+    "x": 0.497,
+    "y": 0.489,
+    "d": "2025-08-24",
+    "t": "11:46",
+    "b": "Detector D5, 4.18 µm. Fundamental CO/CO2 vibrational band.",
+    "det": "D5"
+  },
+  {
+    "wl": 4.72,
+    "f": 64.2,
+    "u": "assets/field_barnard_5.jpg",
+    "x": 0.497,
+    "y": 0.489,
+    "d": "2025-08-24",
+    "t": "11:46",
+    "b": "Detector D6, 4.72 µm. Thermal infrared M-band continuum.",
+    "det": "D6"
+  }
+]

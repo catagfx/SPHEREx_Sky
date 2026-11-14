@@ -1,0 +1,8 @@
+[
+  { "id": "planetx", "name": "Planet X (450 AU Model)", "type": "Hypothetical Outer Planet Field", "desc": "π = 458.4″ annual reflex parallax model at 450 AU (~40–47 K).", "ra": 63.0, "dec": 18.5 },
+  { "id": "wise0855", "name": "WISE 0855-0714", "type": "Sub-Freezing Brown Dwarf", "desc": "8.10″/yr drift, ~250 K cold thermal IR emission.", "ra": 133.795, "dec": -7.245 },
+  { "id": "epsindi", "name": "Epsilon Indi B", "type": "Cold Binary Brown Dwarf", "desc": "4.70″/yr proper motion, T1+T6 spectral absorption.", "ra": 331.044, "dec": -56.783 },
+  { "id": "barnard", "name": "Barnard's Star", "type": "High Proper-Motion Star", "desc": "10.36″/yr fastest moving star in Earth’s sky.", "ra": 269.452, "dec": 4.693 },
+  { "id": "rwaur", "name": "RW Aurigae", "type": "Eruptive T Tauri Variable", "desc": "3.4 magnitude circumstellar dust occultation drop.", "ra": 76.956, "dec": 30.401 },
+  { "id": "rdraconis", "name": "R Draconis", "type": "Mira Pulsating Red Giant", "desc": "245.6-day period stellar atmospheric pulsation shock.", "ra": 248.168, "dec": 66.755 }
+]

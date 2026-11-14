@@ -1,0 +1,90 @@
+[
+  [
+    "The Milky Way's center",
+    0,
+    0,
+    "Toward the middle of the map",
+    "The middle of the map, where the Milky Way's glow is strongest.",
+    "We start at the middle of the map. In ordinary light, thick dust hides this part of the sky. SPHEREx sees infrared light, which passes through much of that dust, so the glowing band is our own galaxy, the Milky Way, seen edge-on from inside. The center of the galaxy lies roughly twenty-six thousand light-years from us."
+  ],
+  [
+    "Bubbles above the plane",
+    6,
+    22,
+    "Gas and dust bubbles",
+    "Red shows cosmic dust, blue shows hot hydrogen gas, white shows stars.",
+    "Above the glowing band are bubbles and curls of gas and dust. In this map, red is cosmic dust, blue is hot hydrogen gas, and white is starlight. These are infrared colors our eyes cannot see, so they were mapped to visible ones."
+  ],
+  [
+    "A big blue bubble",
+    259,
+    3,
+    "A shell of hot gas",
+    "A large shell of hot hydrogen gas, drawn in blue, at galactic longitude about 260 degrees.",
+    "Here is a large shell of hot hydrogen gas, drawn in blue. Bubbles like this are often blown out by the winds of massive stars and by exploding stars."
+  ],
+  [
+    "Large Magellanic Cloud",
+    280.2,
+    -33.1,
+    "Large Magellanic Cloud",
+    "A small neighbor galaxy of the Milky Way, a bright knot well below the glowing band.",
+    "Well below the band is the Large Magellanic Cloud, a small galaxy that orbits the Milky Way, about one hundred and sixty thousand light-years away. It shows up here as a bright knot of stars and glowing gas."
+  ],
+  [
+    "Small Magellanic Cloud",
+    302.5,
+    -44.1,
+    "Small Magellanic Cloud",
+    "Another small galaxy next to the Milky Way, seen as a faint smudge.",
+    "Nearby is the Small Magellanic Cloud, another companion galaxy, roughly two hundred thousand light-years away. It is fainter and smaller than its neighbor."
+  ],
+  [
+    "Barnard's Star (Proper Motion)",
+    31.0,
+    14.1,
+    "Barnard's Star",
+    "High proper-motion red dwarf star in Ophiuchus.",
+    "Barnard's Star moves faster across our sky than any other known star, shifting over 10 arcseconds each year across SPHEREx scans."
+  ],
+  [
+    "Planet X Candidate (450 AU)",
+    175.4,
+    -23.3,
+    "Planet X Candidate",
+    "Hypothetical outer solar system world at 450 AU.",
+    "At 450 AU from the Sun, a hypothetical outer planet reflects almost no sunlight, but SPHEREx can search for its thermal emission and parallactic shift across survey passes."
+  ],
+  [
+    "WISE 0855 (Cold Brown Dwarf)",
+    235.0,
+    23.4,
+    "WISE 0855",
+    "Sub-freezing brown dwarf 7.5 light-years away drifting 8.1 arcsec/yr.",
+    "WISE 0855 is colder than water ice. Optical telescopes see blank sky, but SPHEREx detects it in infrared."
+  ],
+  [
+    "Epsilon Indi B (Brown Dwarf Binary)",
+    336.1,
+    -48.1,
+    "Epsilon Indi B",
+    "Cold binary brown dwarf pair traveling 4.7 arcsec/yr.",
+    "A pair of sub-stellar brown dwarfs orbiting each other 11.9 light-years away in the southern constellation Indus."
+  ],
+  [
+    "RW Aurigae (Dust Eclipse)",
+    174.2,
+    -6.0,
+    "RW Aurigae",
+    "Young eruptive star occulted by tidal circumstellar dust streams.",
+    "Periodic deep eclipses caused by dust filaments sweeping across the young T Tauri star."
+  ],
+  [
+    "R Draconis (Mira Variable)",
+    98.5,
+    38.2,
+    "R Draconis",
+    "Pulsating red giant star with 245.6-day infrared brightness cycle.",
+    "R Draconis expands, cools, and pulses rhythmically, blowing enriched gas and dust into interstellar space."
+  ]
+]

@@ -1,0 +1,162 @@
+{
+  "planetx": {
+    "metrics": {
+      "title": "Planet X / Planet Nine Model Metrics [Hypothetical]",
+      "items": [
+        ["Model Distance", "~450 AU (Hypothetical)"],
+        ["Annual Parallax (π)", "458.4″ (206,265″/450)"],
+        ["Equilibrium Temp.", "~40–47 K (Internal Heat)"],
+        ["SPHEREx Level 2 Passes", "6 passes (D2 1.22–1.52 µm)"]
+      ]
+    },
+    "tracker": {
+      "title": "Planet X 450 AU Parallactic Reflex Model (π = 458.4″)",
+      "path": "M 40,42 Q 150,92 260,45",
+      "points": [
+        { "x": 40, "y": 42, "label": "Pass 1 (23 Aug 2025): Baseline 0.0″ (Earth Apex)", "sub": "0.0″" },
+        { "x": 150, "y": 88, "label": "Pass 2 (11 Feb 2026): Annual Parallax π = 458.4″ at 450 AU", "sub": "π = 458.4″" },
+        { "x": 260, "y": 45, "label": "Pass 3 (15 Feb 2026): 12-Month Orbit Reflex Closure (~39″/yr drift)", "sub": "12-Mo Loop" }
+      ],
+      "axis": [
+        { "x": 40, "t": "Pass 1 (0.0″)", "anchor": "start" },
+        { "x": 150, "t": "Pass 2 (π = 458.4″)", "anchor": "middle" },
+        { "x": 260, "t": "Pass 3 (Loop)", "anchor": "end" }
+      ],
+      "hint": "Illustrative 450 AU parallactic reflex loop (π = 206,265″/450 ≈ 458.4″). Click points to inspect multi-pass field."
+    },
+    "note": {
+      "title": "Scientific Honesty &amp; Detection Limits",
+      "text": "Reflected sunlight drops as 1/r⁴ (pure solar radiative equilibrium at 450 AU is ~13 K; internal Kelvin–Helmholtz core heat raises it to ~40–47 K). Because a single SPHEREx exposure reaches m ≈ 17, a 450 AU planet is 3–5 magnitudes fainter and requires multi-pass shift-and-stack co-addition."
+    }
+  },
+  "wise0855": {
+    "metrics": {
+      "title": "WISE 0855-0714 Astrometric Metrics",
+      "items": [
+        ["Total Proper Motion", "8.10″ / year"],
+        ["Distance from Sun", "7.53 ly (4th nearest)"],
+        ["Effective Temperature", "~250 K (-23°C)"],
+        ["SPHEREx Level 2 Passes", "6 passes (D2 1.12–1.51 µm)"]
+      ]
+    },
+    "tracker": {
+      "title": "WISE 0855-0714 Astrometric Drift Tracker (µ = 8.10″/yr)",
+      "path": "M 40,78 L 150,52 L 260,26",
+      "points": [
+        { "x": 40, "y": 78, "label": "Pass 1 (6 May 2025): Reference 0.00″ (Flux 0.081 MJy/sr)", "sub": "0.00″" },
+        { "x": 150, "y": 52, "label": "Pass 2 (7 Nov 2025): +4.11″ in 6.1 mo (8.10″/yr rate)", "sub": "+4.11″" },
+        { "x": 260, "y": 26, "label": "Pass 3 (10 Nov 2025): +7.99″ cumulative drift", "sub": "+7.99″" }
+      ],
+      "axis": [
+        { "x": 40, "t": "Pass 1 (0.0″)", "anchor": "start" },
+        { "x": 150, "t": "Pass 2 (+4.1″)", "anchor": "middle" },
+        { "x": 260, "t": "Pass 3 (+8.0″)", "anchor": "end" }
+      ],
+      "hint": "Linear astrometric proper motion. Click points to inspect multi-pass drift."
+    }
+  },
+  "epsindi": {
+    "metrics": {
+      "title": "Epsilon Indi B Binary Brown Dwarf Metrics",
+      "items": [
+        ["Composite Proper Motion", "4.70″ / year"],
+        ["Distance from Earth", "11.87 light-years"],
+        ["Spectral Types", "T1 + T6 (Cool Pair)"],
+        ["SPHEREx Level 2 Passes", "6 passes (D2 1.10–1.56 µm)"]
+      ]
+    },
+    "tracker": {
+      "title": "Epsilon Indi B Proper Motion Vector (µ = 4.70″/yr)",
+      "path": "M 40,76 L 175,48 L 260,26",
+      "points": [
+        { "x": 40, "y": 76, "label": "Pass 1 (24 Apr 2025): Reference 0.00″ (2.05 MJy/sr)", "sub": "0.00″" },
+        { "x": 175, "y": 48, "label": "Pass 2 (7 Jun 2025): +4.70″ (4.70″/yr rate)", "sub": "+4.70″" },
+        { "x": 260, "y": 26, "label": "Pass 3 (1 Oct 2025): +6.71″ cumulative drift", "sub": "+6.71″" }
+      ],
+      "axis": [
+        { "x": 40, "t": "Pass 1 (0.0″)", "anchor": "start" },
+        { "x": 175, "t": "Pass 2 (+4.7″)", "anchor": "middle" },
+        { "x": 260, "t": "Pass 3 (+6.7″)", "anchor": "end" }
+      ],
+      "hint": "Binary proper motion vector. Click points to inspect multi-pass drift."
+    }
+  },
+  "barnard": {
+    "metrics": {
+      "title": "Proper Motion Metrics (Gaia DR3 / SPHEREx)",
+      "items": [
+        ["Total Proper Motion", "10.36″ / year"],
+        ["Distance from Sun", "5.96 ly (1.83 pc)"],
+        ["Parallax Wobble", "0.547″"],
+        ["SPHEREx Level 2 Passes", "6 passes (D2 1.12–1.50 µm)"]
+      ]
+    },
+    "tracker": {
+      "title": "Barnard’s Star Proper Motion Vector (µ = 10.36″/yr)",
+      "path": "M 40,78 L 155,50 L 260,26",
+      "points": [
+        { "x": 40, "y": 78, "label": "Pass 1 (24 Aug 2025): Reference 0.00″ (Flux 246.3 MJy/sr)", "sub": "0.00″" },
+        { "x": 155, "y": 50, "label": "Pass 2 (30 Aug 2025): +5.74″ (10.36″/yr rate)", "sub": "+5.74″" },
+        { "x": 260, "y": 26, "label": "Pass 3 (15 Mar 2026): +10.19″ (10.36″/yr rate)", "sub": "+10.19″" }
+      ],
+      "axis": [
+        { "x": 40, "t": "Pass 1 (0.0″)", "anchor": "start" },
+        { "x": 155, "t": "Pass 2 (+5.7″)", "anchor": "middle" },
+        { "x": 260, "t": "Pass 3 (+10.2″)", "anchor": "end" }
+      ],
+      "hint": "Fastest stellar proper motion in our sky. Click points to inspect multi-pass drift."
+    }
+  },
+  "rwaur": {
+    "metrics": {
+      "title": "RW Aurigae Astrophysical Metrics",
+      "items": [
+        ["System Type", "T Tauri Binary (~530 ly)"],
+        ["Variability Cause", "Circumstellar Dust Stream"],
+        ["Observed Flux Range", "17.16 – 33.85 MJy/sr"],
+        ["SPHEREx Level 2 Passes", "6 passes (D2 1.25–1.46 µm)"]
+      ]
+    },
+    "tracker": {
+      "title": "RW Aurigae Circumstellar Dust Eclipse Profile",
+      "path": "M 25,28 Q 70,30 110,65 T 180,88 Q 230,55 280,28",
+      "points": [
+        { "x": 160, "y": 86, "label": "Pass 1 (8 Sep 2025): Dust Ingress / Minimum (17.16 MJy/sr)", "sub": "17.2 MJy" },
+        { "x": 225, "y": 46, "label": "Pass 2 (1 Mar 2026): Egress Recovery (+35%, 23.25 MJy/sr)", "sub": "23.3 MJy" },
+        { "x": 275, "y": 28, "label": "Pass 3 (5 Mar 2026): Quiescent Peak (33.85 MJy/sr)", "sub": "33.8 MJy" }
+      ],
+      "axis": [
+        { "x": 25, "t": "Baseline", "anchor": "start" },
+        { "x": 160, "t": "Deep Dust Eclipse", "anchor": "middle" },
+        { "x": 280, "t": "Recovery", "anchor": "end" }
+      ],
+      "hint": "Tidal dust stream occultation. Click points (Pass 1–3) to inspect eclipse frames."
+    }
+  },
+  "rdraconis": {
+    "metrics": {
+      "title": "R Draconis Astrophysical Metrics",
+      "items": [
+        ["Pulsation Period", "245.6 days"],
+        ["Spectral Class", "M5e–M8e AGB Giant (~2,100 ly)"],
+        ["Infrared Flux Swing", "465.0 – 677.9 MJy/sr"],
+        ["SPHEREx Level 2 Passes", "6 passes (D2 1.26–1.48 µm)"]
+      ]
+    },
+    "tracker": {
+      "title": "R Draconis Mira Light Curve (P = 245.6 days)",
+      "path": "M 25,22 Q 95,55 160,86 T 280,26",
+      "points": [
+        { "x": 35, "y": 24, "label": "Pass 1 (8 Jun 2025): Phase 0.00 (Max Light: 677.9 MJy/sr)", "sub": "Phase 0.0" },
+        { "x": 165, "y": 86, "label": "Pass 2 (15 Jun 2025): Phase 0.66 (Envelope Cooling)", "sub": "Phase 0.66" },
+        { "x": 235, "y": 46, "label": "Pass 3 (22 Jun 2025): Phase 0.54 Cycle 2 (Ascending Rise)", "sub": "Cycle 2" }
+      ],
+      "axis": [
+        { "x": 25, "t": "Phase 0.0 (Max)", "anchor": "start" },
+        { "x": 165, "t": "Phase 0.5 (Min)", "anchor": "middle" },
+        { "x": 280, "t": "Phase 1.0", "anchor": "end" }
+      ],
+      "hint": "Pulsating red giant envelope. Click points (Pass 1–3) to inspect pulsation cycle."
+    }
+  }
+}

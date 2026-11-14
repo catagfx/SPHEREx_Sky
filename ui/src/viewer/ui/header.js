@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { $, $$ } from '../dom';
-import { prefersReducedMotion as reduce } from '../../core/env';
+import { prefersReducedMotion as reduce, setReducedMotion } from '../../core/env';
 
 // Header: the five category dropdowns (Explore, Science, Data, Share, Tools), the highlight of the active view,
 // and the glowing scroll-progress line (its star markers are added by story/ProgressNav.tsx).
@@ -78,7 +78,16 @@ function initScrollProgress() {
   update();
 }
 
+// Tools > "Reduce motion": calm mode on / off (core/env.ts; the page reloads to apply it everywhere)
+function initMotionToggle() {
+  const btn = $('#motionToggle');
+  if (!btn) return;
+  btn.setAttribute('aria-pressed', reduce);
+  btn.onclick = () => setReducedMotion(!reduce);
+}
+
 export function initHeader() {
   initDropdowns();
   initScrollProgress();
+  initMotionToggle();
 }

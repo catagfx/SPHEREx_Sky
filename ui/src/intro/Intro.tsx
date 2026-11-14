@@ -11,15 +11,17 @@ gsap.registerPlugin(ScrollTrigger);
 // Intro (styles: css/intro.css). Flying stars, then a scroll-gated title screen over the live sky:
 //   1. dark cover with a GLSL star field flying at warp speed, decelerating (Warp.tsx; calm mode: still stars)
 //   2. when the sky scene is ready: a last surge of the stars while the cover fades into the sky,
-//      then SPHEREx is typed over the sky (calm mode: letters fade in), then a "scroll" cue appears
-//   3. the FIRST scroll gesture (wheel, swipe, ↓ / PageDown / Space, or a click on the cue) is consumed by the intro:
-//      title + cue fade out together (EXIT_FADE), then after EXIT_GAP the header + hero + the rest of the page
-//      appear (story/Hero.tsx) and scrolling is unlocked.
+//      then SPHEREx SKY is typed over the sky (calm mode: letters fade in), then a "scroll" cue appears
+//   3. the title stays until the FIRST scroll gesture (wheel, swipe, ↓ / PageDown / Space, Esc / Enter, or a click
+//      on the cue), which is consumed by the intro: title + cue fade out together (EXIT_FADE), then after EXIT_GAP
+//      the header + hero + the rest of the page appear (story/Hero.tsx) and scrolling is unlocked.
+//      Never auto-dismissed: the visitor decides when to go on (tests/intro.mjs checks it).
 // Page scrolling is locked while the title is shown, so that first gesture never moves the page.
-// "calm" = prefers-reduced-motion (e.g. Windows "Animation effects" off) unless overridden with ?motion=full.
+// "calm" = calm mode (core/env.ts: Tools > Reduce motion or ?motion=reduced).
 
 const calm = prefersReducedMotion;
-const TITLE = ['S', 'P', 'H', 'E', 'R', 'E', 'x'];
+const TITLE_TEXT = 'SPHEREx SKY';
+const TITLE = Array.from(TITLE_TEXT.replace(' ', ' ')); // a no-break space keeps its width as an inline-block letter
 const TYPE_STEP = 0.13;   // seconds per typed letter
 const MIN_MS = 2800;      // the flying stars are shown at least this long (from page load)
 const SAFETY_MS = 7000;   // show the title anyway if the sky scene never reports ready
@@ -27,6 +29,7 @@ const QUIET_MS = 350;     // trackpad momentum: keep eating wheel events until t
 const EXIT_FADE = 0.6;    // seconds: title + "scroll" cue fade out together, all at once
 const EXIT_GAP = 0.5;     // seconds between the text being gone and the header / page appearing
 const SCROLL_KEYS = new Set(['ArrowDown', 'PageDown', ' ', 'Spacebar', 'End']);
+const SKIP_KEYS = new Set(['Escape', 'Enter']);  // also work while the stars are still flying
 
 function showErrorBanner(msg: string): void {
   const el = document.createElement('div');
@@ -130,6 +133,12 @@ export default function Intro({ onDone }: { onDone: () => void }) {
       if (touchY - (e.touches[0]?.clientY ?? touchY) > 24) exit();
     };
     const onKey = (e: KeyboardEvent) => {
+      if (SKIP_KEYS.has(e.key)) {
+        e.preventDefault();
+        if (phase.current === 'title') exit();
+        else if (phase.current === 'loading') { phase.current = 'done'; unlockRef.current(); revealPage(); onDone(); }
+        return;
+      }
       if (!SCROLL_KEYS.has(e.key)) return;
       e.preventDefault();
       exit();
@@ -205,7 +214,7 @@ export default function Intro({ onDone }: { onDone: () => void }) {
           {webgl ? <Warp state={warp} onUnsupported={onUnsupported} /> : <div className="intro-stars" aria-hidden="true" />}
         </div>
       )}
-      <div id="introType" ref={titleRef} aria-label="SPHEREx">
+      <div id="introType" ref={titleRef} aria-label={TITLE_TEXT}>
         {TITLE.map((ch, i) => (
           <span key={i} className="ch" aria-hidden="true">{ch}</span>
         ))}

@@ -5,7 +5,7 @@
 //   node tests/snapshot-render.mjs compare    -> diff against it
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, launch, withServer, sleep } from './helpers.mjs';
+import { ROOT, launch, withServer, sleep, newContext } from './helpers.mjs';
 
 const DIR = path.join(ROOT, 'tests', '.baselines');
 const FILE = path.join(DIR, 'render.json');
@@ -17,7 +17,7 @@ if (cmd !== 'save' && cmd !== 'compare') {
 
 async function capture(base) {
   const browser = await launch();
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  const ctx = await newContext(browser, 'calm', { viewport: { width: 1440, height: 900 } }); // calm = deterministic
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -73,7 +73,7 @@ async function capture(base) {
     out.epochs.F = { cap2: H('#cap2'), chart: H('#chart'), tgB: T('#tgB'), tlx: H('#tlx') };
     closeChange();
     await wait(400);
-    openChange('M'); setSeries(0); selectFrame(1);
+    openChange('M'); setSeries(18); selectFrame(1);
     const rep = generateAnomalyReport();
     delete rep.discovery_id;
     delete rep.timestamp_utc;

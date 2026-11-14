@@ -3,7 +3,7 @@
  *
  *   #ui-boot          static dark cover in index.html (paints before any JS)
  *   #load             dark cover with the flying stars (.intro-warp); fades into the sky when it is ready
- *   #introType        big SPHEREx title over the sky
+ *   #introType        big SPHEREx SKY title over the sky
  *   .intro-cue        "Scroll to explore": the first scroll ends the intro
  *   html.intro-lock   page scrolling is locked while the title is shown
  *   body.ui-intro     hides the header / watermark until the intro reveals the page
@@ -67,9 +67,9 @@ html.intro-lock body {
   z-index: 1000;       /* above the cover while it fades */
   pointer-events: none;
   visibility: hidden;  /* GSAP reveals it */
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: clamp(56px, 14vw, 230px);
+  font-family: 'Exo 2', var(--font-main);
+  font-weight: 600;
+  font-size: clamp(34px, 9vw, 200px); /* "SPHEREx SKY" is ~7.5em wide: ~2/3 of the viewport, never wider */
   letter-spacing: 0.1em;
   line-height: 1;
 }

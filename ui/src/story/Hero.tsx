@@ -133,8 +133,13 @@ export default function Hero() {
         </div>
 
         <div className="hero-foot">
-          <span>Level 2 Quick Release Data: NASA/JPL-Caltech &amp; IPAC IRSA</span>
-          <button className="link-btn" id="hw3">Methodology &amp; Limits</button>
+          <div className="hero-foot-row">
+            <span>Level 2 Quick Release Data: NASA/JPL-Caltech &amp; IPAC IRSA</span>
+            <button className="link-btn" id="hw3">Methodology &amp; Limits</button>
+          </div>
+          <p className="hero-foot-credit">
+            Whole sky in infrared, from NASA's SPHEREx all-sky maps: stars &amp; galaxies, and dust &amp; gas. Credit: NASA/JPL-Caltech &amp; NASA/IPAC IRSA.
+          </p>
         </div>
       </div>
 

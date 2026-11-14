@@ -1,7 +1,10 @@
 import Hero from './Hero';
+import About from './sections/About';
+import Guide from './sections/Guide';
 import PlanetX from './sections/PlanetX';
 import Diff from './sections/Diff';
 import Benchmarks from './sections/Benchmarks';
+import Colors from './sections/Colors';
 import Spectro from './sections/Spectro';
 import Citizen from './sections/Citizen';
 import ProgressNav from './ProgressNav';
@@ -15,9 +18,12 @@ export default function Story() {
   return (
     <>
       <Hero />
+      <About />
+      <Guide />
       <PlanetX />
       <Diff />
       <Benchmarks />
+      <Colors />
       <Spectro />
       <Citizen />
       <ProgressNav />

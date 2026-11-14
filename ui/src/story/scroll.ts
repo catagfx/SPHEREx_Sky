@@ -12,9 +12,12 @@ gsap.registerPlugin(ScrollToPlugin);
 /** Story sections in scroll order (same ids as Story.tsx / viewer/story/sky-sync.js), with their nav labels. */
 export const STORY_SECTIONS: Array<[id: string, label: string]> = [
   ['secHero', 'Overview'],
+  ['secAbout', 'About the project'],
+  ['secGuide', 'Beginner guide'],
   ['secPlanetX', 'Planet X'],
   ['secDiff', 'Difference imaging'],
   ['secBenchmarks', 'Benchmark targets'],
+  ['secColors', '102 infrared colors'],
   ['secSpectro', 'Spectroscopy'],
   ['secCitizen', 'Citizen science'],
 ];

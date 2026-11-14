@@ -10,7 +10,7 @@
     // One-time reset of old service workers / caches. Reloads only if a stale worker actually controlled this page.
     (function(){
       try{
-        var V = 'ui-react-6';
+        var V = 'ui-react-23';
         if(localStorage.getItem('spx_build') !== V){
           localStorage.setItem('spx_build', V);
           var controlled = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
@@ -28,16 +28,16 @@
   <meta name="description" content="Explore NASA's SPHEREx all-sky infrared survey. Watch comets, asteroids, proper-motion stars, and variable stars move and change across time and wavelength.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="css/base.css?v=2">
-  <link rel="stylesheet" href="css/header.css?v=2">
-  <link rel="stylesheet" href="css/sky.css?v=2">
+  <link rel="stylesheet" href="css/header.css?v=4">
+  <link rel="stylesheet" href="css/sky.css?v=8">
   <link rel="stylesheet" href="css/explorer.css?v=2">
   <link rel="stylesheet" href="css/dialogs.css?v=2">
-  <link rel="stylesheet" href="css/intro.css?v=8">
-  <link rel="stylesheet" href="css/story.css?v=13">
-  <link rel="stylesheet" href="css/hero.css?v=1">
+  <link rel="stylesheet" href="css/intro.css?v=10">
+  <link rel="stylesheet" href="css/story.css?v=16">
+  <link rel="stylesheet" href="css/hero.css?v=6">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0e1a">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%2305070f'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%238fd3ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23ffb86b'/%3E%3C/svg%3E">
@@ -58,7 +58,7 @@
     <div id="brand">
       <button class="brand-btn" id="home" title="Return to start">
         <span class="brand-text">
-          <span class="brand-name">SPHEREx</span>
+          <span class="brand-name">SPHEREx SKY</span>
           <span class="brand-badge">NASA 2026</span>
         </span>
       </button>
@@ -71,6 +71,7 @@
           <button class="dd-item nav-tab active" id="tabStory" data-nav="story">Story Tour</button>
           <button class="dd-item nav-tab" id="tabSky" data-nav="sky">Free-Look 360°</button>
           <button class="dd-item nav-tab" id="tabLandmarks" data-nav="landmarks">Landmarks (11)</button>
+          <button class="dd-item nav-tab" id="tabConstellations" data-nav="constellations">Constellations (<span id="constCount">20</span>)</button>
           <button class="dd-item nav-tab" id="tbtn" data-nav="tour">Guided Tour</button>
         </div>
       </div>
@@ -106,6 +107,7 @@
           <button class="dd-item" id="grid" aria-pressed="false">Coordinate grid</button>
           <button class="dd-item" id="gyro" aria-pressed="false" hidden>Motion / Gyro look</button>
           <button class="dd-item" id="spin" aria-pressed="false">Auto-orbit</button>
+          <button class="dd-item" id="motionToggle" aria-pressed="false" title="Fades only: no flying, zooming or floating (reloads the page)">Reduce motion</button>
           <button class="dd-item" id="hw">How this was made</button>
           <button class="dd-item" id="about">About SPHEREx</button>
           <button class="dd-item" id="vr" hidden>Enter VR</button>
@@ -114,6 +116,15 @@
     </nav>
 
     <div class="hdr-side hdr-right">
+      <button class="dd-btn solo vr-btn" id="vrQuick" hidden title="Enter immersive VR (WebXR — Meta Quest 3, hand tracking)">
+        <svg width="18" height="14" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="1" y="2" width="22" height="14" rx="4" />
+          <circle cx="8" cy="9" r="2.4" />
+          <circle cx="16" cy="9" r="2.4" />
+          <path d="M11 9 C 11.6 7.8, 12.4 7.8, 13 9" />
+        </svg>
+        <span>Enter VR</span>
+      </button>
       <button class="dd-btn solo" id="searchBtn" title="Search sky coordinates (RA & Dec)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span>Search RA/Dec</span>
@@ -138,6 +149,15 @@
   
   <!-- Attribution and Credits -->
   <div id="credit">Whole sky in infrared, from NASA's SPHEREx all-sky maps: stars & galaxies, and dust & gas. Credit: NASA/JPL-Caltech & NASA/IPAC IRSA.</div>
+
+  <!-- Data sources chip: appears when the sky is in focus (free-look / landmarks modes) -->
+  <div class="data-chip-row" aria-hidden="true">
+    <span><span class="dc-tag">SPHEREx</span> all-sky</span>
+    <span class="dc-sep">·</span>
+    <span><span class="dc-tag">Gaia DR3</span> catalog</span>
+    <span class="dc-sep">·</span>
+    <span><span class="dc-tag">WISE</span> cross-match</span>
+  </div>
   
   <!-- Sky Compare Split Divider & Chips -->
   <div id="dv" hidden></div>
@@ -737,7 +757,7 @@
   <div id="toast">Link copied to clipboard!</div>
 
   <!-- The whole app (React intro + story, 3D viewer): built from ui/src/ by `npm run build` -->
-  <script src="js/ui.bundle.js?v=26"></script>
+  <script src="js/ui.bundle.js?v=44"></script>
   <script>
     // The intro removes the #ui-boot cover as soon as it starts; if the bundle never ran, do not leave it there.
     window.addEventListener('load', function(){
@@ -750,7 +770,7 @@
   <script>
     if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0 && !window.__SPX_DEV){
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('sw.js?v=50').then(function(reg){
+        navigator.serviceWorker.register('sw.js?v=58').then(function(reg){
           if(reg.update) reg.update();
         }).catch(function(err){
           console.warn('Service worker registration:', err);

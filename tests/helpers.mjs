@@ -50,6 +50,22 @@ export async function withServer(fn) {
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * Motion modes every browser test runs in (MOTION=full,calm):
+ *   full = the default. The OS is emulated asking for reduced motion (Windows "Animation effects" off), and the
+ *          page must still animate fully: only the visitor's own choice turns calm mode on.
+ *   calm = Tools > "Reduce motion" (localStorage spx_motion=reduced, as ui/src/core/env.ts stores it).
+ */
+export const MODES = (process.env.MOTION || 'full,calm').split(',');
+
+/** A browser context in motion mode `mode` (see MODES); `options` = Playwright newContext options. */
+export async function newContext(browser, mode, options = {}) {
+  if (mode !== 'full' && mode !== 'calm') throw new Error(`unknown motion mode "${mode}" (full | calm)`);
+  const ctx = await browser.newContext({ ...options, reducedMotion: 'reduce' });
+  if (mode === 'calm') await ctx.addInitScript(() => { try { localStorage.setItem('spx_motion', 'reduced'); } catch (e) {} });
+  return ctx;
+}
+
 /** Tiny check collector: check(name, ok, info) ... report() returns the number of failures. */
 export function checks(title) {
   const results = [];

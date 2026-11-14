@@ -11,9 +11,12 @@ import { renderStoryDiff } from './difference';
 
 const SECTIONS = [
   { id: 'secHero', nav: 'story', label: 'Galactic Plane', gal: [0, 0], fov: 75 },
+  { id: 'secAbout', label: 'Milky Way Overview', gal: [0, 0], fov: 95 },
+  { id: 'secGuide', label: 'Wide Infrared Sky', gal: [120, 20], fov: 90 },
   { id: 'secPlanetX', nav: 'planetx', label: 'Planet X Region', radec: [63.0, 18.5], fov: 50, onEnter: () => showPlanetXPass(0) },
   { id: 'secDiff', nav: 'change', label: "Barnard's Star Field", radec: [269.452, 4.693], fov: 45, onArrive: renderStoryDiff },
   { id: 'secBenchmarks', label: 'WISE 0855 Field', radec: [133.795, -7.245], fov: 45 },
+  { id: 'secColors', nav: 'colors', label: 'Infrared Sky Overview', gal: [60, 10], fov: 90 },
   { id: 'secSpectro', nav: 'colors', label: 'Epsilon Indi B', radec: [331.076, -56.794], fov: 40 },
   { id: 'secCitizen', label: 'Galactic Plane', gal: [0, 0], fov: 85 }, // wide view: the whole sky is there to search
 ];

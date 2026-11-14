@@ -3,14 +3,14 @@ import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import Story from './story/Story';
 import Intro, { skipIntro } from './intro/Intro';
-import { isEmbed } from './core/env';
+import { isEmbed, consumeSkipIntro } from './core/env';
 import { initSmoothScroll } from './core/smooth-scroll';
 import { syncSearchWidth } from './core/header';
 import { startViewer } from './viewer';
 
 // Boot, in order:
 //   1. the Story Tour page (React), rendered synchronously so every element exists
-//   2. the intro over it (skipped in embeds, with ?intro=0 and on deep links)
+//   2. the intro over it (skipped in embeds, with ?intro=0, on deep links and after the "Reduce motion" reload)
 //   3. smooth scrolling, the header search width
 //   4. the viewer (3D sky + tools, ui/src/viewer/), which binds to all of the above by element id
 
@@ -33,7 +33,7 @@ try {
 
 const deepLink = /(^|[?&#])(target|ra|dec|fov|mode)=/.test(location.search + location.hash);
 try {
-  if (isEmbed || deepLink || new URLSearchParams(location.search).get('intro') === '0') {
+  if (consumeSkipIntro() || isEmbed || deepLink || new URLSearchParams(location.search).get('intro') === '0') {
     skipIntro();
   } else {
     const host = document.createElement('div');

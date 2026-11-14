@@ -4,7 +4,7 @@
 //   node tests/snapshot-styles.mjs compare   -> diff against them
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, launch, withServer, sleep } from './helpers.mjs';
+import { ROOT, launch, withServer, sleep, newContext } from './helpers.mjs';
 
 const DIR = path.join(ROOT, 'tests', '.baselines');
 const VIEWPORTS = [[1920, 1080], [1536, 730], [1440, 900], [1366, 768], [1280, 720], [1100, 800], [1024, 700], [880, 740], [768, 1024], [390, 844], [375, 640]];
@@ -55,8 +55,8 @@ async function collect() {
 const STATES = {
   hero: async () => {},
   storyEnd: async (page) => { for (let i = 0; i < 6; i++) { await page.keyboard.press('PageDown'); await sleep(500); } await sleep(1200); },
-  explorerM: async (page) => { await page.evaluate(() => { openChange('M'); setSeries(0); }); await sleep(900); },
-  explorerC: async (page) => { await page.evaluate(() => openChange('C', 'barnard')); await sleep(900); },
+  explorerM: async (page) => { await page.evaluate(() => { openChange('M'); setSeries(16); }); await sleep(900); },
+  explorerC: async (page) => { await page.evaluate(() => openChange('C', 'dec')); await sleep(900); },
   explorerD: async (page) => { await page.evaluate(() => openChange('D', 'planetx')); await sleep(900); },
   gallery: async (page) => { await page.evaluate(() => document.getElementById('galb').click()); await sleep(900); },
   search: async (page) => { await page.evaluate(() => document.getElementById('searchBtn').click()); await sleep(900); },
@@ -70,7 +70,7 @@ async function capture(base) {
   const result = {};
   const queue = VIEWPORTS.slice();
   const one = async ([w, h]) => {
-    const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: 'reduce' });
+    const ctx = await newContext(browser, 'calm', { viewport: { width: w, height: h } }); // calm = deterministic
     await ctx.addInitScript(() => {
       let seed = 42; // same "random" star field every run
       Math.random = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };

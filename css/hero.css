@@ -54,8 +54,9 @@
 
 #hc h1 {
   margin: 0 0 22px;
+  font-family: 'Exo 2', var(--font-main);
   font-size: min(clamp(30px, 3.4vw, 60px), 8.5vh);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.04;
   letter-spacing: 0.035em;
   text-transform: uppercase;
@@ -125,10 +126,25 @@
 
 .hero-foot {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #a9b5cf;
+}
+.hero-foot-row {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
+}
+.hero-foot-credit {
+  margin: 0;
+  max-width: 68ch;
+  text-align: center;
   font-size: 13px;
+  line-height: 1.5;
   color: #a9b5cf;
 }
 
@@ -198,15 +214,20 @@
   100% { transform: translate(-50%, 12px); opacity: 0; }
 }
 
-/* the sky credit belongs to the hero; on the card sections it would sit under the cards */
-html.story-paged body.hero-mode:not(.story-at-hero) #credit { opacity: 0; }
+/* the sky credit now lives inside the hero footer (.hero-foot-credit) -> hide the fixed #credit on every
+   story-mode state (hero + cards). free-look (no hero-mode class on body) still shows it bottom-right. */
+html.story-paged body.hero-mode #credit { opacity: 0; }
 
 /* the hero's sky (Constellation.tsx): constellations growing out of the title and subtitle, wired to the facts */
+/* Ambient motion. The chains, their stars and the facts float as ONE piece (.hero-sky), so every star stays on its
+   line and every fact at the end of its chain; only the loose field stars drift on their own (depth).
+   Always the `translate` property, never `transform`: GSAP owns the transforms (fact entrance, star pop-in). */
 .hero-sky {
   position: absolute;
   inset: 0;
   z-index: 2;                 /* above the hero's dark gradient, under the content */
   pointer-events: none;
+  animation: clFloat 8s ease-in-out infinite;
 }
 .hero-constellation { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 .hero-constellation .cl-lines line { stroke: rgba(170, 222, 255, 0.5); stroke-width: 1.1; }
@@ -214,39 +235,51 @@ html.story-paged body.hero-mode:not(.story-at-hero) #credit { opacity: 0; }
 .hero-constellation .cl-stars circle,
 .hero-constellation .cl-field circle { fill: #fff; transform-box: fill-box; transform-origin: center; }
 .hero-constellation .cl-stars { filter: drop-shadow(0 0 5px rgba(143, 211, 255, 0.95)) drop-shadow(0 0 12px rgba(79, 141, 249, 0.45)); }
-.hero-constellation .cl-field circle { fill: rgba(220, 236, 255, 0.75); }
+.hero-constellation .cl-field { animation: clDrift 11s ease-in-out infinite; }
+.hero-constellation .cl-field circle { fill: rgba(220, 236, 255, 0.75); animation: clTwinkle 5s ease-in-out infinite; }
 .hero-constellation .cl-ticks circle { fill: #8fd3ff; transform-box: fill-box; transform-origin: center; }
 .hero-constellation .cl-bright { animation: clTwinkle 3.6s ease-in-out infinite; }
 @keyframes clTwinkle { 50% { fill-opacity: 0.5; } }
+@keyframes clFloat { 50% { translate: 0 -5px; } }
+@keyframes clDrift { 50% { translate: 2px -3px; } }
+/* calm mode: still and steady */
+.reduce-motion .hero-sky,
+.reduce-motion .hero-constellation .cl-field,
+.reduce-motion .hero-constellation .cl-field circle,
 .reduce-motion .hero-constellation .cl-bright { animation: none; }
 
-/* the four facts: framed like instrument read-outs, near the corners, deliberately not mirrored */
+/* the four facts: frameless, glowing like stars — tied to the constellation chains */
 .hero-fact {
   position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 11px 16px 10px;
-  border: 1px solid rgba(143, 211, 255, 0.34);
-  border-radius: 6px;
-  background: rgba(6, 10, 20, 0.62);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 8px 28px rgba(0, 0, 0, 0.45);
-  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
+  gap: 4px;
+  padding: 0;
   pointer-events: none;
 }
-.hero-fact::before,
-.hero-fact::after {                    /* corner brackets */
-  content: '';
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  border: 0 solid #8fd3ff;
+.hero-fact .fact-k {
+  font: 700 17px/1 var(--font-main);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.85),
+    0 0 14px rgba(143, 211, 255, 0.95),
+    0 0 28px rgba(79, 141, 249, 0.6),
+    0 2px 10px rgba(0, 0, 0, 0.85);
 }
-.hero-fact::before { left: -1px; top: -1px; border-left-width: 2px; border-top-width: 2px; border-top-left-radius: 6px; }
-.hero-fact::after { right: -1px; bottom: -1px; border-right-width: 2px; border-bottom-width: 2px; border-bottom-right-radius: 6px; }
-.hero-fact .fact-k { font: 700 13px/1 var(--font-main); letter-spacing: 0.16em; text-transform: uppercase; color: #fff; white-space: nowrap; }
-.hero-fact .fact-v { font: 500 11px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: #9fd8ff; white-space: nowrap; }
+.hero-fact .fact-v {
+  font: 500 15px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #cfeaff;
+  white-space: nowrap;
+  text-shadow:
+    0 0 6px rgba(143, 211, 255, 0.9),
+    0 0 18px rgba(79, 141, 249, 0.55),
+    0 2px 10px rgba(0, 0, 0, 0.85);
+}
 .fact-tl { left: 7.5vw; top: max(124px, 17vh); }
 .fact-tr { right: 6.2vw; top: max(124px, 15.5vh); align-items: flex-end; text-align: right; }
 .fact-bl { left: 9vw; bottom: max(96px, 15vh); }

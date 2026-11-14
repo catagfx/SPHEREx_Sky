@@ -1,14 +1,12 @@
 // Regression checks for behaviour that once broke: the story page keeping its section paging after dialogs,
 // hero buttons, deep links, the CO₂ scan, "Locate in 360° Sky", the header highlight, no console errors.
 // usage: node tests/behaviour.mjs
-import { launch, withServer, sleep, checks } from './helpers.mjs';
-
-const MODES = (process.env.MOTION || 'no-preference,reduce').split(',');
+import { launch, withServer, sleep, checks, MODES, newContext } from './helpers.mjs';
 
 async function run(base, motion) {
   const { check, report } = checks(`behaviour ${base} [${motion}]`);
   const browser = await launch();
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: motion });
+  const ctx = await newContext(browser, motion, { viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -87,7 +85,7 @@ async function run(base, motion) {
 
   // "Locate in 360° Sky" flies to the selected target
   await page.evaluate(() => { setSeries(0); document.getElementById('mM').click(); document.getElementById('fly2').click(); });
-  await sleep(motion === 'reduce' ? 600 : 2600);
+  await sleep(motion === 'calm' ? 600 : 2600);
   const card = await page.evaluate(() => ({ shown: !document.getElementById('card').hidden, title: document.querySelector('#card h2').textContent }));
   check('"Locate in 360° Sky" shows the selected target', card.shown && /Barnard/.test(card.title), card);
 

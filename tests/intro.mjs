@@ -1,15 +1,15 @@
-// The intro and the landing: flying stars -> SPHEREx title -> the first scroll reveals the page ->
-// each further gesture (wheel, PageDown) moves exactly one section. Several screen sizes, both motion modes.
+// The intro and the landing: flying stars -> SPHEREx SKY title (it waits: never auto-dismissed) -> the first
+// scroll reveals the page -> each further gesture (wheel, PageDown) moves exactly one section.
+// Several screen sizes, both motion modes.
 // usage: node tests/intro.mjs
-import { launch, withServer, sleep, checks } from './helpers.mjs';
+import { launch, withServer, sleep, checks, MODES, newContext } from './helpers.mjs';
 
-const MODES = (process.env.MOTION || 'no-preference,reduce').split(',');
 const SIZES = [[1536, 730], [1920, 1080], [1280, 720]];
 
 async function run(base, motion, [w, h]) {
   const { check, report } = checks(`intro ${base} [${motion}, ${w}x${h}]`);
   const browser = await launch();
-  const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: motion });
+  const ctx = await newContext(browser, motion, { viewport: { width: w, height: h } });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));

@@ -8,6 +8,7 @@
     "dev": "node scripts/dev.mjs",
     "dev:vr": "node scripts/dev.mjs --vr",
     "build": "vite build",
+    "build:pages": "node scripts/build-site.mjs",
     "typecheck": "tsc --noEmit",
     "start": "python server.py",
     "voice": "node voice-server/server.js",

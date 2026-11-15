@@ -12,6 +12,7 @@ import { setSeries, capFrames, addSeriesOption, renderSeries } from '../explorer
 import { renderSpectrum } from '../explorer/spectrum';
 import { setTelemetry } from '../explorer/telemetry';
 import { enhanceSelect } from '../ui/dropdown';
+import { apiUrl } from '../../core/api';
 
 // Data ▸ "Data Releases & JSON Ingest" (#releaseModal): pick the survey release (passes available), re-index the
 // local FITS archive, load a custom candidate from JSON, or download the whole catalog as JSON.
@@ -23,7 +24,7 @@ function syncFitsArchive(btn) {
   const msg = $('#syncFitsMsg');
   btn.disabled = true;
   if (msg) msg.textContent = 'Scanning local FITS archive (data/movers_cutouts/)...';
-  fetch('/api/sync-data-archive', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+  fetch(apiUrl('/api/sync-data-archive'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
     .then((r) => r.json())
     .then((data) => {
       btn.disabled = false;

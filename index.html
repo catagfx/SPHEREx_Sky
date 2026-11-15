@@ -23,6 +23,15 @@
     })();
   </script>
 
+  <script>
+    // SPHEREx Sky Cloud Backend Configuration (Option 2 - Hybrid Deployment):
+    // When running statically on GitHub Pages, configure the remote cloud API & Voice backend:
+    // e.g. window.SPX_API_URL = 'https://spherex-sky-api.onrender.com';
+    // If running locally or same-origin, leave unset/empty string.
+    window.SPX_API_URL = window.SPX_API_URL || '';
+    window.SPX_VOICE_API = window.SPX_VOICE_API || '';
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>SPHEREx SKY | NASA 2026</title>
   <meta name="description" content="Explore NASA's SPHEREx all-sky infrared survey. Watch comets, asteroids, proper-motion stars, and variable stars move and change across time and wavelength.">

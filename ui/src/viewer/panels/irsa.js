@@ -6,6 +6,7 @@ import { enhanceSelect } from '../ui/dropdown';
 import { parseCoord } from '../sky/coords';
 import { openChange } from '../explorer';
 import { setSeries, addSeriesOption } from '../explorer/series';
+import { apiUrl } from '../../core/api';
 
 // Data ▸ "IRSA Cutout → Mail" (#irsaModal): the backend cuts multi-epoch SPHEREx Level 2 cutouts around any
 // coordinate (POST /api/irsa-cutout, polled via /api/irsa-status/<id>), renders a blink GIF + difference map,
@@ -42,7 +43,7 @@ function openProcessedInViewer(toast) {
 // ---- SMTP (optional email delivery) ----
 
 function refreshSmtpStatus() {
-  fetch('/api/smtp-config')
+  fetch(apiUrl('/api/smtp-config'))
     .then((r) => r.json())
     .then((cfg) => {
       const badge = $('#smtpStatusBadge');
@@ -68,7 +69,7 @@ function saveSmtp() {
     user: val('#smtpUserInput'),
     pass: $('#smtpPassInput').value,
   };
-  fetch('/api/smtp-config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+  fetch(apiUrl('/api/smtp-config'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
     .then((r) => r.json())
     .then((res) => {
       if (res.ok) { showToast('Saved SMTP configuration'); refreshSmtpStatus(); }
@@ -211,7 +212,7 @@ export function startIrsaJob(autoOpenViewer) {
   if (runBtn) runBtn.disabled = true;
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
 
-  fetch('/api/irsa-cutout', {
+  fetch(apiUrl('/api/irsa-cutout'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -231,7 +232,7 @@ export function startIrsaJob(autoOpenViewer) {
         return;
       }
       pollTimer = setInterval(() => {
-        fetch('/api/irsa-status/' + resp.job_id)
+        fetch(apiUrl('/api/irsa-status/' + resp.job_id))
           .then((r) => r.json())
           .then((st) => {
             const job = st.job || st;

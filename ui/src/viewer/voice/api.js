@@ -1,7 +1,7 @@
 // Calls to the voice server (voice-server/server.js). Same origin by default (Vite proxies /api/rooms in dev);
 // in production set window.SPX_VOICE_API = 'https://voice.example.com' before the bundle loads.
 
-const base = () => (window.SPX_VOICE_API || '').replace(/\/+$/, '');
+const base = () => (window.SPX_VOICE_API || window.SPX_API_URL || '').replace(/\/+$/, '');
 
 async function call(path, body, method = 'POST') {
   let res;

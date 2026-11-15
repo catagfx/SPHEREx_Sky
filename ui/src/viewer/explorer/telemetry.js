@@ -1,4 +1,5 @@
 import { FIELD } from '../../data';
+import { apiUrl } from '../../core/api';
 
 // FITS telemetry per target (field sources, contamination zones, 6-band SED), extracted by the backend from the
 // local Level 2 FITS archive (GET /api/fits-telemetry, refreshed by Data ▸ "Sync Local FITS Archive").
@@ -12,7 +13,7 @@ export function setTelemetry(data) {
 
 /** Fetch once at start; `onLoaded` re-renders if the explorer is open. */
 export function loadTelemetry(onLoaded) {
-  fetch('/api/fits-telemetry')
+  fetch(apiUrl('/api/fits-telemetry'))
     .then((r) => r.json())
     .then((data) => {
       if (data && data.ok && data.telemetry) {

@@ -21,6 +21,7 @@ __pycache__/
 
 # JS tooling
 node_modules/
+dist/
 .certs/
 
 # local test baselines (tests/snapshot-*.mjs save)

@@ -5,6 +5,7 @@ import { radecToGal } from './coords';
 import { fly, flyToView } from './camera';
 import { view } from './view';
 import { playNarration, stopAllNarration, pauseAllNarration, resumeAllNarration, isAudioPlaying } from '../audio/narration';
+import { apiUrl } from '../../core/api';
 
 // Classical constellation overlay on the globe (Explore ▸ Constellations).
 //   on the sky: lines + star dots per constellation (three.js, additive glow)
@@ -290,7 +291,7 @@ export function initConstellations(skyRef) {
 
   // Auto-sync with backend /api/constellations when available so backend coordinate updates propagate automatically
   if (typeof fetch === "function") {
-    fetch("/api/constellations")
+    fetch(apiUrl("/api/constellations"))
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!data || !Array.isArray(data.constellations) || !data.constellations.length) return;

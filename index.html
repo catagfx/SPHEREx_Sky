@@ -25,11 +25,14 @@
 
   <script>
     // SPHEREx Sky Cloud Backend Configuration (Option 2 - Hybrid Deployment):
-    // When running statically on GitHub Pages, configure the remote cloud API & Voice backend:
-    // e.g. window.SPX_API_URL = 'https://spherex-sky-api.onrender.com';
-    // If running locally or same-origin, leave unset/empty string.
-    window.SPX_API_URL = window.SPX_API_URL || '';
-    window.SPX_VOICE_API = window.SPX_VOICE_API || '';
+    // When running statically on GitHub Pages, route dynamic API & Voice requests to live Render backend.
+    // If running on localhost or 127.0.0.1, keep local same-origin.
+    (function() {
+      var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname.startsWith('192.168.') || location.hostname.startsWith('172.');
+      var cloudBackend = 'https://spherex-sky-backend.onrender.com';
+      window.SPX_API_URL = isLocal ? '' : cloudBackend;
+      window.SPX_VOICE_API = isLocal ? '' : cloudBackend;
+    })();
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">

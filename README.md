@@ -1,6 +1,7 @@
 # SPHEREx Sky: The Sky, Again and Again
 
 > **NASA Space Apps Challenge** — *Planet X and SPHEREx* Track  
+> Developed by **Team PP.AP**  
 > A browser-native 3D celestial observatory, multi-epoch FITS cutout pipeline, and time-domain discovery platform for NASA's 102-band infrared all-sky survey.
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://catagfx.github.io/SPHEREx_Sky/)
@@ -279,8 +280,9 @@ The production platform operates as a modern **hybrid architecture**:
 
 ## 👥 Team & Contributors
 
-Proudly designed and developed for the **NASA Space Apps Challenge**:
+Proudly designed and developed for the **NASA Space Apps Challenge** by **Team PP.AP**:
 
+### 🚀 Team PP.AP
 - **Bocioc Marian-Catalin**
 - **Tanase Filip Andrei**
 - **Batrineanu Tudor Mihai**
@@ -300,5 +302,6 @@ Proudly designed and developed for the **NASA Space Apps Challenge**:
 ---
 
 <p align="center">
-  <b>SPHEREx Sky</b> • Standing inside NASA's infrared universe.
+  <b>SPHEREx Sky</b> • Standing inside NASA's infrared universe.<br>
+  Crafted with passion by <b>Team PP.AP</b> for the NASA Space Apps Challenge.
 </p>

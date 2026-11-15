@@ -19,6 +19,8 @@ if (!existsSync(path.join(root, 'node_modules'))) {
   const r = spawnSync(...command(npm, ['install']), { cwd: root, stdio: 'inherit', shell: isWin });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
+const { readConfig } = await import('../voice-server/config.js');
+process.env.VOICE_TARGET ||= `http://127.0.0.1:${readConfig().port}`;
 
 /**
  * Automatically generates a local Root CA (once) and a dynamic server SSL certificate
@@ -168,4 +170,5 @@ if (vr) {
   console.log(`[dev] open http://localhost:5173/   (backend API on :${apiPort}, Ctrl+C stops both)`);
 }
 run('server', isWin ? 'python' : 'python3', ['server.py', apiPort], root);
+run('voice', 'node', ['voice-server/server.js'], root);
 run('vite', npm, ['exec', '--', 'vite', '--host', vr ? '0.0.0.0' : '127.0.0.1'], root);

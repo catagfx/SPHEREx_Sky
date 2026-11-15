@@ -27,6 +27,7 @@ from .jobs import execute_irsa_cutout_job
 from .mailer import load_smtp_config, save_smtp_config_in_memory
 from .state import JOBS, JOBS_LOCK, check_rate_limit, utc_now_iso
 from .telemetry import extract_fits_archive_telemetry
+from .voice import is_voice_path, proxy_voice
 try:
     from .constellations import get_constellations_payload
 except ImportError:
@@ -57,6 +58,15 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT_DIR, **kwargs)
 
+    def send_head(self):
+        # Static hosting must never expose .env credentials, Git data or installed server packages.
+        parts = urllib.parse.unquote(urllib.parse.urlparse(self.path).path).replace("\\", "/").split("/")
+        if (any(part.startswith(".") and part not in (".", "..") for part in parts)
+                or any(part.lower() in ("voice-server", "node_modules") for part in parts)):
+            self.send_error(404)
+            return None
+        return super().send_head()
+
     def send_json(self, data, status=200):
         raw = json.dumps(data).encode("utf-8")
         self.send_response(status)
@@ -67,6 +77,8 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(raw)
 
     def do_OPTIONS(self):
+        if is_voice_path(urllib.parse.urlparse(self.path).path):
+            return proxy_voice(self)
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -77,6 +89,9 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = urllib.parse.urlparse(self.path).path
+
+        if is_voice_path(path):
+            return proxy_voice(self)
 
         if path.startswith("/api/irsa-status/"):
             return self._job_status(path.split("/api/irsa-status/")[-1].strip("/"))
@@ -121,6 +136,19 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
                 "telemetry": telemetry,
             })
 
+        if path == "/rootCA.crt":
+            ca_path = os.path.join(ROOT_DIR, ".certs", "rootCA.crt")
+            if os.path.exists(ca_path):
+                with open(ca_path, "rb") as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/x-x509-ca-cert")
+                self.send_header("Content-Disposition", 'attachment; filename="spherex-rootCA.crt"')
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+                return
+
         return super().do_GET()
 
     def _job_status(self, raw_id):
@@ -139,6 +167,8 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
     # ---- POST ----
 
     def do_POST(self):
+        if is_voice_path(urllib.parse.urlparse(self.path).path):
+            return proxy_voice(self)
         client_ip = self.client_address[0] if self.client_address else "unknown"
         if not check_rate_limit(client_ip, max_per_min=20):
             return self.send_json({"error": "Rate limit exceeded. Please wait a moment."}, status=429)
@@ -198,7 +228,27 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
 
 
-def serve(port, host="0.0.0.0"):
+def serve(port, host="0.0.0.0", cert_file=None, key_file=None):
     server = ThreadedHTTPServer((host, port), SPHERExRequestHandler)
-    print(f"SPHEREx Sky Unified Server + IRSA Cutout API listening on http://localhost:{port}/")
+    proto = "http"
+    if not cert_file:
+        cert_file = os.environ.get("SPX_CERT_FILE")
+    if not key_file:
+        key_file = os.environ.get("SPX_KEY_FILE")
+
+    if (not cert_file or not key_file) and os.environ.get("SPX_HTTPS") == "1":
+        candidate_cert = os.path.join(ROOT_DIR, ".certs", "dev-cert.pem")
+        candidate_key = os.path.join(ROOT_DIR, ".certs", "dev-key.pem")
+        if os.path.exists(candidate_cert) and os.path.exists(candidate_key):
+            cert_file = candidate_cert
+            key_file = candidate_key
+
+    if cert_file and key_file and os.path.exists(cert_file) and os.path.exists(key_file):
+        import ssl
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certfile=cert_file, keyfile=key_file)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
+        proto = "https"
+
+    print(f"SPHEREx Sky Unified Server + IRSA Cutout API listening on {proto}://localhost:{port}/")
     server.serve_forever()

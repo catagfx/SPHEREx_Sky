@@ -1,0 +1,15 @@
+{
+  "name": "spherex-voice-server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Rooms, LiveKit tokens and host controls for SPHEREx Sky voice seminars.",
+  "scripts": { "start": "node server.js", "test": "node test.mjs" },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "livekit-server-sdk": "^2.9.0"
+  }
+}

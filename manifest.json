@@ -1,13 +1,10 @@
 {
-  "short_name": "SPHEREx Sky",
-  "name": "SPHEREx — The Sky, Again and Again",
+  "short_name": "SPHEREx SKY",
+  "name": "SPHEREx SKY: The Sky, Again and Again",
   "description": "Interactive NASA SPHEREx all-sky infrared time-domain discovery platform.",
   "icons": [
-    {
-      "src": "assets/field_wise_0.jpg",
-      "type": "image/jpeg",
-      "sizes": "192x192"
-    }
+    { "src": "assets/favicon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "assets/favicon-512.png", "type": "image/png", "sizes": "512x512" }
   ],
   "start_url": "./index.html",
   "background_color": "#020308",

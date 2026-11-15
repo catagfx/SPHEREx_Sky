@@ -134,7 +134,7 @@ function buildPanel() {
         <svg class="icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
         <span class="const-audio-label">Play narration</span>
       </button>
-      <span class="const-audio-hint">English · auto-play in VR</span>
+      <span class="const-audio-hint">English, auto-play in VR</span>
     </div>
     <div class="const-stats">
       <span><strong class="const-star-count">0</strong> named stars</span>
@@ -199,7 +199,7 @@ function showPanel(def) {
   if (coordsEl) {
     const ra = typeof def.ra === "number" ? def.ra.toFixed(1) : "";
     const dec = typeof def.dec === "number" ? (def.dec >= 0 ? "+" : "") + def.dec.toFixed(1) : "";
-    coordsEl.textContent = ra ? `RA ${ra}° · Dec ${dec}°` : "";
+    coordsEl.textContent = ra ? `RA ${ra}°, Dec ${dec}°` : "";
   }
   panel.querySelector('.const-mini').innerHTML = buildMiniSVG(def);
   const chips = panel.querySelector('.const-chips');
@@ -411,6 +411,20 @@ function applyMaterial(entry) {
   entry.lineMat.color.copy(base);
   entry.lineMat.opacity = entry.selected ? 1 : entry.hovered ? 1 : 0.9;
   entry.dotMat.size = entry.selected ? 10 : entry.hovered ? 9 : 6;
+}
+
+/** Guided tour: focus one constellation exactly like a click on its pill (camera flight, side panel, others hidden). */
+export function focusConstellationByName(name) {
+  const entry = entries.find((e) => e.def.name === name);
+  if (!entry) return null;
+  setConstellationsVisible(true);
+  if (selected !== entry) selectEntry(entry);
+  return entry.def;
+}
+
+/** Guided tour: leave the constellation focus (no camera move back; the next stop flies on). */
+export function leaveConstellationFocus() {
+  setConstellationsVisible(false);
 }
 
 /** Enter / exit the Constellations mode (navigation.js calls this). */

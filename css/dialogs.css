@@ -403,3 +403,626 @@
 }
 
 .reduce-motion #toast { transition: none; }
+
+/* =============================================================
+ * Gallery of Shifting Celestial Bodies: the same look as the story cards
+ * ============================================================= */
+.gw {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.gw .gh { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 10px; }
+.gw .gh > div { flex: 1; }
+.gw .gh h2 { text-align: center; color: #fff; }
+.gw .gh .icon-close-btn { position: absolute; top: 0; right: 0; }
+.gw .gal-intro { max-width: 70ch; margin: 0 auto 20px; text-align: center; color: #fff; font-size: 15px; line-height: 1.6; }
+
+/* filters: card-style buttons, centred, orange hover / selected */
+.gw #gf { justify-content: center; margin: 0 0 22px; }
+.gw #gf .b {
+  min-height: 40px;
+  padding: 6px 18px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+.gw #gf .b:hover,
+.gw #gf .b[aria-pressed="true"] {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm);
+  box-shadow: none;
+  transform: none;
+}
+
+/* the six target cards: 3 + 3 */
+.gw #gg { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .gw #gg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .gw #gg { grid-template-columns: 1fr; } }
+.gw .gc { border-radius: 16px; background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.09); }
+.gw .gc:hover { transform: none; background: rgba(255, 184, 107, 0.1); border-color: var(--warm); box-shadow: none; }
+.gw .gc p { color: #fff; opacity: 0.8; }
+.gw .gc .kd { color: var(--warm); }
+
+/* gallery: compact so the whole card fits the screen (thumbnails cropped to a centred band), titles centred, text left */
+.gw { padding: 22px 30px 26px; }
+.gw .gh h2 { font-size: clamp(22px, 2.6vw, 30px); }
+.gw .gal-intro { margin-bottom: 14px; font-size: 14px; }
+.gw #gf { margin-bottom: 16px; }
+.gw #gg { gap: 14px; }
+.gw .gc .th {
+  clip-path: inset(33% 0 33% 0);   /* the target sits in the middle of the square: keep the middle band */
+  margin: -33% 0;
+}
+.gw .gc .tx { position: relative; padding: 10px 14px 14px; }
+.gw .gc .kd { text-align: center; }
+.gw .gc h3 { text-align: center; margin: 3px 0 8px; font-size: 16px; }
+.gw .gc p { text-align: left; font-size: 12.5px; line-height: 1.4; margin: 2px 0; }
+@media (max-height: 840px) { .gw .gc .th { clip-path: inset(30% 0 30% 0); margin: -30% 0; } }
+@media (max-height: 740px) { .gw .gc .th { clip-path: inset(34% 0 34% 0); margin: -34% 0; } .gw .gal-intro { display: none; } }
+.gw .gc { display: flex; flex-direction: column; justify-content: flex-start; }
+/* gallery cards: the kind line and the name are the same size and colour, a little larger */
+.gw .gc .kd,
+.gw .gc h3 {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #fff;
+  line-height: 1.25;
+  text-align: center;
+}
+.gw .gc .kd { margin: 0; }
+.gw .gc h3 { margin: 2px 0 14px; }
+
+/* gallery: the card sits in the middle of the screen (margin auto keeps it scrollable when it is taller) */
+#gal:not([hidden]) { display: flex; }
+#gal .gw { margin: auto; width: 100%; box-sizing: border-box; }
+.gw .gh { margin-bottom: 0; }
+.gw .gal-intro { margin-top: 2px; }
+.gw .gh h2 { line-height: 1.1; }
+.gw .gal-intro { margin-top: 0; }
+
+/* =============================================================
+ * On-Demand IRSA Cutout & Email Delivery: the same look as the story cards
+ * ============================================================= */
+#irsaModal .modal-dialog {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  scrollbar-width: none;
+}
+#irsaModal .modal-dialog::-webkit-scrollbar { display: none; }
+#irsaModal .modal-header { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 10px; }
+#irsaModal .modal-header > div { flex: 1; }
+#irsaModal .modal-header h2 { text-align: center; color: #fff; }
+#irsaModal .modal-header .icon-close-btn { position: absolute; top: 0; right: 0; }
+#irsaModal > .modal-dialog > .small { color: #fff; text-align: center; font-size: 14px; line-height: 1.6; }
+#irsaModal .preset-label, #irsaModal .input-field label { color: #fff; }
+#irsaModal .irsa-presets { text-align: center; }
+#irsaModal .preset-chips { justify-content: center; }
+
+/* buttons, chips, fields, selects: the card-button look (thin white outline, 6px corners, orange hover) */
+#irsaModal .b,
+#irsaModal .preset-chip {
+  min-height: 40px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#irsaModal .b:hover,
+#irsaModal .preset-chip:hover {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm);
+  box-shadow: none;
+  transform: none;
+}
+#irsaModal .input-field input,
+#irsaModal .styled-select {
+  min-height: 42px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  box-shadow: none;
+}
+#irsaModal .input-field input::placeholder { color: rgba(255, 255, 255, 0.55); }
+#irsaModal .input-field input:focus,
+#irsaModal .styled-select:focus { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; }
+#irsaModal .styled-select option { background: #0a0f1a; color: #fff; }
+#irsaModal .synth-opt { color: #fff; }
+#irsaModal input[type=checkbox] { accent-color: var(--warm); }
+#irsaModal .smtp-config-drawer,
+#irsaModal .irsa-pipeline-box,
+#irsaModal .irsa-visual-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+}
+#irsaModal .smtp-config-drawer summary { color: #fff; }
+
+/* IRSA: quick-fill chips three per row across the full card width, text centred */
+#irsaModal .preset-chips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+#irsaModal .preset-chip {
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 8px;
+  font-size: 12.5px;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* IRSA: every field row sits on one line (fields bottom-aligned, so a two-line label never pushes its input down) */
+#irsaModal .search-inputs { align-items: flex-end; }
+#irsaModal .input-field { min-width: 0; }
+#irsaModal .input-field input,
+#irsaModal .styled-select { width: 100%; box-sizing: border-box; height: 42px; }
+
+/* IRSA: custom dropdowns (ui/dropdown.js): the same box as the fields, a chevron that turns, a solid dark list */
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-dd { position: relative; width: 100%; }
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-native { position: absolute; inset: 0; opacity: 0; pointer-events: none; width: 100%; height: 100%; }
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-btn {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-btn:hover,
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-dd.is-open .sel-btn { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-chev { flex: none; opacity: 0.8; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+:is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-dd.is-open .sel-chev { transform: rotate(180deg); }
+.sel-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: #05080d;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.sel-menu::-webkit-scrollbar { display: none; }
+.sel-item {
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sel-item:hover,
+.sel-item.is-selected { background: rgba(255, 184, 107, 0.16); color: var(--warm); }
+
+/* SMTP note centred */
+#irsaModal .smtp-note { text-align: center; color: #fff; }
+
+/* the card always fits the screen, also with the SMTP drawer open: tighter spacing, centred, scrolls only if still too tall */
+#irsaModal:not([hidden]) { display: flex; }
+#irsaModal .modal-dialog { margin: auto; padding: 20px 28px 22px; max-height: calc(100vh - 24px); width: 100%; box-sizing: border-box; }
+#irsaModal .modal-header { margin-bottom: 4px; }
+#irsaModal > .modal-dialog > .small { font-size: 13px; line-height: 1.5; margin: 6px 0 8px; }
+#irsaModal .preset-section { margin: 8px 0; }
+#irsaModal .preset-label { margin-bottom: 6px; font-size: 10.5px; }
+#irsaModal .preset-chips { gap: 8px; }
+#irsaModal .preset-chip { min-height: 38px; }
+#irsaModal .search-inputs { margin: 8px 0 0; gap: 12px; }
+#irsaModal .search-inputs.stacked { margin-top: 8px; }
+#irsaModal .input-field { gap: 4px; }
+#irsaModal .input-field label { font-size: 10px; }
+#irsaModal .input-field input, #irsaModal .styled-select, :is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-btn { height: 38px; min-height: 38px; }
+#irsaModal .synth-opt { margin-top: 8px; font-size: 12px; }
+#irsaModal .smtp-config-drawer { margin-top: 8px; padding: 8px 12px; }
+#irsaModal .smtp-config-body .search-inputs { margin-top: 6px; }
+#irsaModal .smtp-note { margin-bottom: 6px; font-size: 12px; line-height: 1.45; }
+#irsaModal .smtp-status { margin-top: 6px; }
+#irsaModal .irsa-run { margin-top: 10px; }
+#irsaModal .b { min-height: 38px; }
+.sel-menu { z-index: 60; }
+/* tighter still, so the card fits the screen with the SMTP drawer open */
+#irsaModal .modal-dialog { padding: 14px 26px 16px; }
+#irsaModal .modal-header h2 { font-size: 26px; }
+#irsaModal > .modal-dialog > .small { font-size: 12.5px; margin: 4px 0 6px; }
+#irsaModal .preset-chip { min-height: 34px; }
+#irsaModal .preset-section { margin: 6px 0; }
+#irsaModal .search-inputs { margin-top: 6px; }
+#irsaModal .input-field input, #irsaModal .styled-select, :is(#irsaModal, #releaseModal, #anomalyModal, #cwrap, #searchModal) .sel-btn { height: 36px; min-height: 36px; }
+#irsaModal .smtp-config-drawer { padding: 6px 12px; }
+#irsaModal .smtp-status { margin-top: 4px; }
+#irsaModal #saveSmtpBtn { min-height: 34px; padding: 4px 14px; }
+#irsaModal .smtp-note { font-size: 11.5px; margin-bottom: 4px; }
+#irsaModal .irsa-run { margin-top: 8px; }
+#irsaModal .b { min-height: 36px; }
+
+/* =============================================================
+ * Data Releases & Target Ingestion: the same look as the other card dialogs
+ * ============================================================= */
+#releaseModal:not([hidden]) { display: flex; }
+#releaseModal .modal-dialog {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  margin: auto;
+  width: 100%;
+  box-sizing: border-box;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+#releaseModal .modal-dialog::-webkit-scrollbar { display: none; }
+#releaseModal .modal-header { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 14px; }
+#releaseModal .modal-header > div { flex: 1; }
+#releaseModal .modal-header h2 { text-align: center; color: #fff; }
+#releaseModal .modal-header .icon-close-btn { position: absolute; top: 0; right: 0; }
+#releaseModal label, #releaseModal .small, #releaseModal .custom-ingest-section h3 { color: #fff; }
+#releaseModal .release-select-section { text-align: center; margin-bottom: 18px; }
+#releaseModal .release-select-section .small { text-align: center; }
+#releaseModal .custom-ingest-section { text-align: center; }
+#releaseModal .custom-ingest-section h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+#releaseModal .sync-row { justify-content: center; flex-direction: column; gap: 8px; }
+#releaseModal #syncFitsMsg { color: #fff; }
+#releaseModal .search-actions { justify-content: center; gap: 10px; }
+#releaseModal .search-actions .b { flex: 1 1 0; }
+
+#releaseModal .b {
+  min-height: 40px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#releaseModal .b:hover {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm);
+  box-shadow: none;
+  transform: none;
+}
+#releaseModal .code-textarea {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  text-align: left;
+}
+#releaseModal .code-textarea::placeholder { color: rgba(255, 255, 255, 0.5); }
+#releaseModal .code-textarea:focus { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; }
+
+/* Data Releases: three clear, equal-width boxes, everything centred (release, local archive, custom JSON), then the two buttons side by side */
+#releaseModal .modal-dialog { max-width: 720px; padding: 26px 32px 28px; }
+#releaseModal .release-grid { display: flex; flex-direction: column; gap: 14px; }
+#releaseModal .rel-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  text-align: center;
+  min-width: 0;
+}
+#releaseModal .rel-box > label { font-size: 16px; font-weight: 600; letter-spacing: 0.01em; }
+#releaseModal .rel-box .small { margin: 0; font-size: 13.5px; line-height: 1.5; max-width: 52ch; }
+#releaseModal .release-select-section { margin: 0; }
+#releaseModal .rel-box .sel-dd { max-width: 520px; }
+#releaseModal .rel-box .sync-row { margin: 0; width: 100%; align-items: center; }
+#releaseModal .rel-box .sync-row .b { width: 100%; max-width: 520px; }
+#releaseModal .custom-ingest-section { margin: 0; }
+#releaseModal .custom-ingest-section h3 { margin: 0; font-size: 16px; font-weight: 600; }
+#releaseModal .rel-box .code-textarea { width: 100%; height: 150px; min-height: 0; margin: 0; resize: none; }
+#releaseModal .release-actions { margin-top: 14px; }
+#releaseModal #ingestMsg { text-align: center; }
+
+/* =============================================================
+ * Embed This View: the same look as the other card dialogs
+ * ============================================================= */
+#embedModal:not([hidden]) { display: flex; }
+#embedModal #modalBox {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  margin: auto;
+  width: 100%;
+  max-width: 680px;
+  box-sizing: border-box;
+  padding: 26px 32px 28px;
+}
+#embedModal .modal-header { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 14px; }
+#embedModal .modal-header > div { flex: 1; }
+#embedModal .modal-header h2 { text-align: center; color: #fff; }
+#embedModal .modal-header .icon-close-btn { position: absolute; top: 0; right: 0; }
+#embedModal #modalBox > p { text-align: center; color: #fff; font-size: 14px; line-height: 1.6; margin: 0 0 4px; }
+#embedModal .embed-code {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  margin: 14px 0 16px;
+  box-sizing: border-box;
+}
+#embedModal .embed-actions { justify-content: center; }
+#embedModal .embed-actions .b {
+  min-width: 200px;
+  min-height: 40px;
+  padding: 6px 18px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#embedModal .embed-actions .b:hover { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); box-shadow: none; transform: none; }
+
+/* =============================================================
+ * Flag Candidate / Anomaly Report: the same look as the other card dialogs
+ * ============================================================= */
+#anomalyModal:not([hidden]) { display: flex; }
+#anomalyModal .modal-dialog {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  margin: auto;
+  width: 100%;
+  max-width: 760px;
+  box-sizing: border-box;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 26px 32px 28px;
+  scrollbar-width: none;
+}
+#anomalyModal .modal-dialog::-webkit-scrollbar { display: none; }
+#anomalyModal .modal-header { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 12px; }
+#anomalyModal .modal-header > div { flex: 1; }
+#anomalyModal .modal-header h2 { text-align: center; color: #fff; }
+#anomalyModal .modal-header .icon-close-btn { position: absolute; top: 0; right: 0; }
+#anomalyModal .modal-dialog > .small { text-align: center; color: #fff; font-size: 14px; line-height: 1.6; }
+#anomalyModal .anomaly-summary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  color: #fff;
+  text-align: center;
+}
+#anomalyModal .input-field label { color: #fff; }
+#anomalyModal .search-inputs { align-items: flex-end; gap: 14px; }
+#anomalyModal .input-field { min-width: 0; }
+#anomalyModal .sel-btn { height: 42px; }
+#anomalyModal .code-textarea {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12.5px;
+  box-sizing: border-box;
+}
+#anomalyModal .code-textarea::placeholder { color: rgba(255, 255, 255, 0.55); }
+#anomalyModal .code-textarea:focus { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; outline: none; }
+#anomalyModal .search-actions { justify-content: center; gap: 10px; margin-top: 16px; }
+#anomalyModal .search-actions .b { flex: 1 1 0; }
+#anomalyModal .b {
+  min-height: 40px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#anomalyModal .b:hover { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); box-shadow: none; transform: none; }
+
+/* =============================================================
+ * How This Was Made: the same look as the other card dialogs
+ * ============================================================= */
+#how:not([hidden]) { display: flex; }
+#how #hw2 {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  margin: auto;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 24px 32px 26px;
+  scrollbar-width: none;
+}
+#how #hw2::-webkit-scrollbar { display: none; }
+#how .modal-header { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 10px; }
+#how .modal-header > div { flex: 1; }
+#how .modal-header h2 { text-align: center; color: #fff; }
+#how .modal-header .icon-close-btn { position: absolute; top: 0; right: 0; }
+#how #hw2 > p { text-align: center; color: #fff; font-size: 14px; line-height: 1.55; margin: 0 0 6px; }
+#how #hw2 h3 { text-align: center; color: #fff; font-size: 17px; font-weight: 600; margin: 14px 0 8px; }
+#how #hw2 ul { margin: 0; padding: 12px 18px 12px 34px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 16px; }
+#how #hw2 li { color: #fff; font-size: 13px; line-height: 1.5; margin: 0 0 6px; text-align: left; }
+#how #hw2 li:last-child { margin-bottom: 0; }
+#how #hw2 li b { color: #fff; font-weight: 700; }
+#how #hw2 .doi-link { color: var(--cool); }
+
+/* =============================================================
+ * Sky Coordinate Search: the same look as the other card dialogs, centred on the screen
+ * ============================================================= */
+#searchModal:not([hidden]) { display: flex; }
+#searchModal .modal-dialog {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  margin: auto;
+  width: 100%;
+  max-width: 760px;
+  box-sizing: border-box;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 24px 30px 26px;
+  scrollbar-width: none;
+}
+#searchModal .modal-dialog::-webkit-scrollbar { display: none; }
+#searchModal .modal-header { position: relative; justify-content: center; text-align: center; border-bottom: 0; padding-bottom: 0; margin-bottom: 8px; }
+#searchModal .modal-header > div { flex: 1; }
+#searchModal .modal-header h2 { text-align: center; color: #fff; }
+#searchModal .modal-header .icon-close-btn { position: absolute; top: 0; right: 0; }
+#searchModal .modal-dialog > .small { text-align: center; color: #fff; font-size: 14px; line-height: 1.55; margin: 4px 0 6px; }
+#searchModal .preset-label, #searchModal .input-field label { color: #fff; }
+#searchModal .preset-section { margin: 12px 0; text-align: center; }
+#searchModal .preset-label { display: block; margin-bottom: 8px; }
+
+/* three fields on one line */
+#searchModal .search-inputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: flex-end; margin: 10px 0 0; }
+#searchModal .input-field { min-width: 0; }
+#searchModal .input-field input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  box-shadow: none;
+}
+#searchModal .input-field input::placeholder { color: rgba(255, 255, 255, 0.55); }
+#searchModal .input-field input:focus { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; }
+#searchModal .sel-btn { height: 40px; }
+
+/* benchmark chips: three per row, equal, text centred; the seventh alone in the middle */
+#searchModal .preset-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+#searchModal .preset-chip:last-child:nth-child(3n + 1) { grid-column: 2; }
+#searchModal .preset-chip,
+#searchModal .b {
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: none;
+  transform: none;
+}
+#searchModal .preset-chip { width: 100%; display: flex; align-items: center; justify-content: center; white-space: normal; }
+#searchModal .preset-chip:hover,
+#searchModal .preset-chip[aria-pressed="true"],
+#searchModal .preset-chip.active,
+#searchModal .b:hover { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); box-shadow: none; transform: none; }
+
+/* the three actions: equal, on one line */
+#searchModal .search-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+#searchModal .search-actions .b { width: 100%; }
+#searchModal .search-msg { text-align: center; color: #fff; min-height: 0; }
+
+/* IRSA results: the three action buttons on one row, identical size */
+#irsaResultView .irsa-result-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; flex-wrap: nowrap; }
+#irsaResultView .irsa-result-actions .b,
+#irsaResultView .irsa-result-actions a.b {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  padding: 4px 10px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+  flex: none;
+}
+@media (max-width: 640px) { #irsaResultView .irsa-result-actions { grid-template-columns: 1fr; } }

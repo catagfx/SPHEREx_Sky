@@ -18,7 +18,7 @@ export function updateCompare() {
   $('#cr').style.left = Math.min(innerWidth - 170, dividerX * innerWidth + 10) + 'px';
 }
 
-function applyLayerMix() {
+export function applyLayerMix() {
   sky.uniforms.mixA.value = $('#l1').checked ? $('#s1').value / 100 : 0;
   sky.uniforms.mixG.value = $('#l2').checked ? $('#s2').value / 100 : 0;
 }

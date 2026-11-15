@@ -12,16 +12,20 @@ export function dir(l, b, r) {
   return new THREE.Vector3(Math.cos(p) * Math.cos(B), Math.sin(B), Math.sin(p) * Math.cos(B)).multiplyScalar(r || 1);
 }
 
-const VERTEX_SHADER = 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }';
+const VERTEX_SHADER = 'varying vec2 vUv; varying vec3 vPos; void main(){ vUv=uv; vPos=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }';
 
 // split < 1.5: compare divider at x = split (left stars, right dust); otherwise a screen blend of both layers.
+// cmpOn > 0.5 (VR): the divider is a plane through the viewer instead, with normal cmpN (in the sky's own frame).
 const FRAGMENT_SHADER = `varying vec2 vUv;
+varying vec3 vPos;
 uniform sampler2D a, g;
-uniform float split, mixA, mixG;
+uniform float split, mixA, mixG, cmpOn;
+uniform vec3 cmpN;
 uniform vec2 res;
 void main(){
   vec3 s = texture2D(a, vUv).rgb, d = texture2D(g, vUv).rgb, c;
-  if(split < 1.5){ c = gl_FragCoord.x / res.x < split ? s : d; }
+  if(cmpOn > 0.5){ c = dot(normalize(vPos), cmpN) < 0. ? s : d; }
+  else if(split < 1.5){ c = gl_FragCoord.x / res.x < split ? s : d; }
   else { c = vec3(1.) - (vec3(1.) - clamp(s * mixA, 0., 1.)) * (vec3(1.) - clamp(d * mixG, 0., 1.)); }
   gl_FragColor = vec4(c, 1.);
 }`;
@@ -52,6 +56,8 @@ export function createSky(canvas, onTexturesLoaded) {
     mixA: { value: 0.4 },
     mixG: { value: 1.2 },
     split: { value: 2 },
+    cmpOn: { value: 0 },
+    cmpN: { value: new THREE.Vector3(1, 0, 0) },
     res: { value: new THREE.Vector2(1, 1) },
   };
 

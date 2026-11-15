@@ -727,3 +727,278 @@ body.const-focus .free-look-banner {
   visibility: hidden !important;
   transition: opacity 0.35s ease, visibility 0s linear 0.35s;
 }
+
+/* ---- free-look: no banner, no corner badge; the sky credit is one centred line with "SPHEREx all-sky" above it ---- */
+.free-look-banner,
+#cornerBadge { display: none !important; }
+
+#credit {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  max-width: none;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ---- Landmarks: the buttons form a column on the left of the page, scrollable (wheel / swipe), scrollbar hidden ---- */
+body.landmarks-active #bot {
+  left: 24px;
+  right: auto;
+  top: 104px;
+  bottom: 92px !important;
+  width: max-content;
+  max-width: min(300px, 40vw);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 4px 4px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+body.landmarks-active #bot::-webkit-scrollbar { display: none; width: 0; height: 0; }
+/* the strip no longer runs along the bottom: the credit lines stay at the bottom edge */
+body.landmarks-active #credit { bottom: 22px !important; }
+body.landmarks-active #cornerBadge { bottom: 20px !important; }
+
+/* Landmarks column: vertically centred on the left of the page, equal-width buttons, text centred, same style
+   (and blue hover) as the four buttons on the first page (css/hero.css) */
+body.landmarks-active #bot {
+  top: 50%;
+  bottom: auto !important;
+  transform: translateY(-50%);
+  width: 280px;
+  max-width: 40vw;
+  max-height: calc(100vh - 220px);
+  align-items: stretch;
+  padding: 4px;
+}
+body.landmarks-active #bot button.b {
+  flex: none;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), rgba(5, 8, 13, 0.72); /* dark base: readable on the bright Milky Way */
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: none;
+}
+body.landmarks-active #bot button.b:hover,
+body.landmarks-active #bot button.b:focus-visible {
+  background: linear-gradient(rgba(143, 211, 255, 0.14), rgba(143, 211, 255, 0.14)), rgba(5, 8, 13, 0.72);
+  border-color: var(--cool);
+  color: var(--cool);
+  box-shadow: none;
+  transform: none;
+}
+
+/* ---- info card: centred at the bottom, just above the "SPHEREx all-sky" lines; button style, centred text ---- */
+#card {
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 84px;
+  margin: 0 auto;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 18px 22px 20px;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), rgba(5, 8, 13, 0.88);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+#card::-webkit-scrollbar { display: none; }
+#card h2 { font-size: 20px; font-weight: 600; letter-spacing: 0.02em; color: #fff; text-align: center; }
+#card p { color: #fff; font-size: 13px; line-height: 1.55; text-align: center; }
+#card .b {
+  display: block;
+  margin: 0 auto;
+  min-width: 110px;
+  min-height: 34px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#card .b:hover { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); box-shadow: none; transform: none; }
+
+/* ---- constellation panel: the same look as the story cards (dark glass, thin white borders, calm blue instead of pink) ---- */
+#constellationPanel {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+  scrollbar-width: none;
+}
+#constellationPanel::-webkit-scrollbar { display: none; }
+.const-eyebrow, .const-title { font-size: 28px; font-weight: 600; letter-spacing: -0.01em; color: #fff; }
+.const-eyebrow { margin: 0 0 4px; }
+.const-mini {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: none;
+}
+.const-mini-lines line, .const-mini-dots circle { filter: none; }
+.const-stats {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.const-stat-sep { color: rgba(255, 255, 255, 0.4); }
+.const-info-block {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+.const-info-label { color: #fff; font-size: 12px; letter-spacing: 0.14em; }
+.const-info { color: #fff; font-size: 14px; }
+.const-stars-label { color: #fff; border-top-color: rgba(255, 255, 255, 0.09); }
+.const-chip {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #fff;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+.const-audio-hint { color: #fff; opacity: 0.75; }
+
+/* buttons: the card-button style (thin white outline, 6px corners, blue hover) */
+.const-audio-btn {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  min-height: 40px;
+}
+.const-audio-btn:hover { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); transform: none; box-shadow: none; }
+.const-close-btn {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.const-close-btn:hover { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); }
+
+/* ---- guided tour control bar: story-card look (dark glass, thin outline, card buttons), above the credit lines ---- */
+#tour {
+  bottom: 84px;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), rgba(5, 8, 13, 0.88);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+#tn { color: #fff; font-family: inherit; font-size: 13px; font-weight: 500; letter-spacing: 0.02em; }
+#tour .b {
+  min-height: 36px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#tour .b:hover { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); box-shadow: none; transform: none; }
+/* during the tour the info card sits above the control bar */
+body:has(#tour:not([hidden])) #card { bottom: 156px; }
+
+/* constellation panel a little higher */
+#constellationPanel { top: calc(50% - 34px); }
+#card p { white-space: pre-line; } /* landmark text: the original line, a blank line, then the longer description */
+
+/* =============================================================
+ * Sky layers & compare: the same look as the story cards
+ * ============================================================= */
+.pn {
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  transform: none;
+  width: min(560px, calc(100vw - 32px));
+  bottom: 84px;
+  padding: 18px 22px 20px;
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.pn p { color: #fff; font-size: 13px; line-height: 1.55; text-align: center; margin: 0 0 14px; }
+.pn .r { gap: 12px; flex-wrap: nowrap; }
+.pn label { color: #fff; font-size: 13px; min-width: 150px; display: flex; align-items: center; gap: 8px; }
+.pn input[type=checkbox] { accent-color: var(--warm); }
+.pn input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 4px;
+  min-width: 100px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  outline: none;
+}
+.pn input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); cursor: pointer; }
+.pn input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--warm); border: 0; cursor: pointer; }
+.pn .pn-actions { margin-top: 16px; gap: 10px; justify-content: stretch; }
+.pn .pn-actions .b {
+  flex: 1 1 0;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+.pn .pn-actions .b:hover,
+.pn .pn-actions .b[aria-pressed="true"] { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); box-shadow: none; transform: none; }
+.split-chip { border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(5, 8, 13, 0.85); color: #fff; font-family: inherit; font-size: 12px; }
+
+/* separators between the facts of a line are spacing, not characters */
+.const-stat-sep { display: none; }
+.const-stats { gap: 18px; }

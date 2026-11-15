@@ -3,9 +3,9 @@ import { getLenis } from '../core/smooth-scroll';
 import { glideTo, topOf } from '../story/scroll';
 import { closeModal, dialogOf } from './ui/modal';
 import { showToast } from './ui/toast';
-import { setActiveNav, closeDropdowns } from './ui/header';
+import { setActiveNav, closeDropdowns, keepNav } from './ui/header';
 import { setSpin } from './sky/view';
-import { hideCard } from './sky/card';
+import { hideCard, hideCardNow } from './sky/card';
 import { setConstellationsVisible } from './sky/constellations';
 import { openChange, closeChange } from './explorer';
 import { closeGallery } from './panels/gallery';
@@ -23,6 +23,7 @@ export function setFreeLook(active, mode, navId) {
   body.classList.toggle('free-look-active', active);
   body.classList.toggle('landmarks-active', active && landmarks);
   body.classList.toggle('hero-mode', !active);
+  hideCardNow();   // the info card of the previous view (landmark, tour stop...) never stays open when the view changes
   setConstellationsVisible(active && constellations);
   const banner = $('#freeLookBanner');
   if (banner) {
@@ -30,9 +31,9 @@ export function setFreeLook(active, mode, navId) {
     const text = banner.querySelector('span:not(.live-dot)');
     if (text) {
       text.textContent = landmarks
-        ? '360° Celestial Observatory · 11 Landmarks Active'
+        ? '360° Celestial Observatory, 11 Landmarks Active'
         : constellations
-        ? `360° Celestial Observatory · Constellations (${/* count */ document.querySelectorAll('.const-tag').length})`
+        ? `360° Celestial Observatory, Constellations (${/* count */ document.querySelectorAll('.const-tag').length})`
         : '360° Free-Look Celestial Observatory';
     }
   }
@@ -40,6 +41,43 @@ export function setFreeLook(active, mode, navId) {
   else getLenis()?.start();
   setActiveNav(active ? (landmarks ? 'landmarks' : constellations ? 'constellations' : 'sky') : navId || 'story');
   setSpin(active && !constellations); // constellations mode stays still so hover is predictable
+}
+
+// Tools that act on the globe (sky layers + compare, coordinate grid, auto orbit) only work while the
+// globe is yours: Free-Look, Landmarks or Constellations. Elsewhere they are greyed out and switched off.
+const GLOBE_TOOLS = ['#cmp', '#grid', '#spin'];
+const TOOLS_HINT = 'Available in Free Look, Landmarks and Constellations';
+
+function setToolsActive(active) {
+  if (!active) {
+    // switch off what is on, before the buttons are disabled
+    ['#cmpb', '#grid', '#cmp'].forEach((sel) => {
+      const b = $(sel);
+      if (b && b.getAttribute('aria-pressed') === 'true') b.click();
+    });
+    setSpin(false);
+  }
+  GLOBE_TOOLS.forEach((sel) => {
+    const b = $(sel);
+    if (!b) return;
+    if (b.dataset.title === undefined) b.dataset.title = b.getAttribute('title') || '';
+    b.disabled = !active;
+    b.setAttribute('aria-disabled', String(!active));
+    if (active) { if (b.dataset.title) b.setAttribute('title', b.dataset.title); else b.removeAttribute('title'); }
+    else b.setAttribute('title', TOOLS_HINT);
+  });
+}
+
+function watchTools() {
+  let last = null;
+  const sync = () => {
+    const on = document.body.classList.contains('free-look-active');
+    if (on === last) return;
+    last = on;
+    setToolsActive(on);
+  };
+  new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  sync();
 }
 
 /** Back on the story page, glide to a section (or the top) like the section pager does. */
@@ -62,7 +100,7 @@ function goHome() {
   showStory(null, 'story');
 }
 
-const freeLook = () => { setFreeLook(true); showToast('360° Free-Look Mode · Clean Sky View'); };
+const freeLook = () => { setFreeLook(true); };
 
 // Esc closes the topmost dialog (one per press), then dropdowns and the explorer.
 const ESC_DIALOGS = [
@@ -90,10 +128,9 @@ export function initNavigation() {
   $('#tabStory').onclick = () => showStory(null, 'story');
   $('#tabPlanetX').onclick = () => showStory('secPlanetX', 'planetx');
   $('#tabSky').onclick = freeLook;
-  $('#tabLandmarks').onclick = () => { setFreeLook(true, 'landmarks'); showToast('11 Celestial Landmarks Active'); };
+  $('#tabLandmarks').onclick = () => { setFreeLook(true, 'landmarks'); };
   $('#tabConstellations').onclick = () => {
     setFreeLook(true, 'constellations');
-    showToast(`Constellations · hover a figure, click to open details`);
   };
   $('#tabColors').onclick = () => openChange('C');
   $('#planetxMenuBtn').onclick = () => { closeDropdowns(); openChange('M', 'planetx'); };
@@ -106,4 +143,13 @@ export function initNavigation() {
   $('#btnResumeStory').onclick = () => setFreeLook(false);
 
   addEventListener('keydown', onEscape);
+  // "Locate in 360° Sky" (explorer) asks for the globe: leave the story and open free look
+  addEventListener('spherex:free-look', (e) => {
+    const body = document.body;
+    if (e.detail && e.detail.mode === 'landmarks') {
+      if (!body.classList.contains('landmarks-active')) setFreeLook(true, 'landmarks');
+    } else if (!body.classList.contains('free-look-active')) setFreeLook(true, null);
+    keepNav(); // the explorer closes next: its close must not put the old highlight back
+  });
+  watchTools();
 }

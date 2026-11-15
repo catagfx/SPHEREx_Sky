@@ -14,6 +14,22 @@ const PANEL_BG = 'rgba(10,18,36,0.86)';
 export const PANEL_PIX = 1024;                 // canvas resolution, long side
 export const PANEL_WORLD = 0.75;               // world-space size (m), long side
 
+// Images shown inside panels (target frames, spectra, story passes): loaded once, shared by every panel.
+const imgCache = new Map();
+function getImage(src, onLoad) {
+  let e = imgCache.get(src);
+  if (!e) {
+    const img = new Image();
+    e = { img, ok: false, failed: false, waiting: new Set() };
+    img.onload = () => { e.ok = true; e.waiting.forEach((fn) => fn()); e.waiting.clear(); };
+    img.onerror = () => { e.failed = true; e.waiting.forEach((fn) => fn()); e.waiting.clear(); };
+    img.src = src;
+    imgCache.set(src, e);
+  }
+  if (!e.ok && !e.failed) e.waiting.add(onLoad);
+  return e;
+}
+
 export function createPanel({ w = 1, h = 1, title = '', interactive = true } = {}) {
   const wPx = Math.round(PANEL_PIX * w);
   const hPx = Math.round(PANEL_PIX * h);
@@ -99,6 +115,13 @@ export function createPanel({ w = 1, h = 1, title = '', interactive = true } = {
     ctx.restore();
   }
 
+  function fit(text, maxWidth) {
+    let t = String(text);
+    if (ctx.measureText(t).width <= maxWidth) return t;
+    while (t.length > 1 && ctx.measureText(t + '…').width > maxWidth) t = t.slice(0, -1);
+    return t + '…';
+  }
+
   function wrapText(text, maxWidth, lineH) {
     const words = String(text).split(/\s+/);
     const lines = [];
@@ -160,15 +183,16 @@ export function createPanel({ w = 1, h = 1, title = '', interactive = true } = {
         const bh = 60, bw = Math.min(bodyW - 20, 480);
         const hover = state.hover === item.id;
         const variant = item.variant || 'secondary';
-        const bg = variant === 'primary'
-          ? (hover ? 'rgba(143,211,255,0.28)' : 'rgba(143,211,255,0.18)')
+        const on = !!item.active;
+        const bg = variant === 'primary' || on
+          ? (hover ? 'rgba(143,211,255,0.30)' : on ? 'rgba(143,211,255,0.24)' : 'rgba(143,211,255,0.18)')
           : (hover ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.04)');
-        const stroke = variant === 'primary' ? CYAN : 'rgba(255,255,255,0.22)';
+        const stroke = variant === 'primary' || on ? CYAN : 'rgba(255,255,255,0.22)';
         drawRoundedRect(bodyX, y, bw, bh, 14, bg, stroke, hover ? 3 : 2);
         ctx.font = '600 22px "Space Grotesk", sans-serif';
         ctx.fillStyle = INK;
         ctx.textBaseline = 'middle';
-        ctx.fillText(item.label, bodyX + 22, y + bh / 2);
+        ctx.fillText(fit(item.label, bw - 44), bodyX + 22, y + bh / 2);
         ctx.textBaseline = 'top';
         state.hits.push({ id: item.id, cx: bodyX, cy: y, cw: bw, ch: bh, kind: 'button' });
         y += bh + 14;
@@ -195,6 +219,61 @@ export function createPanel({ w = 1, h = 1, title = '', interactive = true } = {
         // interactive hit covers the full track line (easy to grab)
         state.hits.push({ id: item.id, cx: tx - 20, cy: ty - 20, cw: tw + 40, ch: th + 40, kind: 'slider' });
         y += 44;
+      } else if (item.type === 'note') {
+        ctx.font = '400 18px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = SUB;
+        for (const l of wrapText(item.text, bodyW, 26)) { ctx.fillText(l, bodyX, y); y += 26; }
+        y += 8;
+      } else if (item.type === 'buttons') {
+        const n = item.buttons.length, gap = 12, bh = 60;
+        const bw = (bodyW - gap * (n - 1)) / n;
+        item.buttons.forEach((b, i) => {
+          const bx = bodyX + i * (bw + gap);
+          const hover = state.hover === b.id;
+          const on = !!b.active || b.variant === 'primary';
+          drawRoundedRect(bx, y, bw, bh, 14, on ? (hover ? 'rgba(143,211,255,0.30)' : 'rgba(143,211,255,0.18)') : (hover ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.04)'),
+            on ? CYAN : 'rgba(255,255,255,0.22)', hover ? 3 : 2);
+          ctx.font = '600 20px "Space Grotesk", sans-serif';
+          ctx.fillStyle = INK;
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'center';
+          ctx.fillText(fit(b.label, bw - 16), bx + bw / 2, y + bh / 2);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+          state.hits.push({ id: b.id, cx: bx, cy: y, cw: bw, ch: bh, kind: 'button' });
+        });
+        y += bh + 14;
+      } else if (item.type === 'image') {
+        const e = getImage(item.src, () => { state.dirty = true; });
+        const ih = item.h || Math.round(bodyW * 0.62);
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.fillRect(bodyX, y, bodyW, ih);
+        if (e.ok) {
+          // fit inside the box, keeping the picture's shape
+          const k = Math.min(bodyW / e.img.naturalWidth, ih / e.img.naturalHeight);
+          const dw = e.img.naturalWidth * k, dh = e.img.naturalHeight * k;
+          const dx = bodyX + (bodyW - dw) / 2, dy = y + (ih - dh) / 2;
+          ctx.drawImage(e.img, dx, dy, dw, dh);
+          if (item.marker) {
+            const mx = dx + item.marker.x * dw, my = dy + item.marker.y * dh;
+            ctx.strokeStyle = WARM; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(mx, my, 22, 0, Math.PI * 2); ctx.stroke();
+          }
+        } else {
+          ctx.font = '400 20px "Plus Jakarta Sans", sans-serif';
+          ctx.fillStyle = SUB;
+          ctx.textAlign = 'center';
+          ctx.fillText(e.failed ? 'Image unavailable' : 'Loading image…', bodyX + bodyW / 2, y + ih / 2 - 10);
+          ctx.textAlign = 'left';
+        }
+        y += ih;
+        if (item.caption) {
+          y += 8;
+          ctx.font = '400 17px "Plus Jakarta Sans", sans-serif';
+          ctx.fillStyle = SUB;
+          for (const l of wrapText(item.caption, bodyW, 24)) { ctx.fillText(l, bodyX, y); y += 24; }
+        }
+        y += 12;
       } else if (item.type === 'listItem') {
         const bh = 72, bw = bodyW;
         const hover = state.hover === item.id;
@@ -202,10 +281,10 @@ export function createPanel({ w = 1, h = 1, title = '', interactive = true } = {
           hover ? CYAN : 'rgba(255,255,255,0.12)', hover ? 2 : 1);
         ctx.font = '600 22px "Space Grotesk", sans-serif';
         ctx.fillStyle = INK;
-        ctx.fillText(item.title, bodyX + 20, y + 12);
+        ctx.fillText(fit(item.title, bw - 40), bodyX + 20, y + 12);
         ctx.font = '400 17px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = SUB;
-        ctx.fillText(item.sub, bodyX + 20, y + 42);
+        ctx.fillText(fit(item.sub || '', bw - 40), bodyX + 20, y + 42);
         state.hits.push({ id: item.id, cx: bodyX, cy: y, cw: bw, ch: bh, kind: 'button', data: item.data });
         y += bh + 10;
       }
@@ -249,8 +328,8 @@ export function createPanel({ w = 1, h = 1, title = '', interactive = true } = {
     get hPx() { return hPx; },
     get widthWorld() { return PANEL_WORLD * w; },
     get heightWorld() { return PANEL_WORLD * h; },
-    setTitle(t) { state.title = t; state.dirty = true; },
-    setBody(items) { state.body = items; state.scrollY = 0; state.dirty = true; },
+    setTitle(t) { if (state.title !== t) { state.title = t; state.dirty = true; } },
+    setBody(items, keepScroll) { state.body = items; if (!keepScroll) state.scrollY = 0; state.dirty = true; },
     setSlider(id, info) { state.sliders[id] = { value: 0.5, ...info }; state.dirty = true; },
     getSlider(id) { return state.sliders[id]; },
     updateSlider(id, value) {

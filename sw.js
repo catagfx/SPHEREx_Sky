@@ -3,7 +3,7 @@
  * Caches core interactive application files and textures for offline exploration.
  */
 
-const CACHE_NAME = 'spherex-cache-v50';
+const CACHE_NAME = 'spherex-cache-v60';
 // The whole app is one bundle (three.js included), so these files are all it needs offline.
 const OFFLINE_URLS = [
   './',
@@ -16,8 +16,10 @@ const OFFLINE_URLS = [
   './css/intro.css',
   './css/story.css',
   './css/hero.css',
+  './css/voice.css',
   './js/ui.bundle.js',
   './manifest.json',
+  './assets/favicon-32.png',
   './assets/sky_stars.jpg',
   './assets/sky_dust.jpg'
 ];

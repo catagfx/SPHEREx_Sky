@@ -11,13 +11,31 @@ let savedNav = null;
 /** Highlight the header item whose data-nav matches (story, sky, landmarks, tour, planetx, change, colors, gallery). */
 export function setActiveNav(id) {
   activeNav = id;
+  clearPicked();
   $$('.nav-tab').forEach((tab) => tab.classList.toggle('active', tab.getAttribute('data-nav') === id));
+}
+
+// The header item you just pressed (and its category button) stays blue; the next press, or a change of the active
+// view, hands the highlight on.
+function clearPicked() {
+  $$('.dd-btn.picked, .dd-item.picked').forEach((el) => el.classList.remove('picked'));
+}
+
+function pick(item) {
+  clearPicked();
+  item.classList.add('picked');
+  item.closest('.dd')?.querySelector(':scope > .dd-btn')?.classList.add('picked');
 }
 
 /** A dialog takes the highlight while it is open; restoreNav() gives it back to the view underneath. */
 export function borrowNav(id) {
   if (savedNav === null) savedNav = activeNav;
   setActiveNav(id);
+}
+
+/** The highlight was handed on for good (e.g. a dialog sent you to the globe): restoreNav() has nothing to give back. */
+export function keepNav() {
+  savedNav = null;
 }
 
 export function restoreNav() {
@@ -51,6 +69,12 @@ function initDropdowns() {
       }
     };
   });
+  $$('.dd-menu').forEach((menu) => {
+    menu.addEventListener('click', (e) => {
+      const item = e.target.closest('.dd-item');
+      if (item && !item.hasAttribute('aria-pressed')) pick(item); // toggles (Tools) keep their own on / off state
+    });
+  });
   // menus marked data-autoclose close once an item is chosen (Tools stays open: its items are toggles)
   $$('.dd-menu[data-autoclose]').forEach((menu) => {
     menu.addEventListener('click', (e) => {
@@ -83,6 +107,7 @@ function initMotionToggle() {
   const btn = $('#motionToggle');
   if (!btn) return;
   btn.setAttribute('aria-pressed', reduce);
+  btn.setAttribute('aria-checked', reduce);
   btn.onclick = () => setReducedMotion(!reduce);
 }
 

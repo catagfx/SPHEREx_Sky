@@ -49,7 +49,7 @@ body {
 }
 
 /* a dialog or the free-look globe owns the screen */
-body.modal-open, body.free-look-active {
+body.modal-open, body.free-look-active, body.tour-active {
   overflow: hidden !important;
 }
 
@@ -123,22 +123,9 @@ body.free-look-active #c {
   white-space: nowrap;
 }
 
-/* ---- scrollbars ---- */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(10, 14, 26, 0.4);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  transition: background 0.2s ease;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.5);
-}
+/* ---- scrollbars: hidden everywhere (scrolling still works) ---- */
+html, body, * { scrollbar-width: none; -ms-overflow-style: none; }
+::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
 /* ---- buttons ---- */
 button.b {

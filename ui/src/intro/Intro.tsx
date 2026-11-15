@@ -136,7 +136,17 @@ export default function Intro({ onDone }: { onDone: () => void }) {
       if (SKIP_KEYS.has(e.key)) {
         e.preventDefault();
         if (phase.current === 'title') exit();
-        else if (phase.current === 'loading') { phase.current = 'done'; unlockRef.current(); revealPage(); onDone(); }
+        else if (phase.current === 'loading') {
+          // skipped while the stars still fly: stop the entrance timeline (it would bring the title back) and drop the cover
+          phase.current = 'done';
+          entrance.current?.kill();
+          setCoverOn(false);
+          if (titleRef.current) gsap.set(titleRef.current, { autoAlpha: 0 });
+          if (cueRef.current) gsap.set(cueRef.current, { autoAlpha: 0 });
+          unlockRef.current();
+          revealPage();
+          onDone();
+        }
         return;
       }
       if (!SCROLL_KEYS.has(e.key)) return;

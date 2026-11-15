@@ -2,11 +2,13 @@ import * as THREE from 'three';
 import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory.js';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { $ } from '../../dom';
-import { updateCompare } from '../layers';
+import { updateCompare, applyLayerMix } from '../layers';
 import { dir } from '../scene';
+import { setSpin as setPageSpin } from '../view';
+import { initConstellations } from '../constellations';
 import { createPanel } from './panels';
-import { explorePanelBody, spherexDataPanel, settingsPanel } from './content';
 import { createStarMap } from './starmap';
+import { createPages } from './pages';
 
 // VR / WebXR experience.
 //   - Entry: a prominent VR button in the header (#vrQuick) and the legacy Tools item (#vr).
@@ -114,17 +116,19 @@ export function initXR(sky) {
   xrRoot.visible = false;
   scene.add(xrRoot);
 
-  // Panels: home (floating in front of user) + wrist menu (attached to left hand).
+  // Panels: the menu (floats in front of the user, re-placed on entry and by "Recenter") and a tiny "Menu" button
+  // that shows while the menu is hidden (free look).
   const home = createPanel({ w: 1.1, h: 1.3, title: 'SPHEREx VR' });
   home.mesh.position.set(0, 1.6, -1.4);
   xrRoot.add(home.mesh);
 
-  const wrist = createPanel({ w: 0.42, h: 0.5, title: 'Menu', interactive: true });
-  wrist.mesh.visible = false;      // will be positioned & shown by the hand tracker when left hand is detected
-  xrRoot.add(wrist.mesh);
+  const mini = createPanel({ w: 0.42, h: 0.2, title: '' });
+  mini.setBody([{ type: 'button', id: 'showMenu', label: 'Menu', variant: 'primary' }]);
+  mini.mesh.visible = false;
+  xrRoot.add(mini.mesh);
 
-  // Star Map group.
-  const starMap = createStarMap({ onPick: (p) => showCard(p) });
+  // Star Map group: follows the sky's turn (travel) so the labels stay on their places in the sky.
+  const starMap = createStarMap({ onPick: (p) => pages.handle('lm:' + p.idx) });
   xrRoot.add(starMap.group);
 
   // Fade sphere (for travel transitions): a small sphere around the camera that we can blacken.
@@ -133,113 +137,70 @@ export function initXR(sky) {
   fadeMesh.renderOrder = 10;
   xrRoot.add(fadeMesh);
 
-  // Current panel content state
-  const mode = { current: 'home' }; // 'home' | 'explore' | 'starmap' | 'data' | 'settings'
-  const settings = settingsPanel();
-  settings.items.forEach((it) => {
-    if (it.type === 'slider') home.setSlider(it.id, { value: settings.defaults[it.id] ?? 0.5 });
-  });
+  const mode = { current: 'home' }; // the page now shown (tests read it through spxXR.mode)
+  let uiOpacity = 0.86;
+  let menuHidden = false;
+  let needPlace = false;
+  let spinning = false;
+  let savedConst = false;
 
-  // ---------- Panel contents ----------
-  function renderHome() {
-    mode.current = 'home';
-    home.setTitle('SPHEREx VR');
-    home.setBody([
-      { type: 'heading', text: 'Welcome' },
-      { type: 'paragraph', text: 'An interactive infrared sky — explore NASA SPHEREx data with your hands. Pinch any button below.' },
-      { type: 'divider' },
-      { type: 'button', id: 'go:explore', label: 'Explore Catalog', variant: 'primary' },
-      { type: 'button', id: 'go:starmap', label: 'Open Star Map', variant: 'primary' },
-      { type: 'button', id: 'go:data', label: 'SPHEREx Data', variant: 'primary' },
-      { type: 'button', id: 'go:settings', label: 'Settings', variant: 'secondary' },
-      { type: 'button', id: 'exitVR', label: 'Exit VR', variant: 'secondary' },
-    ]);
-    starMap.hide();
+  const headPos = new THREE.Vector3();
+  const headQuat = new THREE.Quaternion();
+  function readHead() {
+    const c = ren.xr.getCamera(cam);
+    c.getWorldPosition(headPos);
+    c.getWorldQuaternion(headQuat);
+  }
+  const flatForward = () => {
+    const f = new THREE.Vector3(0, 0, -1).applyQuaternion(headQuat);
+    f.y = 0;
+    if (f.lengthSq() < 1e-4) f.set(0, 0, -1); else f.normalize();
+    return f;
+  };
+
+  // put the menu in front of the user, at eye height, turned to them; the star map is centred on the head
+  function place() {
+    readHead();
+    const f = flatForward();
+    // on the Star Map page the menu steps aside, so it does not hide the stars straight ahead
+    const side = mode.current === 'starmap' ? 0.75 : 0;
+    const pf = f.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), side);
+    home.mesh.position.copy(headPos).addScaledVector(pf, 1.4);
+    home.mesh.position.y = headPos.y - 0.05;
+    mini.mesh.position.copy(headPos).addScaledVector(f, 0.9);
+    mini.mesh.position.y = headPos.y - 0.5;
+    starMap.group.position.copy(headPos);
   }
 
-  function renderExplore() {
-    mode.current = 'explore';
-    const { items } = explorePanelBody();
-    home.setTitle('Explore');
-    home.setBody([
-      ...items,
-      { type: 'divider' },
-      { type: 'button', id: 'back:home', label: '← Back to Menu', variant: 'secondary' },
-    ]);
-    starMap.hide();
+  function setMenuHidden(hide) {
+    menuHidden = hide;
+    home.mesh.visible = !hide;
+    mini.mesh.visible = hide;
+    if (hide) starMap.hide(); else if (pages.page === 'starmap') starMap.show();
+    if (!hide) place();
   }
 
-  function renderData() {
-    mode.current = 'data';
-    home.setTitle('SPHEREx Data');
-    home.setBody([
-      ...spherexDataPanel(),
-      { type: 'divider' },
-      { type: 'button', id: 'back:home', label: '← Back to Menu', variant: 'secondary' },
-    ]);
-    starMap.hide();
-  }
-
-  function renderSettings() {
-    mode.current = 'settings';
-    home.setTitle('Settings');
-    home.setBody([
-      ...settings.items,
-      { type: 'divider' },
-      { type: 'button', id: 'back:home', label: '← Back to Menu', variant: 'secondary' },
-    ]);
-    starMap.hide();
-  }
-
-  function showStarMap() {
-    mode.current = 'starmap';
-    home.setTitle('Star Map');
-    home.setBody([
-      { type: 'heading', text: 'Select a Destination' },
-      { type: 'paragraph', text: 'Look around — glowing stars show you where real SPHEREx science targets are on the sky. Pinch one to open its card.' },
-      { type: 'divider' },
-      { type: 'button', id: 'back:home', label: '← Back to Menu', variant: 'secondary' },
-    ]);
-    starMap.show();
-  }
-
-  function showCard(p) {
-    home.setTitle(p.label);
-    home.setBody([
-      { type: 'heading', text: p.cardTitle || p.label },
-      { type: 'paragraph', text: p.cardSub || `Galactic coordinates: l = ${p.l}°, b = ${p.b}°.` },
-      { type: 'divider' },
-      { type: 'kv', k: 'Longitude l:', v: p.l + '°' },
-      { type: 'kv', k: 'Latitude b:', v: p.b + '°' },
-      { type: 'divider' },
-      { type: 'button', id: 'travel:' + p.idx, label: 'Travel Here', variant: 'primary' },
-      { type: 'button', id: 'back:starmap', label: '← Back to Star Map', variant: 'secondary' },
-    ]);
-  }
-
-  function handleButton(id) {
-    if (id === 'go:explore') renderExplore();
-    else if (id === 'go:starmap') showStarMap();
-    else if (id === 'go:data') renderData();
-    else if (id === 'go:settings') renderSettings();
-    else if (id === 'back:home') renderHome();
-    else if (id === 'back:starmap') showStarMap();
-    else if (id === 'exitVR') exitVR();
-    else if (id === 'resetSettings') {
-      Object.entries(settings.defaults).forEach(([k, v]) => home.updateSlider(k, v));
-      applySettings();
-    } else if (id.startsWith('explore:')) {
-      const idx = +id.split(':')[1];
-      const points = starMap.picks.map((p) => p.data);
-      const data = points[idx];
-      if (data) showCard(data);
-    } else if (id.startsWith('travel:')) {
-      const idx = +id.split(':')[1];
-      const points = starMap.picks.map((p) => p.data);
-      const data = points[idx];
-      if (data) travelTo(data);
-    }
-  }
+  const ctx = {
+    sky, panel: home, THREE,
+    get uiOpacity() { return uiOpacity; },
+    setUiOpacity(v) { uiOpacity = Math.max(0.3, Math.min(1, v)); home.mesh.material.opacity = uiOpacity; mini.mesh.material.opacity = uiOpacity; },
+    applyMix: applyLayerMix,
+    travelTo: (p) => travelTo(p),
+    exitVR: () => exitVR(),
+    recenter: () => { if (menuHidden) setMenuHidden(false); else place(); },
+    hideMenu: () => setMenuHidden(true),
+    // the viewer's forward direction (horizontal, world frame)
+    headForward: () => { readHead(); return flatForward(); },
+    constellationRoot: () => initConstellations._root,
+    setSpin: (on) => { spinning = on; },
+    onPage(page) {
+      const was = mode.current;
+      mode.current = page;
+      if (page === 'starmap' && !menuHidden) starMap.show(); else starMap.hide();
+      if ((page === 'starmap') !== (was === 'starmap') && !needPlace && xrRoot.visible) place();
+    },
+  };
+  const pages = createPages(ctx);
 
   // ---------- Travel: fade out, point the sky at target, fade in ----------
   // Stepped from xrFrame: window.requestAnimationFrame does not run while a Quest is presenting.
@@ -254,22 +215,12 @@ export function initXR(sky) {
     if (!travel.turned) {
       // rotate the world so the picked direction sits in front of the headset
       travel.turned = true;
-      const look = new THREE.Vector3(0, 0, -1).applyQuaternion(ren.xr.getCamera(cam).getWorldQuaternion(new THREE.Quaternion()));
-      world.quaternion.setFromUnitVectors(travel.target, look.normalize());
+      readHead();
+      const look = new THREE.Vector3(0, 0, -1).applyQuaternion(headQuat).normalize();
+      world.quaternion.setFromUnitVectors(travel.target, look);
     }
     fadeMat.opacity = Math.max(0, 1 - (t - 1) * 1.4);
     if (t >= 2) { fadeMat.opacity = 0; travel = null; }
-  }
-
-  function applySettings() {
-    const bg = home.getSlider('bgIntensity')?.value ?? 0.7;
-    const stars = home.getSlider('starIntensity')?.value ?? 0.4;
-    const dust = home.getSlider('dustIntensity')?.value ?? 0.75;
-    const uiA = home.getSlider('uiOpacity')?.value ?? 0.86;
-    uniforms.mixA.value = stars * (0.5 + bg);
-    uniforms.mixG.value = dust * (0.5 + bg * 2.0);
-    home.mesh.material.opacity = uiA;
-    wrist.mesh.material.opacity = uiA;
   }
 
   // ---------- Hand tracking ----------
@@ -286,10 +237,12 @@ export function initXR(sky) {
     xrRoot.add(hand);
     const controller = ren.xr.getController(i);
     xrRoot.add(controller);
-    const h = { grip, hand, controller, trigger: false, pinching: false, pinchedTarget: null, lastLocal: null };
+    const h = { grip, hand, controller, trigger: false, pinching: false, pinchedTarget: null, lastLocal: null, overId: null };
     // Quest controllers: the trigger (WebXR "select") works like a pinch
     controller.addEventListener('selectstart', () => { h.trigger = true; });
     controller.addEventListener('selectend', () => { h.trigger = false; });
+    // grip / squeeze: show or hide the menu
+    controller.addEventListener('squeezestart', () => setMenuHidden(!menuHidden));
     return h;
   });
 
@@ -303,13 +256,10 @@ export function initXR(sky) {
   });
 
   const raycaster = new THREE.Raycaster();
-  const tmpV = new THREE.Vector3();
-  const tmpV2 = new THREE.Vector3();
 
   function joint(hand, name) {
     const j = hand.joints && hand.joints[name];
-    if (!j) return null;
-    return j;
+    return j || null;
   }
 
   // pinch (hand tracking) or trigger (controller); hand joints keep stale positions after switching to the
@@ -325,14 +275,14 @@ export function initXR(sky) {
   function pickTargets() {
     const t = [];
     if (home.mesh.visible) t.push(home.mesh);
-    if (wrist.mesh.visible) t.push(wrist.mesh);
+    if (mini.mesh.visible) t.push(mini.mesh);
     if (starMap.group.visible) starMap.picks.forEach((p) => t.push(p.mesh));
     return t;
   }
 
   function panelFromMesh(m) {
     if (m === home.mesh) return home;
-    if (m === wrist.mesh) return wrist;
+    if (m === mini.mesh) return mini;
     return null;
   }
 
@@ -343,7 +293,6 @@ export function initXR(sky) {
     let origin, direction;
     if (tip) {
       origin = tip.position.clone();
-      // direction: from the metacarpal joint to the tip
       const m = joint(hand.hand, 'index-finger-metacarpal') || joint(hand.hand, 'wrist');
       if (m) direction = origin.clone().sub(m.position).normalize();
       else direction = new THREE.Vector3(0, 0, -1).applyQuaternion(cam.quaternion);
@@ -353,78 +302,76 @@ export function initXR(sky) {
       direction = new THREE.Vector3(0, 0, -1).applyQuaternion(hand.controller.getWorldQuaternion(new THREE.Quaternion()));
     }
     raycaster.set(origin, direction);
-    const targets = pickTargets();
-    const hits = raycaster.intersectObjects(targets, false);
+    const hits = raycaster.intersectObjects(pickTargets(), false);
     return { hits, origin, direction };
+  }
+
+  function dispatch(id) {
+    if (id === 'showMenu') { setMenuHidden(false); return; }
+    pages.handle(id);
+  }
+
+  // thumbstick up / down scrolls the menu (Quest: axes 2 / 3; touchpads: 0 / 1)
+  function stickScroll() {
+    const session = ren.xr.getSession();
+    if (!session || !home.mesh.visible) return;
+    for (const src of session.inputSources) {
+      const ax = src.gamepad && src.gamepad.axes;
+      if (!ax) continue;
+      const y = Math.abs(ax[3] || 0) > Math.abs(ax[1] || 0) ? ax[3] : ax[1];
+      if (Math.abs(y) > 0.25) home.scroll(y * 22);
+    }
   }
 
   // Update loop: called every XR frame.
   function xrFrame() {
     if (!ren.xr.isPresenting) return;
 
-    // keep fade sphere centered on the XR camera
-    const xrCam = ren.xr.getCamera(cam);
-    xrCam.getWorldPosition(tmpV);
-    fadeMesh.position.copy(tmpV);
+    readHead();
+    if (needPlace) { needPlace = false; place(); }
+    fadeMesh.position.copy(headPos);
     stepTravel();
+    if (spinning && !travel) world.rotation.y += 0.0009;
+    // the star map turns with the sky (travel / orbit), around the head
+    starMap.group.quaternion.copy(world.quaternion);
+    stickScroll();
 
-    // Position the wrist menu near the left hand if we have hand data
-    const leftHand = hands[0].hand;      // Three.js convention: index 0 = left on most devices
-    const leftWrist = joint(leftHand, 'wrist');
-    const leftMid = joint(leftHand, 'middle-finger-metacarpal');
-    if (leftWrist && leftMid) {
-      wrist.mesh.visible = false;        // the wrist menu is now a quick-access ring but disabled for v1 — home panel is the main surface
-    }
-
+    const hover = new Map();   // panel -> hovered id, over every hand
     for (const h of hands) {
       const { active } = isPinching(h);
       const { hits } = hitFrom(h);
       const firstHit = hits[0];
       h.rayLine.visible = !!firstHit;
-      if (firstHit) {
-        h.rayLine.scale.z = firstHit.distance / HAND_RAY_LEN;
-      }
+      if (firstHit) h.rayLine.scale.z = firstHit.distance / HAND_RAY_LEN;
+      h.overId = null;
 
-      // Hover feedback on buttons / sliders
       const panel = firstHit && panelFromMesh(firstHit.object);
       if (panel) {
         const local = firstHit.object.worldToLocal(firstHit.point.clone());
         const hit = panel.hitTest(local);
-        panel.setHover(hit ? hit.id : null);
+        h.overId = hit ? hit.id : null;
+        if (hit) hover.set(panel, hit.id);
         if (active && !h.pinching) {
-          // Pinch down
           h.pinching = true;
-          if (hit) {
-            h.pinchedTarget = { panel, hit, local: local.clone(), scrollY0: panel.scrollY };
-            h.lastLocal = local.clone();
-          } else {
-            // Start a scroll-drag on the panel body
-            h.pinchedTarget = { panel, hit: null, local: local.clone(), scrollY0: panel.scrollY };
-            h.lastLocal = local.clone();
-          }
+          h.pinchedTarget = { panel, hit, local: local.clone(), scrollY0: panel.scrollY };
+          h.lastLocal = local.clone();
         } else if (active && h.pinching && h.pinchedTarget && h.pinchedTarget.panel === panel) {
           const target = h.pinchedTarget;
           if (target.hit && target.hit.kind === 'slider') {
-            // slider drag: use canvas-x movement
             const canvas = panel.localToCanvas(local);
             const trackX = target.hit.cx + 20;
             const trackW = target.hit.cw - 40;
             const val = Math.max(0, Math.min(1, (canvas.px - trackX) / trackW));
             panel.updateSlider(target.hit.id, val);
-            applySettings();
-          } else {
-            // scroll drag: use y-delta in canvas pixels
+            pages.onSlider(target.hit.id, val);
+          } else if (!target.hit) {
+            // scroll drag: the panel follows the hand (drag up = content up)
             const prev = panel.localToCanvas(target.local);
             const now = panel.localToCanvas(local);
-            panel.setScroll(target.scrollY0 + (prev.py - now.py) * -1);
+            panel.setScroll(target.scrollY0 + (prev.py - now.py));
           }
         }
-      } else if (!firstHit) {
-        // hover off (but keep sticky hover on the last panel briefly)
-        home.setHover(null);
-        wrist.setHover(null);
       } else if (firstHit && firstHit.object.userData && firstHit.object.userData.pick) {
-        // star map hit
         starMap.highlight(firstHit.object.userData.id);
         if (active && !h.pinching) {
           h.pinching = true;
@@ -433,38 +380,43 @@ export function initXR(sky) {
       }
 
       if (!active && h.pinching) {
-        // Pinch up — fire click
+        // Pinch up: fire the click when the ray is still on the thing that was pressed
         const t = h.pinchedTarget;
-        if (t && t.panel && t.hit && t.hit.kind === 'button') {
-          handleButton(t.hit.id);
-        } else if (t && t.starHit) {
-          const data = t.starHit.data;
-          showCard(data);
+        if (t && t.panel && t.hit && t.hit.kind === 'button' && h.overId === t.hit.id) {
+          dispatch(t.hit.id);
+        } else if (t && t.starHit && firstHit && firstHit.object.userData === t.starHit) {
+          pages.handle('lm:' + t.starHit.data.idx);
         }
         h.pinching = false;
         h.pinchedTarget = null;
       }
     }
+    home.setHover(hover.get(home) || null);
+    mini.setHover(hover.get(mini) || null);
 
-    // keep panels soft-billboarded toward the camera (small rotation each frame)
-    const camPos = new THREE.Vector3();
-    ren.xr.getCamera(cam).getWorldPosition(camPos);
-    home.mesh.lookAt(camPos.x, home.mesh.position.y, camPos.z);
-    if (wrist.mesh.visible) wrist.mesh.lookAt(camPos);
+    // keep panels turned toward the user (yaw only: they stay upright)
+    home.mesh.lookAt(headPos.x, home.mesh.position.y, headPos.z);
+    mini.mesh.lookAt(headPos.x, mini.mesh.position.y, headPos.z);
 
     home.refresh();
-    wrist.refresh();
+    mini.refresh();
   }
 
   // ---------- Session lifecycle ----------
   ren.xr.addEventListener('sessionstart', () => {
     xrRoot.visible = true;
-    home.mesh.position.y = eyeY;
-    starMap.group.position.y = eyeY;   // the star map surrounds the head, not the floor
+    const root = initConstellations._root;
+    savedConst = !!(root && root.visible);
+    world.quaternion.identity();
     world.rotation.y = -Math.PI / 2;
     updateCompare();
-    renderHome();
-    applySettings();
+    applyLayerMix();
+    menuHidden = false;
+    home.mesh.visible = true;
+    mini.mesh.visible = false;
+    home.mesh.material.opacity = mini.mesh.material.opacity = uiOpacity;
+    pages.open('home');
+    needPlace = true;   // the headset pose is only known from the first frame
     if (quickBtn) {
       quickBtn.classList.add('active');
       quickBtn.querySelector('span').textContent = 'Exit VR';
@@ -473,10 +425,14 @@ export function initXR(sky) {
   ren.xr.addEventListener('sessionend', () => {
     xrRoot.visible = false;
     travel = null;
+    spinning = false;
     fadeMat.opacity = 0;
+    pages.reset();
+    const root = initConstellations._root;
+    if (root) root.visible = savedConst;
     world.rotation.set(0, 0, 0);   // a travel may have tilted it
-    uniforms.mixA.value = 0.4;
-    uniforms.mixG.value = 1.2;
+    setPageSpin(false);
+    applyLayerMix();               // back to the page's own layer settings
     updateCompare();
     if (quickBtn) {
       quickBtn.classList.remove('active');
@@ -493,6 +449,9 @@ export function initXR(sky) {
     get title() { return home.title; },
     get fading() { return fadeMat.opacity; },
     get worldTilt() { return world.quaternion.toArray(); },
+    get menuHidden() { return menuHidden; },
+    go(id) { dispatch(id); },
+    snapshot() { home.refresh(); return home.mesh.material.map.image.toDataURL('image/png'); },   // the menu as a picture (tests / debugging)
     buttonWorld(id) {   // 'travel:' (ending in ':') = the first button whose id starts with it
       const b = home.hits.find((h) => h.id === id || (id.endsWith(':') && h.id.startsWith(id)));
       return b ? home.mesh.localToWorld(home.canvasToLocal(b.cx + b.cw / 2, b.cy + b.ch / 2)).toArray() : null;

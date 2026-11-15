@@ -196,7 +196,7 @@
 .dd-item.active { background: rgba(143, 211, 255, 0.14); color: var(--cool); }
 .dd-item[aria-pressed="true"] { color: var(--cool); }
 
-/* ---- scroll progress: a glowing line ending in a star (width: viewer/ui/header.js) ---- */
+/* ---- scroll progress: a glowing line ending in a dot (width: viewer/ui/header.js) ---- */
 .scroll-progress {
   position: absolute;
   left: 0;
@@ -225,16 +225,7 @@
   box-shadow: 0 0 6px 2px #fff, 0 0 16px 6px rgba(143, 211, 255, 0.75), 0 0 34px 12px rgba(79, 141, 249, 0.4);
   animation: spTwinkle 2.4s ease-in-out infinite;
 }
-.sp-star::before, .sp-star::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  background: linear-gradient(90deg, transparent, #fff, transparent);
-  transform: translate(-50%, -50%);
-}
-.sp-star::before { width: 30px; height: 1px; }
-.sp-star::after { width: 1px; height: 30px; background: linear-gradient(180deg, transparent, #fff, transparent); }
+/* just the glowing dot: no cross-shaped star rays */
 @keyframes spTwinkle { 50% { transform: translate(50%, -50%) scale(1.25); opacity: 0.85; } }
 
 /* ---- smaller screens ---- */
@@ -268,3 +259,136 @@
   .hdr-right .dd-btn.solo { padding: 8px 10px; }
   .brand-name, .brand-badge { font-size: 15px; letter-spacing: 0.14em; }
 }
+
+/* ---- header: same shape as the card buttons (6px corners), the original blue for hover / selected,
+ *      Enter VR in the blue glow style with no hover change ---- */
+.hdr-nav { border-radius: 11px; }
+.dd-btn { border-radius: 6px; }
+.dd-menu { border-radius: 10px; }
+.dd-item { border-radius: 6px; }
+
+.dd-btn.solo {
+  min-height: 48px;
+  padding: 8px 22px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.dd-btn.solo:hover { color: #fff; background: rgba(255, 255, 255, 0.14); border-color: #fff; }
+
+/* Enter VR: the blue button, identical in every state (no hover / active change) */
+.dd-btn.solo.vr-btn,
+.dd-btn.solo.vr-btn:hover,
+.dd-btn.solo.vr-btn:focus-visible,
+.dd-btn.solo.vr-btn.active {
+  color: #cfeaff;
+  background: linear-gradient(135deg, rgba(79, 141, 249, 0.18), rgba(143, 211, 255, 0.10));
+  border-color: rgba(143, 211, 255, 0.45);
+  box-shadow: 0 0 14px rgba(79, 141, 249, 0.28), inset 0 0 12px rgba(143, 211, 255, 0.08);
+  transform: none;
+}
+.dd-btn.solo.vr-btn svg { filter: drop-shadow(0 0 4px rgba(143, 211, 255, 0.85)); }
+
+/* hover / opened / selected = the header's blue, on the category buttons and on the items of their menus */
+.dd-btn:not(.solo):hover,
+.dd-btn:not(.solo)[aria-expanded="true"],
+.hdr-nav .dd-btn:hover,
+.hdr-nav .dd-btn[aria-expanded="true"] {
+  color: var(--cool);
+  background: rgba(143, 211, 255, 0.14);
+}
+.dd-item:hover,
+.dd-item.active,
+.dd-item[aria-pressed="true"] {
+  color: var(--cool);
+  background: rgba(143, 211, 255, 0.14);
+}
+
+.dd-btn.picked,
+.dd-item.picked {
+  color: var(--cool);
+  background: rgba(143, 211, 255, 0.14);
+}
+
+/* dropdown menus: solid (not see-through), in the header's dark colour */
+.dd-menu,
+#tm {
+  background: #05080d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: none;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* only the button you are on is blue: while another category is open or was just picked, the view's own
+   category (e.g. Explore) steps back to the normal colour */
+#top .hdr-nav:has(.dd-btn[aria-expanded="true"]) .dd:has(.nav-tab.active) > .dd-btn:not([aria-expanded="true"]):not(.picked):not(:hover),
+#top .hdr-nav:has(.dd-btn.picked) .dd:has(.nav-tab.active) > .dd-btn:not([aria-expanded="true"]):not(.picked):not(:hover) {
+  color: #dde4f2;
+  background: transparent;
+}
+
+/* globe tools that only work in Free Look / Landmarks / Constellations */
+.dd-item:disabled,
+.dd-item[aria-disabled="true"] { opacity: 0.38; cursor: not-allowed; pointer-events: auto; }
+.dd-item:disabled:hover,
+.dd-item[aria-disabled="true"]:hover { background: transparent; color: var(--ink); }
+
+/* Reduce motion: a switch, always available from the Tools menu (it works on every page, not only on the globe) */
+.dd-switch-item { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.dd-switch {
+  position: relative;
+  flex: none;
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  transition: background 0.25s ease;
+}
+.dd-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dd-switch-item[aria-checked="true"] .dd-switch { background: var(--cool); }
+.dd-switch-item[aria-checked="true"] .dd-switch::after { transform: translateX(16px); }
+.dd-switch-item[aria-checked="true"] { color: inherit; background: transparent; }
+.dd-switch-item[aria-checked="true"]:hover { color: var(--cool); background: rgba(143, 211, 255, 0.14); }
+
+/* the switch in the site's own style: thin outline, 6px corners, blue when on (like the selected header items) */
+.dd-switch {
+  box-sizing: border-box;
+  width: 44px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: background 0.2s, border-color 0.2s;
+}
+.dd-switch::after {
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: none;
+}
+.dd-switch-item:hover .dd-switch { border-color: #fff; }
+.dd-switch-item[aria-checked="true"] .dd-switch { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); }
+.dd-switch-item[aria-checked="true"] .dd-switch::after { background: var(--cool); transform: translateX(20px); }
+
+/* a larger hit area for the brand without changing its look */
+.brand-btn { position: relative; }
+.brand-btn::after { content: ""; position: absolute; inset: -12px -6px; }

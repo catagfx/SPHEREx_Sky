@@ -4,6 +4,9 @@
   GET  /api/smtp-config           SMTP status (never the password)
   GET  /api/irsa-status/<job_id>  progress / result of a cutout job
   GET  /api/irsa-jobs             the last 10 jobs
+  GET  /api/scientific-resources  CSA / NEOSSat partner resources, validated (scientific_resources.json)
+  GET  /api/constellations        the constellation catalog with galactic coordinates
+  GET  /api/vr-config             WebXR session defaults + landmarks
   POST /api/irsa-cutout           start a cutout job
   POST /api/smtp-config           session SMTP credentials (localhost only, memory only)
   POST /api/sync-data-archive     re-index data/movers_cutouts
@@ -32,6 +35,10 @@ try:
     from .vr import get_vr_config_payload
 except ImportError:
     get_vr_config_payload = None
+try:
+    from .scientific_resources import load_scientific_resources
+except ImportError:
+    load_scientific_resources = None
 
 LOCALHOST = ("127.0.0.1", "::1", "localhost")
 
@@ -96,6 +103,14 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == "/api/vr-config" and get_vr_config_payload is not None:
             return self.send_json(get_vr_config_payload())
+
+        if path == "/api/scientific-resources" and load_scientific_resources is not None:
+            # read on every request: an edited scientific_resources.json shows without a rebuild or restart
+            try:
+                return self.send_json(load_scientific_resources())
+            except Exception as exc:  # a broken JSON file must not crash the request: the page falls back
+                return self.send_json({"ok": False, "count": 0, "validCount": 0, "resources": [],
+                                       "errors": [f"scientific_resources.json could not be read: {exc}"]}, status=500)
 
         if path == "/api/fits-telemetry":
             telemetry = extract_fits_archive_telemetry()

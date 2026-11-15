@@ -1,0 +1,661 @@
+/* =============================================================
+ * SCIENTIFIC RESOURCES  -  the CSA / NEOSSat resources panel (ui/src/scientific-resources/)
+ *
+ * Loaded by styles.js at runtime (bundled as a string with Vite's ?inline): no <link> in index.html,
+ * no Vite config change. Every selector starts with .sr- ; nothing global (html, body, :root, *) is styled,
+ * so this file cannot change the existing page.
+ *
+ * FE1-1  colors & typography
+ *   The tokens alias the site's design tokens (css/base.css :root). The fallback after each comma is the
+ *   bundled dark-blue palette, equal to the site's values, so the panel looks the same even on a page
+ *   without css/base.css.
+ * ============================================================= */
+
+/* ---- tokens (scoped to the panel's own elements: the trigger's host and the modal) ---- */
+.sr-root,
+.sr-host {
+  /* text */
+  --sr-ink: var(--ink, #f0f3fa);
+  --sr-dim: var(--dim, #8b96b0);
+
+  /* accents: cool = labels / links / focus (like .eyebrow), warm = the call to action (like button.pri) */
+  --sr-accent: var(--cool, #8fd3ff);
+  --sr-accent-glow: var(--cool-glow, rgba(143, 211, 255, 0.3));
+  --sr-cta: var(--warm, #ffb86b);
+  --sr-cta-glow: var(--warm-glow, rgba(255, 184, 107, 0.35));
+  --sr-cta-ink: #120900;
+  --sr-focus: var(--cool, #8fd3ff);
+
+  /* surfaces: same glass as the site's dialogs (css/dialogs.css) */
+  --sr-surface: var(--panel-solid, #0d1222);
+  --sr-surface-glass: linear-gradient(135deg, rgba(14, 20, 36, 0.88) 0%, rgba(8, 12, 22, 0.94) 100%);
+  --sr-surface-raised: rgba(255, 255, 255, 0.04);
+  --sr-backdrop: rgba(2, 3, 8, 0.88);
+  --sr-border: var(--panel-border, rgba(255, 255, 255, 0.11));
+  --sr-border-hover: var(--panel-border-hover, rgba(255, 255, 255, 0.28));
+
+  /* one accent per resource category (badge text on a tinted chip) */
+  --sr-cat-mission: var(--cool, #8fd3ff);
+  --sr-cat-mission-bg: rgba(143, 211, 255, 0.1);
+  --sr-cat-archive: #c3b5ff;
+  --sr-cat-archive-bg: rgba(195, 181, 255, 0.1);
+  --sr-cat-learning: #8ee6bf;
+  --sr-cat-learning-bg: rgba(142, 230, 191, 0.1);
+  --sr-cat-dataset: var(--warm, #ffb86b);
+  --sr-cat-dataset-bg: rgba(255, 184, 107, 0.1);
+
+  /* type: the site's two families (Plus Jakarta Sans for text, Space Grotesk for labels) */
+  --sr-font: var(--font-main, "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  --sr-font-mono: var(--font-mono, "Space Grotesk", system-ui, monospace);
+
+  /* shape and stacking: above dialogs (15) and the header dropdowns (25), below the toast / intro (999+) */
+  --sr-radius-lg: 24px;
+  --sr-radius: 12px;
+  --sr-radius-pill: 999px;
+  --sr-z: 30;
+}
+
+/* text defaults of the panel itself (not of the host: the trigger keeps the header menu's own type) */
+.sr-root {
+  font-family: var(--sr-font);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--sr-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- type scale (each one mirrors a style the site already uses) ---- */
+
+/* small uppercase label above titles = .eyebrow (css/base.css) */
+.sr-eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--sr-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sr-accent);
+}
+
+/* dialog title = #modalBox h2 (css/dialogs.css) */
+.sr-title {
+  margin: 0;
+  font-family: var(--sr-font);
+  font-size: clamp(24px, 3.5vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--sr-ink);
+}
+
+/* resource name on a card */
+.sr-card-title {
+  margin: 0;
+  font-family: var(--sr-font);
+  font-size: clamp(18px, 2.4vw, 22px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--sr-ink);
+}
+
+/* the one-sentence summary (always visible) */
+.sr-summary {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--sr-ink);
+}
+
+/* body text (the "Learn more" details) */
+.sr-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--sr-dim);
+}
+
+/* provider / position line = .input-field label (css/base.css), in the dim color */
+.sr-meta {
+  margin: 0;
+  font-family: var(--sr-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sr-dim);
+}
+
+/* text link */
+.sr-link {
+  color: var(--sr-accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(143, 211, 255, 0.4);
+  text-underline-offset: 3px;
+}
+
+.sr-link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* ---- category badge: <span class="sr-badge" data-category="MISSION|ARCHIVE|LEARNING|DATASET"> ---- */
+.sr-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--sr-radius-pill);
+  border: 1px solid currentColor;
+  font-family: var(--sr-font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--sr-accent);
+  background: var(--sr-cat-mission-bg);
+}
+
+.sr-badge[data-category="MISSION"] { color: var(--sr-cat-mission); background: var(--sr-cat-mission-bg); }
+.sr-badge[data-category="ARCHIVE"] { color: var(--sr-cat-archive); background: var(--sr-cat-archive-bg); }
+.sr-badge[data-category="LEARNING"] { color: var(--sr-cat-learning); background: var(--sr-cat-learning-bg); }
+.sr-badge[data-category="DATASET"] { color: var(--sr-cat-dataset); background: var(--sr-cat-dataset-bg); }
+
+/* =============================================================
+ * FE1-2  the single entry point
+ *   One "Scientific Resources" item, the last entry of the header's Data menu (no cards on the page).
+ *   <div class="sr-host">  <button class="dd-item sr-trigger">icon + label</button>  </div>
+ *   The button also carries the site's .dd-item class, so its size, type, colors and hover are the menu's own
+ *   (css/header.css) and the menu closes after it is chosen (viewer/ui/header.js data-autoclose). These rules
+ *   only add the divider and the icon.
+ * ============================================================= */
+
+/* the host: a divider between the Data menu's own items and the entry point */
+.sr-host {
+  display: block;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* icon + label on one line (.dd-item itself is display: block) */
+.sr-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sr-trigger-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--sr-accent);
+}
+
+.sr-trigger-label {
+  min-width: 0;
+}
+
+/* =============================================================
+ * FE1-3  the centred modal, one card at a time
+ *   .sr-overlay (fixed, full screen, the site's dialog backdrop) > .sr-dialog (the glass box, centred)
+ *   > head (eyebrow, title, close) / .sr-stage (ONE .sr-card) / .sr-nav (Previous, position, Next).
+ *   A plain DOM overlay on <body>: it never touches the sky canvas, the challenge image or the story.
+ * ============================================================= */
+
+/* ---- overlay: the same backdrop as the site's dialogs (#chg, .glass-modal in css/dialogs.css) ---- */
+.sr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sr-z);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* the column is exactly the space between the gutters: content can never
+                                            stretch the dialog past them (it was 3.5px too wide at 375px) */
+  place-items: center;       /* centred both ways; a dialog taller than the screen scrolls inside the overlay */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  background: var(--sr-backdrop);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  /* FE1-4 independence: the browser guarantees that nothing inside the overlay changes the layout or the painting
+     of anything outside it (the sky canvas, the challenge images, the story); isolation keeps its blending and
+     stacking to itself. It only ever covers the page, never alters it. */
+  contain: layout paint style;
+  isolation: isolate;
+}
+
+/* hidden = gone, even on a page without the site's own [hidden] rule */
+.sr-overlay[hidden] {
+  display: none;
+}
+
+/* ---- the glass box = #modalBox / .modal-dialog ---- */
+.sr-dialog {
+  position: relative;
+  width: min(580px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px;
+  background: var(--sr-surface-glass);
+  background-color: var(--sr-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--sr-radius-lg);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  outline: none;             /* focused only programmatically (tabindex -1); the controls keep their focus ring */
+}
+
+.sr-dialog-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sr-dialog-headings {
+  min-width: 0;
+}
+
+/* close = .icon-close-btn (css/base.css) */
+.sr-close {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--sr-ink);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.sr-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.sr-close-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- the one visible card ---- */
+.sr-stage {
+  display: grid;
+  min-width: 0;
+}
+
+.sr-card {
+  --sr-cat: var(--sr-cat-mission);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 22px;
+  background: var(--sr-surface-raised);
+  border: 1px solid var(--sr-border);
+  border-top: 2px solid var(--sr-cat);   /* category color, the same as the badge */
+  border-radius: 16px;
+  overflow-wrap: anywhere;               /* long URLs / names never widen the card */
+}
+
+.sr-card[data-category="MISSION"] { --sr-cat: var(--sr-cat-mission); }
+.sr-card[data-category="ARCHIVE"] { --sr-cat: var(--sr-cat-archive); }
+.sr-card[data-category="LEARNING"] { --sr-cat: var(--sr-cat-learning); }
+.sr-card[data-category="DATASET"] { --sr-cat: var(--sr-cat-dataset); }
+
+.sr-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+/* the call to action = button.pri (css/base.css): the site's warm primary button */
+.sr-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--sr-radius);
+  background: linear-gradient(135deg, #ff9d4a, var(--sr-cta));
+  color: var(--sr-cta-ink);
+  font-family: var(--sr-font);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sr-cta:hover {
+  background: linear-gradient(135deg, #ffa85c, #ffc482);
+  box-shadow: 0 0 18px var(--sr-cta-glow);
+}
+
+.sr-cta-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* read by screen readers, not shown */
+.sr-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- navigation: Previous | position + dots | Next ---- */
+.sr-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* = button.b (css/base.css) */
+.sr-nav-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--sr-radius);
+  background: rgba(14, 20, 38, 0.82);
+  border: 1px solid var(--sr-border);
+  color: var(--sr-ink);
+  font-family: var(--sr-font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.sr-nav-btn:hover {
+  background: rgba(25, 34, 58, 0.95);
+  border-color: var(--sr-border-hover);
+  color: #fff;
+}
+
+.sr-nav-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.sr-nav-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  text-align: center;
+}
+
+.sr-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.sr-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  transition: background 0.2s ease, width 0.2s ease;
+}
+
+.sr-dot.is-current {
+  width: 18px;
+  border-radius: var(--sr-radius-pill);
+  background: var(--sr-accent);
+}
+
+/* =============================================================
+ * FE1-5  short text first, "Learn more" on demand
+ *   The card shows badge, provider, title and ONE summary sentence. The details (resources.json "details") sit
+ *   hidden below the actions row; "Learn more" (aria-expanded / aria-controls) reveals them, "Show less" hides
+ *   them again, and every card starts closed.
+ * ============================================================= */
+
+.sr-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* secondary action next to the warm primary one: same height, quiet outline, accent text */
+.sr-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;              /* + 1px border = the CTA's height */
+  border-radius: var(--sr-radius);
+  background: transparent;
+  border: 1px solid rgba(143, 211, 255, 0.35);
+  color: var(--sr-accent);
+  font-family: var(--sr-font);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: inherit;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.sr-more:hover {
+  background: rgba(143, 211, 255, 0.1);
+  border-color: var(--sr-accent);
+  color: #fff;
+}
+
+/* both labels in one grid cell: the button is as wide as the longer one; only the current one is visible
+   (visibility: hidden also keeps the other out of the accessible name) */
+.sr-more-label {
+  display: inline-grid;
+}
+
+.sr-more-label > span {
+  grid-area: 1 / 1;
+}
+
+.sr-more[aria-expanded="true"] .sr-more-closed,
+.sr-more[aria-expanded="false"] .sr-more-open {
+  visibility: hidden;
+}
+
+/* while details are open the dialog stays where it was and grows downward (set by setDetailsExpanded) */
+.sr-dialog--anchored {
+  align-self: start;
+  margin-top: var(--sr-anchor-top, 0px);
+}
+
+/* the chevron turns when open (rotate, not transform: GSAP owns transform, CONTRIBUTING.md §2) */
+.sr-more-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  transition: rotate 0.2s ease;
+}
+
+.sr-more[aria-expanded="true"] .sr-more-icon {
+  rotate: 180deg;
+}
+
+/* the details: a short list under a hairline */
+.sr-details {
+  width: 100%;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sr-details:not([hidden]) {
+  animation: sr-details-in 0.22s ease-out;   /* a fade only (allowed in calm mode too) */
+}
+
+@keyframes sr-details-in {
+  from { opacity: 0; }
+}
+
+.sr-details[hidden] {
+  display: none;                  /* closed, even on a page without the site's [hidden] rule */
+}
+
+.sr-details-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.sr-details-list li::marker {
+  color: var(--sr-cat);           /* bullets in the card's category color */
+}
+
+/* =============================================================
+ * FE1-6  desktop (~1366px) and mobile (~375px): no horizontal overflow
+ *   Desktop needs nothing extra (the dialog is at most 580px wide, centred). Phones (<= 480px): 16px gutters,
+ *   tighter padding, every control >= 44px tall (touch), Previous / Next become icon buttons (their aria-labels
+ *   already name them) so "Resource 2 of 4" stays on one line, and the two card actions stack full width.
+ * ============================================================= */
+
+.sr-position {
+  white-space: nowrap;            /* "Resource 2 of 4" never breaks onto two lines */
+}
+
+@media (max-width: 480px) {
+  .sr-overlay {
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  }
+
+  .sr-dialog {
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .sr-dialog-head {
+    gap: 12px;
+    padding-bottom: 14px;
+  }
+
+  .sr-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .sr-card {
+    padding: 18px;
+  }
+
+  /* the two actions: one per row, full width, 44px tall */
+  .sr-card-actions {
+    align-self: stretch;          /* the row spans the card (the card aligns its children to the start) */
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sr-cta,
+  .sr-more {
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Previous / Next: 44px icon buttons, the label stays for screen readers through aria-label */
+  .sr-nav-btn {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sr-nav-label {
+    display: none;
+  }
+
+  .sr-nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* =============================================================
+ * FE1-7  focus, Esc, contrast, reduced motion
+ * ============================================================= */
+
+/* ---- visible keyboard focus: one 2px ring in the cool accent (11.5:1 on the dialog), on every control.
+        The site's own menu items have none, so the entry point brings its own. ---- */
+.sr-trigger:focus-visible,
+.sr-close:focus-visible,
+.sr-nav-btn:focus-visible,
+.sr-cta:focus-visible,
+.sr-more:focus-visible,
+.sr-link:focus-visible {
+  outline: 2px solid var(--sr-focus);
+  outline-offset: 2px;
+}
+
+/* inside the menu item, so the menu's rounded edge never cuts it off */
+.sr-trigger:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ---- reduced motion = the site's calm mode (html.reduce-motion: Tools > Reduce motion, ?motion=reduced, or the
+        OS setting with ?motion=auto). CONTRIBUTING.md §2: use .reduce-motion, never the prefers-reduced-motion
+        media query (full motion is the site default even when Windows has animations off). ---- */
+.reduce-motion .sr-root,
+.reduce-motion .sr-root *,
+.reduce-motion .sr-host,
+.reduce-motion .sr-host * {
+  animation: none;
+  transition: none;
+}
+
+/* ---- Windows High Contrast / forced colors: the system repaints colors, so give every control and box a
+        visible edge (backgrounds alone disappear) and keep the current dot distinct ---- */
+@media (forced-colors: active) {
+  .sr-dialog,
+  .sr-card,
+  .sr-close,
+  .sr-nav-btn,
+  .sr-more,
+  .sr-badge {
+    border: 1px solid CanvasText;
+  }
+
+  .sr-cta {
+    border: 1px solid LinkText;
+    padding: 9px 15px;            /* the border is inside the same size */
+  }
+
+  .sr-dot {
+    background: GrayText;
+  }
+
+  .sr-dot.is-current {
+    background: Highlight;
+  }
+}
+
+/* =============================================================
+ * FE2-3  touch swipe (index.js): the card area keeps vertical scrolling for the browser and leaves horizontal
+ *        moves to the swipe (left = next, right = previous)
+ * ============================================================= */
+.sr-stage {
+  touch-action: pan-y;
+}

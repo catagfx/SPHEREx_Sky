@@ -24,6 +24,7 @@ import { initNavigation } from './navigation';
 import { initStory } from './story';
 import { initRoutes } from './routes';
 import { exposeApi } from './api';
+import { initScientificResources } from '../scientific-resources/index.js';
 
 // The SPHEREx viewer: the 360° WebGL sky behind the page, the header tools, the "See it change" explorer and
 // the data panels. It binds to index.html and to the story DOM rendered by React, so main.tsx starts it after
@@ -67,6 +68,7 @@ export function startViewer() {
   initRelease();
   initAnomaly();
   initIrsa();
+  initScientificResources();
   initNavigation();
   initStory();
   initMicroInteractions();

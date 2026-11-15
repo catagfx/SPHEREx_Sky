@@ -152,13 +152,22 @@ function updateCoaddHud() {
   }
   hud.hidden = !on;
   const n = Math.max(2, st.FN || 3);
-  hud.textContent = n + '-PASS BAND STACK · SNR ×√' + n + ' (+' + Math.round((Math.sqrt(n) - 1) * 100) + '%)';
+  hud.textContent = n + '-PASS BAND STACK, SNR ×√' + n + ' (+' + Math.round((Math.sqrt(n) - 1) * 100) + '%)';
 }
 
 const checked = (sel) => !$(sel) || $(sel).checked;
 const checkedIfPresent = (sel) => $(sel) && $(sel).checked;
 
 /** Mode M part of render(). */
+/** Pass slider: a dot for every pass on the line (css/explorer.css reads --t, the pixel distance between two dots). */
+function setPassDots() {
+  const s = $('#ms');
+  if (!s) return;
+  const w = s.getBoundingClientRect().width;
+  if (w > 40) s.style.setProperty('--t', ((w - 20) / Math.max(1, st.FN - 1)).toFixed(3) + 'px');
+}
+window.addEventListener('resize', setPassDots);
+
 export function renderSeries() {
   if (!st.FN) return;
   const s = series();
@@ -185,6 +194,7 @@ export function renderSeries() {
   const when = niceDate(e.d) + utSuffix(e);
   $('#mvT').textContent = when + '  (frame ' + (st.fi + 1) + ' of ' + st.FN + ')';
   $('#ms').value = st.fi;
+  setPassDots();
   $('#cap2').innerHTML = '<b>' + when + ', frame ' + (st.fi + 1) + ' of ' + st.FN + '</b><br>' + s.caption + '<br><span class="dm">' + e.b +
     (e.cov < 0.95 ? ' Dark corners are outside this image.' : '') + '</span>';
   cells.forEach((c, i) => { c.className = 'cell' + (i === st.fi ? ' on' : ''); });
@@ -253,6 +263,7 @@ export function initSeries() {
   picker.onchange = function () { stopPlayback(); setSeries(+this.value); };
   row.appendChild(picker);
 
+  $('#mM').addEventListener('click', () => requestAnimationFrame(() => requestAnimationFrame(setPassDots)));
   $('#ms').oninput = function () { st.fi = +this.value; render(); };
   $('#mk').onchange = render;
   ['#coaddToggle', '#gaiaWiseOverlayToggle', '#contamMaskToggle'].forEach((sel) => {

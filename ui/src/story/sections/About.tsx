@@ -1,16 +1,18 @@
 import ShowcaseSection from '../ShowcaseSection';
+import { useFitCard } from '../useFitCard';
 
 // Section 2 — plain-language overview of SPHEREx, Planet X, our project, its features and the
 // 102-band spectroscopy technique. Pure content; no viewer bindings.
 // Two rows of three boxes that fit one screen (one scroll gesture = one section, tests/intro.mjs): keep it short.
 export default function About() {
+  const fitRef = useFitCard<HTMLDivElement>();
   return (
     <ShowcaseSection
       id="secAbout"
-      tag="PROJECT OVERVIEW · WHAT IT IS, WHY IT EXISTS"
-      title="A Hands-On Window Into the Infrared Sky"
-      desc="What SPHEREx is, what Planet X would be, and why Team PP.AP built this interactive map."
+      title="A Hands On Window Into the Infrared Sky"
+      replay
     >
+      <div className="about-fit" ref={fitRef}>
       <div className="about-grid">
         <div className="citizen-box about-card">
           <span className="feature-tag">SPHEREx</span>
@@ -24,9 +26,9 @@ export default function About() {
 
         <div className="citizen-box about-card">
           <span className="feature-tag">PLANET X</span>
-          <h3>The Hidden World We Haven’t Found</h3>
+          <h3>The Undiscovered World</h3>
           <p className="small">
-            A suspected <strong>distant planet beyond Neptune</strong>, nicknamed <em>Planet X</em>. Far-flung orbits
+            A suspected <strong>distant planet beyond Neptune</strong>, nicknamed <em>Planet X</em>. Far flung orbits
             hint at it, but nobody has seen it: so cold and far away, it would glow only faintly in infrared,
             exactly what SPHEREx sees.
           </p>
@@ -43,27 +45,27 @@ export default function About() {
       </div>
 
       <div className="data-sources" aria-label="Data sources used in this project">
-        <span className="feature-tag">DATA SOURCES · LIVE &amp; AVAILABLE</span>
+        <span className="feature-tag">DATA SOURCES</span>
         <div className="data-sources-grid">
           <div className="data-source-card ds-spherex">
             <div className="ds-badge">SPHEREx</div>
             <div className="ds-body">
-              <strong>All-sky infrared survey</strong>
-              <p className="small">102 bands, 0.75 – 5.0 µm. The globe behind you and every cutout in the map.</p>
+              <strong>All sky infrared survey</strong>
+              <p className="small">102 bands, 0.75 to 5.0 µm. The globe behind you and every cutout in the map.</p>
             </div>
           </div>
           <div className="data-source-card ds-gaia">
             <div className="ds-badge">Gaia DR3</div>
             <div className="ds-body">
-              <strong>Astrometry &amp; proper motion</strong>
-              <p className="small">1.8 billion stars with sub-milli-arcsecond positions. Overlaid on any cutout — one click in the explorer.</p>
+              <strong>Positions &amp; Motion</strong>
+              <p className="small">1.8 billion stars with sub milliarcsecond positions. Overlaid on any cutout, one click in the explorer.</p>
             </div>
           </div>
           <div className="data-source-card ds-wise">
             <div className="ds-badge">WISE / AllWISE</div>
             <div className="ds-body">
-              <strong>Cross-match catalog</strong>
-              <p className="small">747 million mid-infrared sources (3.4 – 22 µm). Confirms SPHEREx detections — same button, same panel.</p>
+              <strong>Cross match catalog</strong>
+              <p className="small">747 million mid infrared sources (3.4 to 22 µm). Confirms SPHEREx detections, same button, same panel.</p>
             </div>
           </div>
         </div>
@@ -71,7 +73,6 @@ export default function About() {
 
       <div className="about-lists">
         <div className="citizen-box">
-          <span className="feature-tag">WHAT YOU CAN DO</span>
           <h3>Features</h3>
           <ul className="about-list">
             <li>Search for signs of Planet X yourself.</li>
@@ -83,7 +84,6 @@ export default function About() {
         </div>
 
         <div className="citizen-box">
-          <span className="feature-tag">WHY IT’S DIFFERENT</span>
           <h3>Advantages</h3>
           <ul className="about-list">
             <li>Real telescope data, not artist illustrations.</li>
@@ -95,15 +95,15 @@ export default function About() {
         </div>
 
         <div className="citizen-box">
-          <span className="feature-tag">HOW IT WORKS · 102 BANDS</span>
-          <h3>Why One Sky Becomes 102 Maps</h3>
+          <h3>One Sky, 102 Maps</h3>
           <p className="small about-tech-body">
             Six infrared detectors each split the light into <strong>17 bands</strong>: <strong>102 maps</strong> of
             the same sky. Every substance leaves its own light <em>fingerprint</em>: bands near <strong>3.3 µm</strong>{' '}
-            show star-forming dust, near <strong>4 µm</strong> hot hydrogen gas; others trace water ice, CO₂, CO and
+            show star forming dust, near <strong>4 µm</strong> hot hydrogen gas; others trace water ice, CO₂, CO and
             methanol.
           </p>
         </div>
+      </div>
       </div>
     </ShowcaseSection>
   );

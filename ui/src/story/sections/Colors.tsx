@@ -20,7 +20,7 @@ const DETECTORS: Detector[] = [
   { id: 'D2', low: 1.10, high: 1.63, title: 'J / H-band', signatures: 'Cool stars, young stellar objects, PAH 1.4 µm.', swatch: '#ff8a4a' },
   { id: 'D3', low: 1.63, high: 2.42, title: 'K-band', signatures: 'Red giants, dust-embedded nurseries, H₂ shocks.', swatch: '#ffb559' },
   { id: 'D4', low: 2.42, high: 3.82, title: 'Water-ice window', signatures: 'Ice at 3.05 µm, PAH 3.3 µm, methanol, HCN.', swatch: '#f0c25a' },
-  { id: 'D5', low: 3.82, high: 4.42, title: 'CO₂ / CO gas', signatures: 'CO₂ at 4.26 µm, CO at 4.67 µm — comet comae light up here.', swatch: '#b7c76b' },
+  { id: 'D5', low: 3.82, high: 4.42, title: 'CO₂ / CO gas', signatures: 'CO₂ at 4.26 µm, CO at 4.67 µm. Comet comae light up here.', swatch: '#b7c76b' },
   { id: 'D6', low: 4.42, high: 5.00, title: 'Thermal IR', signatures: 'Brown dwarfs, hidden warm dust, Planet X candidate glow.', swatch: '#6eb5c9' },
 ];
 
@@ -57,9 +57,8 @@ export default function Colors() {
   return (
     <ShowcaseSection
       id="secColors"
-      tag="HOW IT SEES · 102 INFRARED COLORS"
       title="One sky, 102 colors our eyes cannot see"
-      desc="SPHEREx splits near-infrared light into 102 narrow bands between 0.75 and 5.0 microns. Each band is sensitive to a different substance — water ice, carbon dioxide, hot hydrogen, cosmic dust. Hover a band to see what it reveals."
+      desc="SPHEREx splits near-infrared light into 102 narrow bands between 0.75 and 5.0 microns. Each band is sensitive to a different substance: water ice, carbon dioxide, hot hydrogen and cosmic dust. Hover a band to see what it reveals."
     >
       <div className="ir-spectrum-wrap">
         <div className="ir-spectrum-strip" role="group" aria-label="102 SPHEREx spectral bands from 0.75 to 5.0 microns">
@@ -87,8 +86,8 @@ export default function Colors() {
         <div className="ir-readout" aria-live="polite">
           {hoverBand && hoverDet ? (
             <>
-              <strong>Band #{(hover ?? 0) + 1} · {hoverBand.wl.toFixed(2)} µm</strong>{' '}
-              · Detector {hoverDet.id} ({hoverDet.title}) — {hoverDet.signatures}
+              <strong>Band #{(hover ?? 0) + 1}, {hoverBand.wl.toFixed(2)} µm</strong>{' '}
+              Detector {hoverDet.id} ({hoverDet.title}). {hoverDet.signatures}
             </>
           ) : (
             <>Each SPHEREx detector carries a <strong>linear variable filter</strong> that picks out <strong>17 narrow bands</strong>. Six detectors × 17 = <strong>102 maps of the same sky</strong>.</>

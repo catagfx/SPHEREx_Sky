@@ -44,7 +44,7 @@ function photometryTracker(spectrum) {
   const points = spectrum.map((sp, idx) => ({
     x: Math.round(45 + idx * (215 / Math.max(1, n - 1))),
     y: Math.round(78 - (idx % 2) * 28),
-    label: 'Pass ' + sp.pass + ' (' + sp.date + '): ' + sp.det + ' (' + sp.wl_um + ' µm) · Flux ' + sp.flux_mjy_sr + ' MJy/sr',
+    label: 'Pass ' + sp.pass + ' (' + sp.date + '): ' + sp.det + ' (' + sp.wl_um + ' µm), Flux ' + sp.flux_mjy_sr + ' MJy/sr',
     sub: sp.wl_um + 'µm (' + sp.flux_mjy_sr + ' MJy)',
   }));
   return trackerBox({
@@ -69,7 +69,7 @@ function coaddCard() {
     '<div class="metric-item"><span>Theoretical SNR Gain</span><strong style="color:var(--cool);">√' + n + ' ≈ ' + gain.toFixed(2) + '× (+' + Math.round((gain - 1) * 100) + '%)</strong></div>' +
     '<div class="metric-item"><span>Single-Pass SNR</span><strong style="color:#ff9898;">1.8σ (Baseline)</strong></div>' +
     '<div class="metric-item"><span>Co-Added Peak</span><strong style="color:#8fd3ff;">' + (1.8 * gain).toFixed(1) + 'σ (Enhanced)</strong></div>' +
-    '</div><p class="small" style="margin:6px 0 0;">Because SPHEREx’s 6 detectors (D1–D6) cover distinct wavelength bands (0.75–5.0 µm), co-adding repeated passes within each detector band separately reduces background Poisson noise by √N.</p></div>';
+    '</div><p class="small" style="margin:6px 0 0;">Because the SPHEREx 6 detectors (D1–D6) cover distinct wavelength bands (0.75–5.0 µm), co-adding repeated passes within each detector band separately reduces background Poisson noise by √N.</p></div>';
 }
 
 export function renderSeriesAside() {

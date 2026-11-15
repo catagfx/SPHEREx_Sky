@@ -40,7 +40,10 @@ export function glideTo(y: number, done?: () => void): void {
   }
 }
 
-/** Page top of an element (document coordinates). */
+/** Page top of an element (document coordinates), from its layout position: CSS transforms (the cards' 3D tilt,
+ *  which animates while the sky flies) must not move the scroll stops, so no getBoundingClientRect here. */
 export function topOf(el: Element): number {
-  return el.getBoundingClientRect().top + window.scrollY;
+  let y = 0;
+  for (let n: HTMLElement | null = el as HTMLElement; n; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
+  return y;
 }

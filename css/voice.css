@@ -76,7 +76,14 @@ body.ui-intro .vc-fab, body.modal-open .vc-fab { display: none; }
 .vc-icon-btn.send:hover { background: #b6e4ff; color: #07111f; }
 
 /* ---- lobby ---- */
-.vc-lobby { padding: 10px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+.vc-lobby {
+  padding: 10px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: calc(85dvh - 120px);
+}
 .vc-sub { color: var(--dim); font-size: 13px; line-height: 1.45; margin-top: 3px; }
 
 .vc-seg { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; gap: 3px; background: var(--vc-soft); border: 1px solid var(--vc-line); border-radius: 12px; }
@@ -246,50 +253,16 @@ body.ui-intro .vc-fab, body.modal-open .vc-fab { display: none; }
 .vc-mini-text { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vc.min .vc-bar { display: none; }
 
-/* ---- audio device settings ---- */
-.vc-select {
-  width: 100%; padding: 10px 12px; font-size: 13.5px; color: var(--ink);
-  background: #0d1525; border: 1px solid var(--vc-line); border-radius: 10px;
-  cursor: pointer; outline: none; transition: border-color 0.15s;
-}
-.vc-select:hover { border-color: var(--panel-border-hover); }
-.vc-select:focus { border-color: var(--cool); }
-.vc-select option { background: #0b111e; color: #fff; }
-
-.vc-lobby-details {
-  border: 1px solid var(--vc-line); border-radius: 12px; background: var(--vc-soft); padding: 8px 12px;
-}
-.vc-lobby-summary {
-  font-size: 13px; font-weight: 600; color: var(--dim); cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;
-}
-.vc-lobby-summary:hover { color: #fff; }
-.vc-lobby-details[open] .vc-lobby-summary { margin-bottom: 10px; color: var(--cool); }
-.vc-lobby-details .vc-device-group { margin-bottom: 8px; }
-
-.vc-pane.devices { padding: 8px 4px; display: flex; flex-direction: column; gap: 14px; }
-.vc-device-group { display: flex; flex-direction: column; gap: 6px; }
-.vc-device-label {
-  font: 600 11px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--cool);
-  display: flex; align-items: center; gap: 6px;
-}
-.vc-device-note { font-size: 11.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
-.vc-test-btn {
-  align-self: flex-start; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
-  color: var(--dim); background: var(--vc-soft); border: 1px solid var(--vc-line);
-  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.15s;
-}
-.vc-test-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); border-color: var(--panel-border-hover); }
-
 /* ---- phones: bottom sheet ---- */
 @media (max-width: 640px) {
   .vc { right: 8px; left: 8px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); width: auto; max-height: calc(100dvh - 160px); border-radius: 20px; }
   .vc.min { width: auto; }
   .vc-panes { max-height: 36vh; }
   .vc-input {
-    width: 100%; padding: 11px 13px; font-size: 15px; color: var(--ink);
-    background: rgba(255, 255, 255, 0.04); border: 1px solid var(--vc-line); border-radius: 10px;
-    transition: border-color 0.15s;
-  }
+  width: 100%; padding: 11px 13px; font-size: 15px; color: var(--ink);
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--vc-line); border-radius: 10px;
+  transition: border-color 0.15s;
+}
 }
 
 /* ---- motion ---- */
@@ -303,3 +276,287 @@ body.ui-intro .vc-fab, body.modal-open .vc-fab { display: none; }
 
 /* the OS "reduce motion" setting */
 .reduce-motion .vc, .reduce-motion .vc *, .reduce-motion .vc *::before, .reduce-motion .vc *::after, .reduce-motion .vc-live-dot { animation: none !important; transition: none !important; }
+
+/* =============================================================
+ * Voice chat: the same look as the story cards
+ *   dark glass, thin white outlines, 6px corners on buttons and fields, orange hover / selected,
+ *   white text. Live / speaking indicators keep their meaning (red dot, blue ring).
+ * ============================================================= */
+.vc {
+  --vc-line: rgba(255, 255, 255, 0.09);
+  --vc-soft: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.vc-bar { padding: 14px 14px 6px; }
+.vc-bar-title { font-size: 18px; font-weight: 600; color: #fff; }
+.vc-sub, .vc-fine, .vc-count, .vc-stage-role, .vc-empty, .vc-msg-meta, .vc-msg-meta time { color: #fff; opacity: 0.8; }
+.vc-eyebrow { color: #fff; font-family: inherit; font-size: 12px; letter-spacing: 0.1em; }
+.vc-field > span { color: #fff; }
+
+/* buttons and fields */
+.vc-btn, .vc-follow, .vc-mini-btn {
+  min-height: 42px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  filter: none;
+}
+.vc-mini-btn { min-height: 30px; padding: 4px 12px; font-size: 12px; }
+.vc-btn.primary, .vc-btn.warn, .vc-follow:not(.on), .vc-mini-btn.on { color: #fff; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.35); }
+.vc-btn:hover:not(:disabled), .vc-follow:hover, .vc-mini-btn:hover,
+.vc-btn.primary:hover, .vc-follow:not(.on):hover, .vc-mini-btn.on:hover, .vc-mini-btn.off:hover {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm);
+  filter: none;
+}
+.vc-follow.on { color: var(--warm); border-color: var(--warm); background: rgba(255, 184, 107, 0.16); }
+.vc-btn.primary:disabled { opacity: 0.5; filter: none; }
+.vc-input {
+  min-height: 42px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+}
+.vc-input::placeholder { color: rgba(255, 255, 255, 0.55); }
+.vc-input:hover { border-color: rgba(255, 255, 255, 0.55); }
+.vc-input:focus { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+
+/* Join / Host switch and the tabs: card buttons, the selected one orange */
+.vc-seg { background: none; border: 0; padding: 0; gap: 10px; border-radius: 0; }
+.vc-seg button { min-height: 40px; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: #fff; font-weight: 500; }
+.vc-seg button:hover, .vc-seg button[aria-selected="true"] { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+.vc-tabs { border-bottom: 0; gap: 10px; }
+.vc-tab { flex: 1; margin: 0; padding: 8px 10px; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: #fff; font-weight: 500; text-align: center; }
+.vc-tab:hover, .vc-tab[aria-selected="true"] { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+
+/* microphone / audio choice and the round call controls */
+.vc-pref { border-radius: 6px; font-weight: 500; }
+.vc-pref[aria-pressed="true"] { color: var(--warm); background: rgba(255, 184, 107, 0.16); border-color: var(--warm); }
+.vc-ctl { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.35); color: #fff; }
+.vc-ctl:hover:not(:disabled) { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+.vc-ctl.on { color: var(--warm); background: rgba(255, 184, 107, 0.16); border-color: var(--warm); }
+.vc-icon-btn { color: #fff; border-radius: 6px; }
+.vc-icon-btn:hover { background: rgba(255, 184, 107, 0.16); color: var(--warm); }
+.vc-icon-btn[aria-pressed="true"] { color: var(--warm); background: rgba(255, 184, 107, 0.16); }
+.vc-icon-btn.send { color: #fff; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.35); }
+.vc-icon-btn.send:hover { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+
+/* boxes inside: the card boxes */
+.vc-stage, .vc-chip, .vc-msg { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 16px; }
+.vc-msg.own { background: rgba(255, 184, 107, 0.1); border-color: rgba(255, 184, 107, 0.4); }
+.vc-msg-meta b { color: #fff; }
+.vc-row { border-radius: 10px; }
+.vc-row:hover { background: rgba(255, 255, 255, 0.05); }
+.vc-pane, .vc-chatlog { scrollbar-width: none; }
+.vc-pane::-webkit-scrollbar, .vc-chatlog::-webkit-scrollbar { display: none; }
+.vc-banner { border-radius: 12px; }
+.vc-tag.host { color: #fff; background: rgba(255, 184, 107, 0.2); border: 1px solid var(--warm); }
+.vc-tag.speaker { color: #fff; background: rgba(255, 255, 255, 0.08); }
+.vc-unread { background: var(--warm); color: #1a1000; }
+
+/* the floating button: the same button look, orange on hover */
+.vc-fab { border-radius: 6px; height: 48px; background: rgba(255, 255, 255, 0.06); background-color: rgba(8, 12, 22, 0.9); border: 1px solid rgba(255, 255, 255, 0.35); color: #fff; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); }
+.vc-fab svg { color: inherit; }
+.vc-fab:hover, .vc-fab[aria-expanded="true"], .vc-fab:focus-visible { background-color: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+.vc-fab.live { border-color: rgba(255, 107, 107, 0.55); }
+
+
+/* Overview (the hero) is blue; everywhere else voice chat is orange */
+body.hero-mode.story-at-hero .vc-btn:hover:not(:disabled),
+body.hero-mode.story-at-hero .vc-follow:hover,
+body.hero-mode.story-at-hero .vc-mini-btn:hover,
+body.hero-mode.story-at-hero .vc-btn.primary:hover,
+body.hero-mode.story-at-hero .vc-follow:not(.on):hover,
+body.hero-mode.story-at-hero .vc-mini-btn.on:hover,
+body.hero-mode.story-at-hero .vc-mini-btn.off:hover {
+  background: rgba(143, 211, 255, 0.14);
+  border-color: var(--cool);
+  color: var(--cool);
+  filter: none;
+}
+body.hero-mode.story-at-hero .vc-follow.on { color: var(--cool); border-color: var(--cool); background: rgba(143, 211, 255, 0.14); }
+body.hero-mode.story-at-hero .vc-seg button:hover,
+body.hero-mode.story-at-hero .vc-seg button[aria-selected="true"] { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); }
+body.hero-mode.story-at-hero .vc-tab:hover,
+body.hero-mode.story-at-hero .vc-tab[aria-selected="true"] { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); }
+body.hero-mode.story-at-hero .vc-pref[aria-pressed="true"] { color: var(--cool); background: rgba(143, 211, 255, 0.14); border-color: var(--cool); }
+body.hero-mode.story-at-hero .vc-ctl:hover:not(:disabled) { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); }
+body.hero-mode.story-at-hero .vc-ctl.on { color: var(--cool); background: rgba(143, 211, 255, 0.14); border-color: var(--cool); }
+body.hero-mode.story-at-hero .vc-icon-btn:hover { background: rgba(143, 211, 255, 0.14); color: var(--cool); }
+body.hero-mode.story-at-hero .vc-icon-btn[aria-pressed="true"] { color: var(--cool); background: rgba(143, 211, 255, 0.14); }
+body.hero-mode.story-at-hero .vc-icon-btn.send:hover { background: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); }
+body.hero-mode.story-at-hero .vc-msg.own { background: rgba(143, 211, 255, 0.1); border-color: rgba(255, 184, 107, 0.4); }
+body.hero-mode.story-at-hero .vc-tag.host { color: #fff; background: rgba(143, 211, 255, 0.18); border: 1px solid var(--cool); }
+body.hero-mode.story-at-hero .vc-unread { background: var(--cool); color: #06101e; }
+body.hero-mode.story-at-hero .vc-fab:hover,
+body.hero-mode.story-at-hero .vc-fab[aria-expanded="true"],
+body.hero-mode.story-at-hero .vc-fab:focus-visible { background-color: rgba(143, 211, 255, 0.14); border-color: var(--cool); color: var(--cool); }
+
+/* phones: with the voice panel open the landmark column steps aside (they used to overlap) */
+@media (max-width: 640px) { body:has(.vc:not([hidden])) #bot { display: none !important; } }
+
+/* keyboard focus is always visible on buttons, links and summaries (inputs keep their own focus style) */
+html :is(button, a, summary, select, [role="button"], [role="switch"]):focus-visible {
+  outline: 2px solid var(--cool, #8fd3ff);
+  outline-offset: 2px;
+}
+
+/* ---- audio device settings (matching new dark glass & orange theme) ---- */
+.vc-select {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 42px;
+  padding: 8px 38px 8px 12px;
+  font-size: 13.5px;
+  color: #fff;
+  background-color: rgba(12, 18, 32, 0.95);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,184,107,0.85)' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+}
+.vc-select:hover {
+  border-color: var(--warm);
+  background-color: rgba(18, 25, 42, 0.98);
+}
+.vc-select:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 184, 107, 0.3);
+}
+.vc-select option {
+  background: #0d1424;
+  color: #fff;
+  padding: 8px 10px;
+}
+
+.vc-lobby-details {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px 14px;
+  margin-top: 4px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.vc-lobby-summary {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  list-style: none;
+}
+.vc-lobby-summary::-webkit-details-marker {
+  display: none;
+}
+.vc-lobby-summary::after {
+  content: '';
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.2s ease;
+}
+.vc-lobby-details[open] .vc-lobby-summary::after {
+  transform: rotate(180deg);
+}
+.vc-lobby-summary:hover {
+  color: var(--warm);
+}
+.vc-lobby-details[open] .vc-lobby-summary {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--warm);
+}
+
+.vc-device-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.vc-lobby-details .vc-device-group {
+  margin-bottom: 12px;
+}
+.vc-lobby-details .vc-device-group:last-child {
+  margin-bottom: 4px;
+}
+.vc-device-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--warm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vc-device-note {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.vc-pane.devices {
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+.vc-test-btn {
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s;
+}
+.vc-test-btn:hover {
+  background: rgba(255, 184, 107, 0.18);
+  border-color: var(--warm);
+  color: var(--warm);
+}

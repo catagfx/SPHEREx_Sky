@@ -19,7 +19,8 @@
   transition: opacity 0.35s ease;
 }
 
-body.free-look-active .story-container {
+body.free-look-active .story-container,
+body.tour-active .story-container {
   opacity: 0 !important;
   pointer-events: none !important;
   visibility: hidden !important;
@@ -71,6 +72,8 @@ body.free-look-active .story-container {
   color: #fff;
   margin: 0 0 10px;
 }
+/* About card: title centered in the card */
+#secAbout .showcase-header h2 { text-align: center; }
 .showcase-desc {
   font-size: 16px;
   line-height: 1.6;
@@ -336,9 +339,8 @@ html.story-paged .feature-section .showcase-card {
 html.story-paged .preview-media { justify-self: center; max-width: 100%; }
 html.story-paged #secPlanetX .preview-media { width: min(100%, calc((100svh - 390px) * 720 / 540)); }  /* image 720x540 */
 html.story-paged #secDiff .preview-media { width: min(100%, calc((100svh - 390px) * 540 / 400)); }     /* canvas 540x400 */
-html.story-paged #secSpectro .preview-media { width: min(100%, calc(100svh - 390px)); }                 /* image 1:1 */
 
-@media (max-height: 900px) {
+@media (max-height: 1200px) {
   html.story-paged .feature-section { padding-top: 116px; padding-bottom: 18px; }
   html.story-paged .showcase-card { padding: 26px 36px; }
   html.story-paged .showcase-header { margin-bottom: 14px; }
@@ -421,7 +423,7 @@ body:not(.hero-mode) .sp-nav .sp-mark { pointer-events: none; }
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), fill 0.3s, filter 0.3s;
 }
 .sp-mark-label {
-  font: 600 10.5px/1 var(--font-mono);
+  font: 600 11px/1 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -431,17 +433,10 @@ body:not(.hero-mode) .sp-nav .sp-mark { pointer-events: none; }
   transform: translateY(-4px);
   transition: opacity 0.35s ease, transform 0.35s ease, color 0.25s ease;
 }
-.sp-mark:hover .sp-mark-star, .sp-mark:focus-visible .sp-mark-star { transform: scale(1.25) rotate(45deg); fill: #fff; }
+.sp-mark:hover .sp-mark-star, .sp-mark:focus-visible .sp-mark-star { transform: scale(1.25); fill: #fff; }
 .sp-mark:hover .sp-mark-label, .sp-mark:focus-visible .sp-mark-label { color: #fff; opacity: 0.85; transform: none; }
 .sp-mark.is-passed .sp-mark-star { fill: rgba(143, 211, 255, 0.55); }
-.sp-mark.is-active .sp-mark-star {
-  width: 14px;
-  height: 14px;
-  margin-top: 12px;
-  fill: #fff;
-  transform: scale(1.5);
-  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px rgba(143, 211, 255, 0.9));
-}
+.sp-mark.is-active .sp-mark-star { fill: rgba(143, 211, 255, 0.55); } /* the line's own glowing head marks the position */
 .sp-mark.is-active .sp-mark-label { opacity: 1; transform: none; color: #fff; }
 @media (max-width: 900px) {
   .sp-mark-label { display: none; }     /* phones: just the stars */
@@ -630,6 +625,7 @@ body:not(.hero-mode) .sp-nav .sp-mark { pointer-events: none; }
   transition: opacity 0.35s ease;
 }
 body.free-look-active .data-chip-row,
+body.tour-active .data-chip-row,
 body.landmarks-active .data-chip-row { opacity: 1; }
 .data-chip-row .dc-sep { color: rgba(143, 211, 255, 0.5); }
 .data-chip-row .dc-tag { color: #fff; }
@@ -793,4 +789,892 @@ body.landmarks-active .data-chip-row { opacity: 1; }
     margin-top: 10px;
     gap: 8px;
   }
+}
+
+/* About card: still scrolls, but the scrollbar is hidden */
+html.story-paged #secAbout .showcase-card {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html.story-paged #secAbout .showcase-card::-webkit-scrollbar { display: none; }
+
+/* About card: everything centered */
+#secAbout .showcase-header,
+#secAbout .about-card,
+#secAbout .about-lists .citizen-box,
+#secAbout .data-sources { text-align: center; }
+#secAbout .showcase-desc { margin-left: auto; margin-right: auto; }
+#secAbout .data-source-card { flex-direction: column; align-items: center; text-align: center; }
+html.story-paged #secAbout .about-list { align-items: center; }
+html.story-paged #secAbout .about-list li { padding-left: 0; }
+#secAbout .about-list li::before {
+  position: static;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* About card: all text white; section labels (SPHEREx, PLANET X ...) bigger, plain white, no blue pill */
+#secAbout .feature-tag {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  margin-bottom: 8px;
+}
+#secAbout .small,
+#secAbout .about-list li,
+#secAbout .about-tech-body,
+#secAbout .ds-body p.small,
+#secAbout .about-card p.small em,
+#secAbout .about-tech-body em { color: #fff; }
+
+/* About card: bigger titles, equal spacing, serious markers, colored badge text without boxes */
+#secAbout .feature-tag { font-size: 18px; margin-bottom: 8px; }
+#secAbout .citizen-box h3 { font-size: 22px; margin-bottom: 8px; }
+html.story-paged #secAbout .citizen-box h3 { font-size: 22px; margin-bottom: 6px; }
+#secAbout .ds-body strong { font-size: 17px; }
+/* equal distance between every card/row */
+html.story-paged #secAbout .showcase-header { margin-bottom: 16px; }
+html.story-paged #secAbout .about-grid,
+html.story-paged #secAbout .about-lists,
+html.story-paged #secAbout .data-sources { margin-top: 16px; }
+html.story-paged #secAbout .about-grid { margin-top: 0; }
+html.story-paged #secAbout .about-grid,
+html.story-paged #secAbout .about-lists,
+html.story-paged #secAbout .data-sources-grid { gap: 16px; }
+/* list markers: small white diamond instead of the glowing blue dot */
+#secAbout .about-list li::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  transform: rotate(45deg);
+  margin-right: 10px;
+}
+/* source names: colored text, no box */
+#secAbout .ds-badge {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  font-size: 17px;
+  color: #8fd3ff;
+}
+#secAbout .ds-gaia .ds-badge { background: none; box-shadow: none; color: #ffd27a; }
+#secAbout .ds-wise .ds-badge { background: none; box-shadow: none; color: #ff9d6c; }
+
+/* About card: tight title -> subtitle, clearly (but not much) more space before the body text */
+html.story-paged #secAbout .about-card .feature-tag { margin-bottom: 0; line-height: 1.2; }
+html.story-paged #secAbout .citizen-box h3 { margin-top: 0; margin-bottom: 10px; }
+html.story-paged #secAbout .about-list,
+html.story-paged #secAbout .about-tech-body { margin-top: 0; }
+
+/* About card: rows line up across the cards of a row (tag, title, body each start at the same height) */
+#secAbout .about-grid .about-card,
+#secAbout .about-lists .citizen-box {
+  display: grid;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  align-content: start;
+}
+#secAbout .about-grid .about-card { grid-row: span 3; }
+#secAbout .about-lists .citizen-box { grid-row: span 2; }
+#secAbout .about-grid .about-card > *,
+#secAbout .about-lists .citizen-box > * { align-self: start; }
+
+/* About card: body texts left-aligned (titles stay centered), no list markers */
+#secAbout .about-card p.small,
+#secAbout .about-tech-body,
+#secAbout .about-list li,
+#secAbout .ds-body p.small { text-align: left; }
+html.story-paged #secAbout .about-list { align-items: stretch; }
+#secAbout .about-list li::before { display: none; }
+
+/* About card: card labels (SPHEREx, PLANET X ...) same size as the card titles below them */
+html.story-paged #secAbout .feature-tag { font-size: 22px; }
+
+/* About card: sources block, name (badge) + subtitle centered, close together, exactly the same size, rows aligned across the 3 cards */
+#secAbout .data-sources-grid { grid-template-rows: auto auto auto; }
+#secAbout .data-source-card {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  align-content: start;
+  justify-items: center;
+  text-align: center;
+}
+#secAbout .ds-body { display: contents; }
+#secAbout .ds-badge,
+#secAbout .ds-body strong {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0;
+  text-align: center;
+}
+#secAbout .ds-body strong { margin-bottom: 10px; }
+#secAbout .data-source-card > * { align-self: start; }
+
+/* About card: one identical title -> text distance in every card (14px), same title/body line-height everywhere */
+html.story-paged #secAbout .citizen-box h3,
+html.story-paged #secAbout .ds-body strong { line-height: 1.2; margin-top: 0; margin-bottom: 14px; }
+html.story-paged #secAbout .about-card p.small,
+html.story-paged #secAbout .about-tech-body,
+html.story-paged #secAbout .about-list li,
+html.story-paged #secAbout .ds-body p.small { line-height: 1.45; margin-top: 0; }
+html.story-paged #secAbout .about-list,
+html.story-paged #secAbout .about-tech-body { margin-top: 0; }
+
+/* About card: every description text identical (same size, weight, color), no bold / italic emphasis */
+html.story-paged #secAbout .about-card p.small,
+html.story-paged #secAbout .about-tech-body,
+html.story-paged #secAbout .about-list li,
+html.story-paged #secAbout .ds-body p.small {
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  color: #fff;
+}
+#secAbout .about-card p.small strong,
+#secAbout .about-card p.small em,
+#secAbout .about-tech-body strong,
+#secAbout .about-tech-body em {
+  font-weight: inherit;
+  font-style: inherit;
+  color: inherit;
+}
+
+/* About card: never scrolls (About.tsx scales the content down on short screens until it fits) */
+html.story-paged #secAbout .showcase-card { overflow: hidden; }
+
+/* About + Guide cards: static 3D tilt (About leans right, Guide mirrored), slightly smaller and leaning back.
+   Applied to the SECTION, not the card: the card's GSAP entrance rewrites its transform/rotate/scale and would
+   make the tilt pop in only when the animation ends. Symmetric padding keeps the card centred on the page. */
+#secAbout, #secGuide, #secPlanetX, #secDiff, #secSpectro, #secBenchmarks, #secColors, #secCitizen { transform-origin: 50% 50%; }
+#secAbout { transform: perspective(1400px) rotateX(calc(8deg * var(--tilt, 1))) scale(calc(1 - 0.12 * var(--tilt, 1))); }
+#secGuide { transform: perspective(1400px) rotate3d(6, calc(9 * var(--tdir, 1)), 0, calc(10.8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secPlanetX { transform: perspective(1400px) rotate3d(6, 9, 0, calc(10.8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secDiff { transform: perspective(1400px) rotate3d(6, calc(-9 * var(--tdir, 1)), 0, calc(10.8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secBenchmarks { transform: perspective(1400px) rotate3d(6, calc(-9 * var(--tdir, 1)), 0, calc(10.8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secColors { transform: perspective(1400px) rotate3d(6, calc(-9 * var(--tdir, 1)), 0, calc(10.8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secSpectro { transform: perspective(1400px) rotate3d(6, -9, 0, calc(10.8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secCitizen { transform: perspective(1400px) rotateX(calc(8deg * var(--tilt, 1))) scale(calc(1 - 0.08 * var(--tilt, 1))); }
+#secCitizen .showcase-card { box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45); }
+#secAbout .showcase-card { box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45); }
+#secGuide .showcase-card { box-shadow: calc(-18px * var(--tdir, 1)) 22px 50px rgba(0, 0, 0, 0.45); }
+#secColors .showcase-card { box-shadow: calc(18px * var(--tdir, 1)) 22px 50px rgba(0, 0, 0, 0.45); }
+#secBenchmarks .showcase-card { box-shadow: calc(18px * var(--tdir, 1)) 22px 50px rgba(0, 0, 0, 0.45); }
+#secDiff .showcase-card { box-shadow: calc(18px * var(--tdir, 1)) 22px 50px rgba(0, 0, 0, 0.45); }
+#secSpectro .showcase-card { box-shadow: 18px 22px 50px rgba(0, 0, 0, 0.45); }
+#secPlanetX .showcase-card { box-shadow: -18px 22px 50px rgba(0, 0, 0, 0.45); }
+/* About + Guide sit lower than centre: more room above (clear of the header), less below */
+html.story-paged #secGuide.feature-section,
+html.story-paged #secPlanetX.feature-section,
+html.story-paged #secDiff.feature-section,
+html.story-paged #secSpectro.feature-section,
+html.story-paged #secBenchmarks.feature-section,
+html.story-paged #secColors.feature-section { padding-top: 140px; padding-bottom: 60px; }
+@media (max-width: 760px) {
+  #secAbout { transform: perspective(1400px) rotateX(calc(4deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secGuide { transform: perspective(1400px) rotate3d(3, calc(4 * var(--tdir, 1)), 0, calc(5deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secPlanetX { transform: perspective(1400px) rotate3d(3, 4, 0, calc(5deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secDiff { transform: perspective(1400px) rotate3d(3, calc(-4 * var(--tdir, 1)), 0, calc(5deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secSpectro { transform: perspective(1400px) rotate3d(3, -4, 0, calc(5deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secBenchmarks { transform: perspective(1400px) rotate3d(3, calc(-4 * var(--tdir, 1)), 0, calc(5deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secColors { transform: perspective(1400px) rotate3d(3, calc(-4 * var(--tdir, 1)), 0, calc(5deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+  #secCitizen { transform: perspective(1400px) rotateX(calc(4deg * var(--tilt, 1))) scale(calc(1 - 0.04 * var(--tilt, 1))); }
+}
+
+/* ---- Guide card: same look as the About card (centered titles, equal spacing, uniform left-aligned body text, no scroll) ---- */
+#secGuide .showcase-header h2 { text-align: center; }
+html.story-paged #secGuide .showcase-card { overflow: hidden; }
+html.story-paged #secGuide .showcase-header { margin-bottom: 16px; }
+html.story-paged #secGuide .guide-grid { margin-top: 0; gap: 16px; }
+html.story-paged #secGuide .guide-footnote { margin-top: 16px; }
+/* rows line up across the cards: step number, title, text, buttons each start at the same height */
+html.story-paged #secGuide .guide-step,
+#secGuide .guide-step {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  align-content: start;
+  text-align: center;
+  gap: 0;
+}
+#secGuide .guide-step > * { align-self: start; }
+#secGuide .guide-step-head { justify-content: center; }
+/* number + title: same size, centered, close together */
+#secGuide .guide-step-num {
+  font-size: 22px;
+  line-height: 1.2;
+}
+html.story-paged #secGuide .guide-step h3,
+#secGuide .guide-step h3 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0 0 14px;
+}
+/* body text: identical everywhere, left-aligned, no bold / italic */
+html.story-paged #secGuide .guide-step p,
+html.story-paged #secGuide .guide-footnote {
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.45;
+  color: #fff;
+  text-align: left;
+  margin-top: 0;
+}
+#secGuide .guide-step p strong,
+#secGuide .guide-step p em,
+#secGuide .guide-footnote strong { font-weight: inherit; font-style: inherit; color: inherit; }
+#secGuide .guide-actions { justify-content: center; padding-top: 14px; margin-top: 0; }
+html.story-paged #secGuide .guide-footnote { margin-top: 16px; }
+
+/* Guide card: number on the same line as the title (white), serious neutral buttons on one row */
+#secGuide .guide-step { grid-row: span 3; }
+#secGuide .guide-step-num {
+  display: inline;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: #fff;
+  margin-right: 12px;
+}
+#secGuide .guide-step > .guide-actions { align-self: end; }
+#secGuide .guide-btn,
+#secGuide .guide-btn.ghost {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+#secGuide .guide-btn:hover,
+#secGuide .guide-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Guide card: identical buttons (one size, one row), buttons close under the text, more room between title and text */
+html.story-paged #secGuide .guide-step h3,
+#secGuide .guide-step h3 { margin-bottom: 20px; }
+#secGuide .guide-step > .guide-actions {
+  align-self: start;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding-top: 8px;
+}
+#secGuide .guide-btn,
+#secGuide .guide-btn.ghost {
+  flex: 0 0 142px;
+  width: 142px;
+  height: 36px;
+  padding: 0 6px;
+  font-size: 12px;
+  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+/* Guide card: more room between the text and the buttons */
+#secGuide .guide-step > .guide-actions { padding-top: 22px; }
+/* Guide card: text + buttons form one block, so the text -> buttons distance is identical in every card */
+#secGuide .guide-step { grid-row: span 2; }
+#secGuide .guide-body { display: flex; flex-direction: column; align-items: stretch; }
+#secGuide .guide-body > .guide-actions { padding-top: 22px; align-self: stretch; }
+/* Guide card: buttons sit at the base of their card, so they line up across the cards of a row */
+#secGuide .guide-step > .guide-body { align-self: stretch; }
+#secGuide .guide-body > .guide-actions { margin-top: auto; padding-top: 22px; }
+
+/* Guide card: no hover effect on the step cards; all 4 steps have exactly the same size (the biggest one sets it) */
+#secGuide .guide-step,
+#secGuide .guide-step:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+#secGuide .guide-grid { grid-auto-rows: 1fr; }
+html.story-paged #secGuide .guide-step,
+#secGuide .guide-step {
+  display: flex;
+  flex-direction: column;
+  grid-row: auto;
+  grid-template-rows: none;
+}
+#secGuide .guide-step > .guide-body { flex: 1; align-self: stretch; }
+#secGuide .guide-step h3 { text-align: center; }
+#secGuide .guide-step > h3 { align-self: stretch; text-align: center; }
+
+/* Guide card: the note at the bottom has the same color as the step cards */
+#secGuide .guide-footnote {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+/* ---- Planet X card: centered title + subtitle, centered image, 2x2 metrics under it, 3 buttons in one row ---- */
+#secPlanetX .showcase-header h2 { text-align: center; }
+#secPlanetX .showcase-desc { margin-left: auto; margin-right: auto; text-align: center; }
+html.story-paged #secPlanetX .showcase-card { overflow: hidden; }
+#secPlanetX .px-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  margin-top: 16px;
+}
+html.story-paged #secPlanetX .px-stack { margin-top: 16px; gap: 16px; }
+html.story-paged #secPlanetX .preview-media,
+#secPlanetX .preview-media {
+  width: min(100%, 440px);
+  align-self: center;
+  justify-self: center;
+}
+#secPlanetX .metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+#secPlanetX .metric-pill { align-items: center; text-align: center; }
+#secPlanetX .px-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+html.story-paged #secPlanetX .px-actions button.b,
+#secPlanetX .px-actions button.b {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: none;
+  transform: none;
+}
+#secPlanetX .px-actions button.b:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Planet X image caption: one line, centered at the bottom of the image */
+#secPlanetX .preview-overlay-badge {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  text-align: center;
+  font-size: 11px;
+  padding: 5px 10px;
+}
+html.story-paged #secPlanetX .preview-media,
+#secPlanetX .preview-media { width: min(100%, 540px); }
+
+/* Planet X card: the 3 buttons stand to the right of the image, stacked, top and bottom flush with the image */
+#secPlanetX .px-top {
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 240px);
+  gap: 16px;
+  justify-content: center;
+  align-items: stretch;
+}
+html.story-paged #secPlanetX .px-top .preview-media,
+#secPlanetX .px-top .preview-media { width: 100%; align-self: start; }
+#secPlanetX .px-actions {
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+html.story-paged #secPlanetX .px-actions button.b,
+#secPlanetX .px-actions button.b {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 64px;
+  min-height: 0;
+}
+/* metrics exactly as wide as the image + buttons group above them */
+#secPlanetX .metric-grid { width: min(100%, 756px); margin-left: auto; margin-right: auto; }
+
+/* Planet X card, final layout: image left, the 4 metrics stacked to its right (flush with the image),
+   the 3 buttons in one row under both; title on one line */
+html.story-paged #secPlanetX .showcase-header h2,
+#secPlanetX .showcase-header h2 {
+  font-size: 30px;
+  white-space: nowrap;
+}
+#secPlanetX .px-top .metric-grid {
+  width: 100%;
+  margin: 0;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 16px;
+}
+#secPlanetX .px-top .metric-pill { justify-content: center; }
+#secPlanetX .px-actions {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: stretch;
+  gap: 16px;
+  width: min(100%, 756px);
+  align-self: center;
+}
+html.story-paged #secPlanetX .px-actions button.b,
+#secPlanetX .px-actions button.b {
+  flex: 1 1 0;
+  width: auto;
+  height: 52px;
+  min-width: 0;
+}
+
+/* ---- Difference Imaging card: caption centered on one line, Planet X style buttons (equal size), card-style gain slider ---- */
+:is(#secDiff, #secSpectro) .preview-overlay-badge {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  text-align: center;
+  font-size: 11px;
+  padding: 5px 10px;
+}
+:is(#secDiff, #secSpectro) .diff-actions { flex-wrap: nowrap; gap: 12px; }
+:is(#secDiff, #secSpectro) .diff-actions button.b {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  height: 52px;
+  min-height: 0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: none;
+  transform: none;
+}
+:is(#secDiff, #secSpectro) .diff-actions button.b:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+  box-shadow: none;
+  transform: none;
+}
+:is(#secDiff, #secSpectro) .diff-gain {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+:is(#secDiff, #secSpectro) .diff-gain label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  color: #aab6d0;
+}
+:is(#secDiff, #secSpectro) .diff-gain-val {
+  min-width: 44px;
+  text-align: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+:is(#secDiff, #secSpectro) .diff-gain input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  outline: none;
+}
+:is(#secDiff, #secSpectro) .diff-gain input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  cursor: pointer;
+}
+:is(#secDiff, #secSpectro) .diff-gain input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  cursor: pointer;
+}
+:is(#secDiff, #secSpectro) .diff-gain input[type=range]::-moz-range-track { height: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.22); }
+
+/* Difference card: layout as originally (image left, controls right); never scrolls (Diff.tsx fits the content) */
+html.story-paged :is(#secDiff, #secSpectro) .showcase-card { overflow: hidden; }
+:is(#secDiff, #secSpectro) .showcase-controls .small { margin: 0 !important; }
+:is(#secDiff, #secSpectro) .diff-actions button.b { white-space: normal; font-size: 12.5px; padding: 6px 10px; }
+:is(#secDiff, #secSpectro) .diff-gain { gap: 10px; padding: 10px 12px; }
+
+/* Difference card: title + description centered */
+:is(#secDiff, #secSpectro) .showcase-header h2 { text-align: center; }
+:is(#secDiff, #secSpectro) .showcase-desc { margin-left: auto; margin-right: auto; text-align: center; }
+
+/* Benchmarks card: centered title + subtitle, targets 3 per row (5 cards = 3 + 2, centered), content centered in each card */
+html.story-paged #secBenchmarks .showcase-card { overflow: hidden; }
+#secBenchmarks .showcase-header h2 { text-align: center; }
+#secBenchmarks .showcase-desc { margin-left: auto; margin-right: auto; text-align: center; }
+#secBenchmarks .benchmark-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+#secBenchmarks .benchmark-card {
+  flex: 0 0 calc((100% - 32px) / 3);
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#secBenchmarks .benchmark-card .bm-desc,
+#secBenchmarks .benchmark-card .small { text-align: center; margin-top: 0 !important; }
+@media (max-width: 760px) { #secBenchmarks .benchmark-card { flex-basis: 100%; } }
+#secBenchmarks .benchmark-card { gap: 0; }
+#secBenchmarks .benchmark-card .bm-type,
+#secBenchmarks .benchmark-card h4 {
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #fff;
+  text-align: center;
+}
+#secBenchmarks .benchmark-card .bm-type { margin: 0 0 3px; }
+#secBenchmarks .benchmark-card h4 { margin: 0 0 12px; }
+#secBenchmarks .benchmark-card .bm-desc,
+#secBenchmarks .benchmark-card .small {
+  align-self: stretch;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+}
+#secBenchmarks .benchmark-card .small { margin-top: 10px !important; }
+
+/* Benchmark cards: titles, names, descriptions and coordinates line up across a row (subgrid: each row is as tall
+   as the tallest card's content), descriptions white */
+@media (min-width: 761px) {
+  #secBenchmarks .benchmark-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    column-gap: 16px;
+    row-gap: 0;
+  }
+  #secBenchmarks .benchmark-card {
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    align-items: start;
+    justify-items: stretch;
+    flex: none;
+  }
+  #secBenchmarks .benchmark-card:nth-child(n+4) { margin-top: 16px; }
+}
+#secBenchmarks .benchmark-card .bm-desc { color: #fff; }
+#secBenchmarks .benchmark-card .small { align-self: end; }
+
+/* Colors card: centered title + subtitle, hovered band grows upward, readout white + left, detector text centered */
+#secColors .showcase-header h2 { text-align: center; }
+#secColors .showcase-desc { margin-left: auto; margin-right: auto; text-align: center; }
+#secColors .ir-spectrum-strip { overflow: visible; margin-top: 18px; }
+#secColors .ir-band { transform-origin: 50% 100%; }
+#secColors .ir-band:first-child { border-radius: 10px 0 0 10px; }
+#secColors .ir-band:last-child { border-radius: 0 10px 10px 0; }
+#secColors .ir-band:hover { transform: scaleY(1.45); filter: brightness(1.4); position: relative; z-index: 2; }
+#secColors .ir-readout { color: #fff; text-align: center; }
+#secColors .ir-det { text-align: center; }
+#secColors .ir-det-head { flex-direction: column; justify-content: center; gap: 6px; }
+#secColors .ir-det-sig { color: #fff; }
+
+/* Spectro card: image box identical to the Difference card's (same width rule, same 4:3 frame; the photo is cropped to fit) */
+html.story-paged #secSpectro .preview-media { width: min(100%, calc((100svh - 390px) * 540 / 400)); justify-self: center; }
+#secSpectro .diff-gain-val { white-space: nowrap; font-size: 12.5px; padding: 3px 12px; }
+
+/* Planet X card: image the same size as the Difference card's (543 x 407) */
+#secPlanetX .px-top { grid-template-columns: minmax(0, 543px) minmax(0, 1fr); }
+/* Planet X card: slightly tighter vertical rhythm so the larger image still clears the "scroll to explore" marker */
+html.story-paged #secPlanetX.feature-section { padding-top: 108px; padding-bottom: 92px; }
+html.story-paged #secPlanetX .showcase-header { margin-bottom: 8px; }
+html.story-paged #secPlanetX .px-stack { margin-top: 10px; gap: 12px; }
+
+/* ---- Citizen card: centered content, buttons like the other cards, the two top buttons on the same row ---- */
+html.story-paged #secCitizen .showcase-card { overflow: hidden; }
+#secCitizen .showcase-header h2 { text-align: center; }
+#secCitizen .showcase-desc { margin-left: auto; margin-right: auto; text-align: center; }
+#secCitizen .citizen-box { text-align: center; }
+#secCitizen .citizen-actions-panel > .citizen-box:not(:last-child) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+#secCitizen .citizen-actions-panel > .citizen-box:not(:last-child) > button { margin-top: auto !important; }
+#secCitizen .citizen-actions-panel > .citizen-box:not(:last-child) .search-inputs { margin-bottom: 12px; }
+#secCitizen .citizen-actions-panel > .citizen-box:nth-child(2) > p { margin-bottom: 12px; }
+#secCitizen .coord-input { text-align: center; }
+#secCitizen .citizen-irsa-actions { display: flex; gap: 12px; margin-top: 12px; }
+#secCitizen button.b {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: none;
+  transform: none;
+}
+#secCitizen button.b:hover { background: rgba(255, 255, 255, 0.16); border-color: #fff; box-shadow: none; transform: none; }
+#secCitizen .citizen-actions-panel > .citizen-box:not(:last-child) > button.b { flex: none; width: 100%; }
+html.story-paged #secCitizen.feature-section { padding-top: 100px; padding-bottom: 100px; }
+
+/* Citizen card: fields span the full width of the buttons below them and look like the buttons */
+#secCitizen .search-inputs { display: grid; width: 100%; gap: 12px; margin-left: 0; margin-right: 0; }
+#secCitizen .citizen-actions-panel > .citizen-box:not(:last-child) .search-inputs { grid-template-columns: 1fr 1fr; }
+#secCitizen .citizen-actions-panel > .citizen-box:last-child .search-inputs { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+@media (max-width: 900px) { #secCitizen .citizen-actions-panel > .citizen-box:last-child .search-inputs { grid-template-columns: 1fr 1fr !important; } }
+#secCitizen .coord-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: center;
+  outline: none;
+}
+#secCitizen .coord-input::placeholder { color: rgba(255, 255, 255, 0.6); text-align: center; }
+#secCitizen .coord-input:focus { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; }
+
+/* About: sits lower, toward the middle of the page below the header */
+html.story-paged #secAbout.feature-section { padding-top: 165px; padding-bottom: 36px; }
+#secAbout .showcase-card { position: relative; top: -11px; } /* lower on the page (not a transform: the pager scrolls to a transformed section's own top) */
+
+/* Same hover on every card button: the site's orange (--warm) */
+#secGuide .guide-btn:hover,
+#secGuide .guide-btn.ghost:hover,
+#secPlanetX .px-actions button.b:hover,
+html.story-paged #secPlanetX .px-actions button.b:hover,
+:is(#secDiff, #secSpectro) .diff-actions button.b:hover,
+#secCitizen button.b:hover {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Planet X: the button row is as wide as the image + the metrics column together */
+#secPlanetX .px-actions { width: 100%; align-self: stretch; }
+
+/* Benchmark target cards: same orange hover as the buttons (no lift, the card keeps its place) */
+#secBenchmarks .benchmark-card { transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+#secBenchmarks .benchmark-card:hover {
+  transform: none;
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+}
+#secBenchmarks .benchmark-card:hover .bm-type,
+#secBenchmarks .benchmark-card:hover h4 { color: var(--warm); }
+
+/* the "SPHEREx all-sky" line: same style as the credit under it, no pill, centred above it */
+.data-chip-row {
+  bottom: 46px;
+  gap: 0.6em;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  backdrop-filter: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: #fff;
+  text-shadow: 0 0 10px #000, 0 0 2px #000;
+  white-space: nowrap;
+}
+.data-chip-row .dc-sep { color: #fff; }
+body.landmarks-active .data-chip-row { bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
+@media (max-width: 820px) { .data-chip-row { display: none; } }
+body.landmarks-active .data-chip-row { bottom: 46px; }
+
+/* Diff + Spectro sliders: the explorer's slider look (a dot for every step on the line, round orange handle) */
+:is(#storyDiffGain, #storyWavelengthSlider) { height: 20px !important; background: none !important; border-radius: 0; --t: 60px; }
+:is(#storyDiffGain, #storyWavelengthSlider)::-webkit-slider-thumb { width: 20px !important; height: 20px !important; border-radius: 50%; background: var(--warm) !important; border: 0 !important; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25) !important; }
+:is(#storyDiffGain, #storyWavelengthSlider)::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+:is(#storyDiffGain, #storyWavelengthSlider)::-webkit-slider-runnable-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+:is(#storyDiffGain, #storyWavelengthSlider)::-moz-range-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+
+/* Spectroscopy: inside the same box, the label and the wavelength value share the top line, the slider runs full width below */
+#secSpectro .diff-gain {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "label val" "slider slider";
+  row-gap: 10px;
+  column-gap: 12px;
+  padding: 12px 16px 10px;
+}
+#secSpectro .diff-gain label { grid-area: label; }
+#secSpectro .diff-gain .diff-gain-val { grid-area: val; justify-self: end; }
+#secSpectro .diff-gain input[type=range] { grid-area: slider; width: 100%; margin: 0; }
+
+/* Citizen card, IRSA service: the two bottom buttons are one row of two identical buttons (same width, same height,
+   in every state: idle, hover, pressed, focused after a click) */
+#secCitizen .citizen-irsa-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+#secCitizen .citizen-irsa-actions button.b {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px;
+  margin: 0;
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  outline: none;
+  transform: none !important;
+}
+#secCitizen .citizen-irsa-actions button.b:focus,
+#secCitizen .citizen-irsa-actions button.b:active { transform: none !important; outline: none; box-shadow: none; }
+@media (max-width: 760px) { #secCitizen .citizen-irsa-actions { grid-template-columns: 1fr; } }
+.data-chip-row .dc-sep { display: none; }
+.data-chip-row { gap: 1.4em; }
+
+/* ---- audit fixes ---- */
+/* the tilted sections never make the page wider than the screen (no sideways scrolling) */
+.story-container { overflow-x: clip; }
+
+/* Citizen: the IRSA service box spans both columns (like the other boxes, no accent of its own) */
+#secCitizen .citizen-wide { grid-column: 1 / -1; }
+
+/* phones: the cards scroll inside themselves (nothing is scaled down or cut off), no tilt animation space needed */
+@media (max-width: 760px) {
+  html.story-paged .feature-section .showcase-card,
+  html.story-paged #secAbout .showcase-card,
+  html.story-paged #secGuide .showcase-card,
+  html.story-paged #secPlanetX .showcase-card,
+  html.story-paged #secColors .showcase-card,
+  html.story-paged #secCitizen .showcase-card {
+    overflow-y: auto !important;
+    max-height: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* =============================================================
+ * Phones (760px and below): every card is one column, readable and scrollable inside itself.
+ * Desktop is not touched by anything in this block.
+ * ============================================================= */
+@media (max-width: 760px) {
+  .story-section { padding-left: 12px; padding-right: 12px; }
+  html.story-paged .feature-section { padding: 84px 12px 20px; }
+  /* no 3D tilt on a phone: the cards are flat and fill the width */
+  #secAbout, #secGuide, #secPlanetX, #secDiff, #secBenchmarks, #secColors, #secSpectro, #secCitizen { transform: none !important; }
+  .showcase-card { padding: 18px 16px !important; border-radius: 22px; max-width: 100% !important; }
+  .showcase-header h2,
+  html.story-paged .showcase-header h2,
+  #secPlanetX .showcase-header h2 { font-size: 22px !important; white-space: normal !important; line-height: 1.2; }
+  .showcase-desc { font-size: 14px !important; }
+
+  /* About */
+  #secAbout .about-grid, #secAbout .about-lists, #secAbout .data-sources-grid { grid-template-columns: 1fr !important; }
+  #secAbout .about-grid .about-card, #secAbout .about-lists .citizen-box { grid-row: auto !important; }
+
+  /* Planet X: picture, then the four metrics, then the three buttons, all stacked */
+  #secPlanetX .px-top { grid-template-columns: 1fr !important; }
+  #secPlanetX .px-top .metric-grid { grid-template-rows: none !important; grid-template-columns: 1fr 1fr !important; }
+  #secPlanetX .px-actions { flex-direction: column !important; width: 100% !important; }
+  #secPlanetX .px-actions button.b { width: 100% !important; height: auto !important; min-height: 48px; }
+
+  /* Difference + Spectroscopy: picture above the controls */
+  #secDiff .showcase-interactive, #secSpectro .showcase-interactive { grid-template-columns: 1fr !important; gap: 14px !important; }
+  html.story-paged #secDiff .preview-media, html.story-paged #secSpectro .preview-media,
+  #secDiff .preview-media, #secSpectro .preview-media { width: 100% !important; }
+  #secDiff .diff-actions, #secSpectro .diff-actions { flex-wrap: wrap !important; }
+  #secDiff .diff-actions button.b, #secSpectro .diff-actions button.b { flex: 1 1 100% !important; }
+
+  /* Benchmarks: one card per row */
+  #secBenchmarks .benchmark-grid { display: flex !important; flex-direction: column; gap: 10px; }
+  #secBenchmarks .benchmark-card { width: 100%; flex: none !important; display: flex !important; grid-row: auto !important; margin-top: 0 !important; }
+
+  /* Guide + Citizen */
+  .guide-grid, .citizen-actions-panel { grid-template-columns: 1fr !important; }
+  .citizen-irsa-actions { grid-template-columns: 1fr !important; }
+  #secCitizen .citizen-box.citizen-wide .search-inputs { grid-template-columns: 1fr 1fr !important; }
 }

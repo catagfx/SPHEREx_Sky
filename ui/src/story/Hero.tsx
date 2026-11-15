@@ -60,7 +60,9 @@ export default function Hero() {
     if (!root || !cue) return;
     const ctx = gsap.context(() => {
       const trigger = { trigger: '#secHero', start: 'top top', scrub: true };
-      gsap.fromTo(root, { opacity: 1, filter: 'blur(0px)' }, { opacity: 0, filter: 'blur(10px)', ease: 'none', immediateRender: false, scrollTrigger: { ...trigger, end: '75% top' } });
+      // The title block recedes like part of the sky: it scrolls away slower than the page (y pushes back down,
+      // so it drifts with the background), shrinks a little and blurs / fades, always behind the next card.
+      gsap.fromTo(root, { opacity: 1, filter: 'blur(0px)', y: 0, scale: 1 }, { opacity: 0, filter: 'blur(10px)', y: () => window.innerHeight * 0.45, scale: 0.86, transformOrigin: '50% 50%', ease: 'none', immediateRender: false, scrollTrigger: { ...trigger, end: '75% top', invalidateOnRefresh: true } });
       if (skyRef.current) gsap.fromTo(skyRef.current, { opacity: 1 }, { opacity: 0, ease: 'none', immediateRender: false, scrollTrigger: { ...trigger, end: '60% top' } });
       gsap.fromTo(cue, { opacity: 1, y: 0 }, { opacity: 0, y: 24, ease: 'none', immediateRender: false, scrollTrigger: { ...trigger, end: '25% top' } });
     });

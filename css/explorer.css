@@ -194,7 +194,7 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-.mode-tab.active, .mode-tab[aria-pressed=true] {
+.mode-tab[aria-pressed=true] {
   color: #fff;
   background: rgba(255, 255, 255, 0.15);
 }
@@ -452,4 +452,946 @@
   color: var(--warm);
   font-size: 13px;
   font-family: var(--font-mono);
+}
+
+/* =============================================================
+ * Multi-Epoch Target Analysis: the same look as the story cards
+ * ============================================================= */
+#cwrap {
+  background: linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(8, 12, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+#cwrap #chh { position: relative; justify-content: center; text-align: center; }
+#cwrap #chh > div:first-child { flex: 1; }
+#cwrap #chh h2 { text-align: center; color: #fff; }
+#cwrap #chh .header-actions { position: absolute; top: 0; right: 0; }
+
+/* the swipe image: draggable divider (grab anywhere on the picture) */
+#sw { cursor: ew-resize; touch-action: none; user-select: none; -webkit-user-select: none; }
+#sw img { -webkit-user-drag: none; user-select: none; pointer-events: none; }
+
+/* mode tabs, buttons, selects: the card-button look (thin white outline, 6px corners, blue hover / selected) */
+.mode-toolbar { background: none; border: 0; padding: 0; border-radius: 0; gap: 8px; flex-wrap: wrap; width: min(100%, 70vh); }
+#cwrap .mode-toolbar .mode-tab { flex: 1 1 auto; white-space: nowrap; }
+#cwrap .mode-tab,
+#cwrap .b {
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  transform: none;
+}
+#cwrap .mode-tab:hover,
+#cwrap .b:hover {
+  background: rgba(143, 211, 255, 0.14);
+  border-color: var(--cool);
+  color: var(--cool);
+  box-shadow: none;
+  transform: none;
+}
+#cwrap .mode-tab[aria-pressed=true] {
+  background: rgba(143, 211, 255, 0.14);
+  border-color: var(--cool);
+  color: var(--cool);
+}
+#cwrap .row label, #cwrap .toggle-pill { color: #fff; }
+#cwrap .row select {
+  min-height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  font-size: 13px;
+}
+#cwrap .row select option { background: #0a0f1a; color: #fff; }
+#cwrap .row input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  outline: none;
+}
+#cwrap .row input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  cursor: pointer;
+}
+#cwrap .row input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 0; cursor: pointer; }
+#cwrap input[type=checkbox] { accent-color: var(--cool); }
+
+/* inner boxes like the cards' boxes */
+#cwrap #cap2 {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  color: #fff;
+}
+#cwrap #cap2 .dm { color: #fff; opacity: 0.75; }
+#cwrap #contamCrossmatchBar { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.09); border-radius: 16px; }
+#cwrap .tg, #cwrap .diff-hud, #cwrap .coadd-hud { border-radius: 6px; }
+
+/* ---- Multi-Epoch Target Analysis, part 2: fits the screen, centred, orange hover, card dropdowns ---- */
+#chg:not([hidden]) { display: flex; }
+#cwrap { margin: auto; width: 100%; box-sizing: border-box; padding: 22px 30px 26px; scrollbar-width: none; }
+#chg::-webkit-scrollbar, #cwrap::-webkit-scrollbar { display: none; }
+#chg { scrollbar-width: none; }
+#cwrap #chh { margin-bottom: 14px; }
+
+/* pictures a little smaller so the whole card fits a 900px screen */
+#sw, #cs { width: min(100%, 50vh); }
+#mv, #diffView { width: min(100%, 62vh); margin-left: auto; margin-right: auto; }
+.mode-toolbar, .row { width: min(100%, 62vh); }
+@media (min-height: 1000px) { #sw, #cs { width: min(100%, 58vh); } #mv, #diffView { width: min(100%, 70vh); } .mode-toolbar, .row { width: min(100%, 70vh); } }
+
+/* orange hover / selected, like the buttons of the story cards */
+#cwrap .mode-tab:hover,
+#cwrap .b:hover,
+#cwrap .mode-tab[aria-pressed=true] {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm);
+}
+#cwrap input[type=checkbox] { accent-color: var(--warm); }
+
+/* dropdowns (ui/dropdown.js) sized for the control rows */
+#cwrap .row .sel-dd { width: auto; min-width: 150px; flex: 0 1 auto; }
+#cwrap .row .sel-btn { height: 36px; padding: 0 12px; font-size: 13px; gap: 8px; }
+#cwrap #contamCrossmatchBar .sel-dd { min-width: 160px; }
+#cwrap #contamCrossmatchBar .sel-btn { height: 30px; font-size: 12px; }
+
+/* right panel: headings centred, texts left */
+#cwrap #cr1 h3 { text-align: center; font-size: 16px; font-weight: 600; margin: 14px 0 8px; }
+
+/* ---- Multi-Epoch Target Analysis, part 3: the toolbar (five views + Locate) runs across the whole card; the
+ *      controls and the cross-match bar are full width under the picture and the panel ---- */
+#cwrap .mode-toolbar { width: 100%; margin: 0 0 16px; gap: 10px; flex-wrap: nowrap; }
+#cwrap .mode-toolbar .mode-tab { flex: 1 1 0; min-width: 0; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 8px; }
+#cwrap .mode-toolbar #fly2 { margin: 0; }
+#cwrap .mode-controls { margin-top: 16px; }
+#cwrap .mode-controls .row { width: 100%; margin: 10px 0 0; justify-content: center; }
+#cwrap .mode-controls .row input[type=range] { flex: 1 1 200px; max-width: 420px; }
+#cwrap .ring-toggle { display: flex; justify-content: center; margin: 12px auto 0; padding: 0; }
+#cwrap #contamCrossmatchBar { width: 100%; margin: 12px 0 0; justify-content: space-between; }
+
+/* texts on the picture: centred on one line */
+#cwrap #tgA { left: auto; right: calc(50% + 6px); }
+#cwrap #tgB { right: auto; left: calc(50% + 6px); }
+#cwrap #csT, #cwrap #mvT, #cwrap #diffT { left: 50%; right: auto; transform: translateX(-50%); white-space: nowrap; }
+#cwrap .diff-hud { top: auto; bottom: 12px; right: auto; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+#cwrap .coadd-hud { top: auto; bottom: 12px; right: auto; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+#chg #cwrap { margin: auto; }
+
+/* part 4: controls and cross-match bar back under the picture (left column), as before */
+#cwrap .mode-controls { margin-top: 0; }
+#cwrap #cg .row { width: min(100%, 62vh); margin: 10px auto 0; justify-content: flex-start; }
+#cwrap #cg .row input[type=range] { flex: 1; min-width: 120px; max-width: none; }
+#cwrap #cg #contamCrossmatchBar { width: min(100%, 62vh); margin: 10px auto 0; justify-content: space-between; }
+#cwrap #cg .ring-toggle { margin: 10px auto 0; }
+#sw, #cs { width: min(100%, 46vh); }
+#cwrap #cr1 #cap2 { margin-bottom: 6px; padding: 10px 14px; }
+#cwrap #cr1 h3 { margin: 8px 0 4px; }
+#cwrap #cr1 .small { margin: 4px 0; }
+#cwrap { padding-top: 18px; padding-bottom: 20px; }
+
+/* ---- part 5 ---- */
+/* no line between the title and the buttons */
+#cwrap #chh { border-bottom: 0; padding-bottom: 0; margin-bottom: 14px; }
+
+/* Scan colors: the picture on the right of the card; the controls and the cross-match bar span the whole card */
+#cwrap[data-mode="C"] #cg { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+#cwrap[data-mode="C"] #cg > div:first-child { display: contents; }
+#cwrap[data-mode="C"] #cg > aside { grid-column: 1; grid-row: 1; }
+#cwrap[data-mode="C"] #cg #cs { grid-column: 2; grid-row: 1; justify-self: center; align-self: start; margin: 0; }
+#cwrap[data-mode="C"] #cg .row,
+#cwrap[data-mode="C"] #cg #contamCrossmatchBar,
+#cwrap[data-mode="C"] #cg #aladinEmbedBox { grid-column: 1 / -1; width: 100%; margin: 0; box-sizing: border-box; }
+#cwrap[data-mode="C"] #cg #grC { justify-content: center; margin-top: 6px; }
+#cwrap[data-mode="C"] #cg #grC input[type=range] { flex: 1 1 320px; max-width: 520px; }
+#cwrap[data-mode="C"] #cg #cs { justify-self: end; }
+
+/* Scan colors: Play + Download are equal and together exactly as wide as the picture above them, flush with its edges */
+#cwrap[data-mode="C"] #cg #cs { width: min(100%, 46vh); }
+#cwrap[data-mode="C"] #cg #grC { justify-content: flex-start; flex-wrap: nowrap; gap: 10px; }
+#cwrap[data-mode="C"] #cg #grC input[type=range] { flex: 1 1 auto; max-width: none; min-width: 80px; }
+#cwrap[data-mode="C"] #cg #grC .b {
+  flex: 0 0 calc((min(100%, 46vh) - 10px) / 2);
+  box-sizing: border-box;
+  white-space: nowrap;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Scan colors: under the picture, first the Band slider (full picture width), then Play + Download */
+#cwrap[data-mode="C"] #cg #grC {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  width: min(100%, 46vh);
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+#cwrap[data-mode="C"] #cg #grC label { flex: 0 0 40px; }
+#cwrap[data-mode="C"] #cg #grC input[type=range] { flex: 1 1 calc(100% - 52px); min-width: 0; }
+#cwrap[data-mode="C"] #cg #grC .b { flex: 0 0 calc(50% - 5px); }
+#cwrap[data-mode="C"] #cg > aside { grid-row: 1 / span 2; }
+#cwrap[data-mode="C"] #cg #contamCrossmatchBar,
+#cwrap[data-mode="C"] #cg #aladinEmbedBox { grid-row: 3; }
+#cwrap[data-mode="C"] #cg { row-gap: 10px; }
+#cwrap[data-mode="C"] #cg #grC { margin-top: 0; }
+
+/* Scan colors: "Band" and its slider on one line; 10px between everything (picture, slider line, buttons) */
+#cwrap[data-mode="C"] #cg #grC { flex-wrap: wrap; column-gap: 10px; row-gap: 0; align-items: center; }
+#cwrap[data-mode="C"] #cg #grC label { order: 1; flex: 0 0 auto; margin: 0; }
+#cwrap[data-mode="C"] #cg #grC input[type=range] { order: 2; flex: 1 1 0; min-width: 0; margin: 0; }
+#cwrap[data-mode="C"] #cg #grC::after { content: ''; order: 3; flex: 0 0 100%; height: 0; }
+#cwrap[data-mode="C"] #cg #grC .b { order: 4; margin-top: 10px; flex: 0 0 calc(50% - 5px); }
+
+/* Scan colors, left column: the note joins the info box (one frame) and the chart fills the rest, down to the Play / Download row */
+#cwrap[data-mode="C"] #cg > aside { display: flex; flex-direction: column; align-self: stretch; min-height: 0; }
+#cwrap[data-mode="C"] #cg > aside #asC { display: contents; }
+#cwrap[data-mode="C"] #cg > aside #cap2 { order: 1; margin-bottom: 0; border-bottom: 0; border-radius: 16px 16px 0 0; padding-bottom: 4px; }
+#cwrap[data-mode="C"] #cg > aside #asC > p {
+  order: 2;
+  margin: 0 0 12px;
+  padding: 0 16px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.5;
+}
+#cwrap[data-mode="C"] #cg > aside #asC > h3 { order: 3; margin-top: 4px; }
+#cwrap[data-mode="C"] #cg > aside #cch { order: 4; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; min-height: 0; }
+#cwrap[data-mode="C"] #cg > aside #cch svg { max-height: 100%; width: 100%; height: auto; }
+#cwrap[data-mode="C"] #cg > aside #cch { align-items: flex-end; }
+
+/* Scan colors, left column swapped: the chart on top, the info box (with its note) at the bottom, level with Play / Download */
+#cwrap[data-mode="C"] #cg > aside #asC > h3 { order: 1; margin: 0 0 4px; }
+#cwrap[data-mode="C"] #cg > aside #cch { order: 2; align-items: center; }
+#cwrap[data-mode="C"] #cg > aside #cap2 { order: 3; margin-top: 8px; }
+#cwrap[data-mode="C"] #cg > aside #asC > p { order: 4; margin-bottom: 0; }
+
+/* Scan colors: chart title on the left; the two sides closer (the right side is exactly as wide as the picture) */
+#cwrap[data-mode="C"] #cg { grid-template-columns: minmax(0, 1fr) min(46vh, 50%); column-gap: 24px; }
+#cwrap[data-mode="C"] #cg > aside #asC > h3 { text-align: left; }
+#cwrap[data-mode="C"] #cg > aside #cch svg { max-width: 100%; }
+
+/* Scan colors: two equal halves, the 24px gap exactly on the middle of the card (and so of the screen); the picture
+   fills the right half in its own 4:3 shape (the cutouts are 720 x 540) */
+#cwrap[data-mode="C"] #cg { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; }
+#cwrap[data-mode="C"] #cg #cs { width: 100%; aspect-ratio: 4 / 3; justify-self: stretch; }
+#cwrap[data-mode="C"] #cg #grC { width: 100%; justify-self: stretch; }
+
+/* ---- Scan colors: the info box is one even block of text (same size, font, colour, weight) ---- */
+#cwrap[data-mode="C"] #cap2,
+#cwrap[data-mode="C"] #cap2 *,
+#cwrap[data-mode="C"] #asC > p,
+#cwrap[data-mode="C"] #asC > p * {
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+  color: #fff !important;
+  opacity: 1 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ---- the Cutout FOV / cross-match bar, split into two boxes in the style of the rest of the card ---- */
+#cwrap #contamCrossmatchBar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  background: none;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+}
+#cwrap #contamCrossmatchBar > .xm-fov,
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+#cwrap[data-mode="C"] #cg #contamCrossmatchBar { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+#cwrap #contamCrossmatchBar label,
+#cwrap #contamCrossmatchBar .xm-label,
+#cwrap #contamCrossmatchBar a,
+#cwrap #contamCrossmatchBar #contamFlagBadge {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #fff !important;
+  text-decoration: none;
+}
+#cwrap #contamCrossmatchBar a:hover { color: var(--warm) !important; }
+#cwrap #contamCrossmatchBar #contamFlagBadge {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 6px;
+  padding: 7px 12px;
+}
+#cwrap #contamCrossmatchBar .b { font-size: 13px; }
+#cwrap #contamCrossmatchBar .sel-btn { height: 36px; font-size: 13px; }
+/* both boxes: two tidy rows */
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks { display: grid; grid-template-columns: repeat(4, auto); justify-content: center; align-items: center; column-gap: 14px; row-gap: 10px; }
+#cwrap #contamCrossmatchBar #aladinEmbedBtn { grid-column: 1 / -1; justify-self: center; }
+#cwrap #contamCrossmatchBar > .xm-fov { row-gap: 10px; }
+
+/* Band slider: a round dot like the highlighted point of the chart */
+#cwrap #cw::-webkit-slider-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #cw::-moz-range-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+
+/* Cutout FOV box: the dropdown and the FLAG label are the same width, one exactly under the other */
+#cwrap #contamCrossmatchBar > .xm-fov {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+  column-gap: 12px;
+  row-gap: 10px;
+}
+#cwrap #contamCrossmatchBar > .xm-fov > label { grid-column: 1; grid-row: 1; }
+#cwrap #contamCrossmatchBar > .xm-fov > .sel-dd { grid-column: 2; grid-row: 1; width: 100%; min-width: 0; }
+#cwrap #contamCrossmatchBar > .xm-fov > #contamFlagBadge {
+  grid-column: 2;
+  grid-row: 2;
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  margin: 0;
+  text-align: center;
+}
+
+/* Band slider: a dot for every band on the line itself (like the points of the chart) */
+#cwrap #cw { height: 20px; background: none; border-radius: 0; --t: 95px; }
+#cwrap #cw::-webkit-slider-runnable-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+#cwrap #cw::-moz-range-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+
+/* the cross-match box mirrors the FOV box: label | wide button, then the three links on the field width */
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks {
+  grid-template-columns: 92px repeat(3, minmax(0, 1fr));
+  justify-content: stretch;
+  justify-items: center;
+  column-gap: 12px;
+  row-gap: 10px;
+}
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > .xm-label { grid-column: 1; grid-row: 1; justify-self: end; }
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > #aladinEmbedBtn { grid-column: 2 / -1; grid-row: 1; width: 100%; justify-self: stretch; }
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > a { grid-row: 2; }
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > #xrefSimbad { grid-column: 2; }
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > #xrefAladin { grid-column: 3; }
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > #xrefIrsa { grid-column: 4; }
+#cwrap #contamCrossmatchBar > .xm-fov { grid-template-columns: 92px minmax(0, 1fr); }
+#cwrap #contamCrossmatchBar > .xm-fov > label { justify-self: end; }
+
+/* cross-match links: three equal buttons on one row, together as wide as the "Toggle Live" button */
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > a {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks > a:hover {
+  background: rgba(255, 184, 107, 0.16);
+  border-color: var(--warm);
+  color: var(--warm) !important;
+}
+#cwrap #contamCrossmatchBar > #externalCrossmatchLinks { column-gap: 10px; }
+
+/* ---- live Aladin view: a proper card section, readable header, loading / fallback message ---- */
+#cwrap #aladinEmbedBox {
+  margin: 12px 0 0;
+  padding: 14px 16px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+#cwrap #aladinEmbedBox .aladin-head { flex-direction: column; gap: 4px; text-align: center; margin-bottom: 10px; font-size: 13px; }
+#cwrap #aladinEmbedBox strong { color: #fff; font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: 0; }
+#cwrap #aladinCoordReadout { color: #fff; opacity: 0.8; font-family: inherit; font-size: 13px; }
+#cwrap .aladin-frame { position: relative; border-radius: 10px; overflow: hidden; background: #02040a; }
+#cwrap #aladinIframe { display: block; width: 100%; height: clamp(240px, 38vh, 420px); border: 0; border-radius: 10px; background: #02040a; }
+#cwrap .aladin-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  text-align: center;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.5;
+  background: rgba(2, 4, 10, 0.72);
+  pointer-events: none;
+}
+#cwrap .aladin-status[data-kind="warn"] { pointer-events: none; }
+#cwrap .aladin-status[hidden] { display: none; }
+#cwrap #aladinEmbedBtn[aria-pressed="true"] { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+/* in Scan colors the box sits on its own row under the two boxes */
+#cwrap[data-mode="C"] #cg #aladinEmbedBox { grid-row: 4; }
+/* taller live view: Aladin stacks its left buttons (layers, locate, ...) with +/- below them; with room they no longer overlap */
+#cwrap #aladinIframe { height: clamp(460px, 62vh, 600px); }
+
+/* =============================================================
+ * Difference (B - A): same rules as Scan colors, arranged for this view
+ *   left: info box, the close-ups in one row, the method box   |   right: the picture, then Epoch A / B, Contrast, Invert
+ *   below, full width: the two boxes (Cutout FOV | Cross-Match)
+ * ============================================================= */
+#cwrap[data-mode="D"] #cg { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; row-gap: 10px; align-items: start; }
+#cwrap[data-mode="D"] #cg > div:first-child { display: contents; }
+#cwrap[data-mode="D"] #cg > aside { grid-column: 1; grid-row: 1 / span 3; display: flex; flex-direction: column; min-height: 0; }
+#cwrap[data-mode="D"] #cg #diffView { grid-column: 2; grid-row: 1; width: 100%; margin: 0; aspect-ratio: 4 / 3; justify-self: stretch; }
+#cwrap[data-mode="D"] #cg #grD { grid-column: 2; grid-row: 2; width: 100%; margin: 0; }
+#cwrap[data-mode="D"] #cg .ring-toggle { grid-column: 2; grid-row: 3; justify-self: start; margin: 0; }
+#cwrap[data-mode="D"] #cg #contamCrossmatchBar,
+#cwrap[data-mode="D"] #cg #aladinEmbedBox { grid-column: 1 / -1; width: 100%; margin: 0; box-sizing: border-box; }
+#cwrap[data-mode="D"] #cg #contamCrossmatchBar { grid-row: 4; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+#cwrap[data-mode="D"] #cg #aladinEmbedBox { grid-row: 5; }
+
+/* right: Epoch A / Epoch B on one row, Contrast with its slider, Invert as wide as the picture */
+#cwrap[data-mode="D"] #cg #grD {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 10px;
+  align-items: center;
+}
+#cwrap[data-mode="D"] #cg #grD .sel-dd { width: 100%; min-width: 0; }
+#cwrap[data-mode="D"] #cg #grD label[for="diffGain"] { grid-column: 1; grid-row: 2; }
+#cwrap[data-mode="D"] #cg #grD #diffGain { grid-column: 2 / -1; grid-row: 2; width: 100%; min-width: 0; margin: 0; }
+#cwrap[data-mode="D"] #cg #grD #invDiff { grid-column: 1 / -1; grid-row: 3; width: 100%; }
+
+/* left: the three blocks, the text of each one even (same size, font, colour) */
+#cwrap[data-mode="D"] #cg > aside #cap2 { order: 1; margin: 0; }
+#cwrap[data-mode="D"] #cg > aside #asM { order: 2; display: flex; flex-direction: column; }
+#cwrap[data-mode="D"] #cg > aside #asM > h3 { text-align: left; margin: 12px 0 6px; }
+#cwrap[data-mode="D"] #cg #strip { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 0 0 4px; }
+#cwrap[data-mode="D"] #cg #strip .cell-date { font-size: 10px; }
+#cwrap[data-mode="D"] #cg #asN { margin-top: 10px; }
+#cwrap[data-mode="D"] #cg #asN > * { margin-top: 0; }
+#cwrap[data-mode="D"] #cap2,
+#cwrap[data-mode="D"] #cap2 *,
+#cwrap[data-mode="D"] #asN,
+#cwrap[data-mode="D"] #asN * {
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  color: #fff !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  opacity: 1 !important;
+}
+#cwrap[data-mode="D"] #asN > div,
+#cwrap[data-mode="D"] #asN .metric-box {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 16px !important;
+  padding: 10px 14px !important;
+  margin: 0 0 8px !important;
+  box-shadow: none !important;
+}
+#cwrap[data-mode="D"] #asN .metric-grid { gap: 6px 14px; margin: 4px 0; }
+#cwrap[data-mode="D"] #asN p { margin: 6px 0 0 !important; }
+#cwrap[data-mode="D"] #cg { grid-template-rows: auto auto 1fr auto auto; }
+#cwrap[data-mode="D"] #cg #strip { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+#cwrap[data-mode="D"] #cg .ring-toggle { align-self: start; }
+/* Difference: a little tighter so the whole card fits the screen */
+#cwrap[data-mode="D"] { padding-top: 12px; padding-bottom: 12px; }
+#cwrap[data-mode="D"] #chh { margin-bottom: 8px; }
+#cwrap[data-mode="D"] .mode-toolbar { margin-bottom: 10px; }
+#cwrap[data-mode="D"] #cg { row-gap: 8px; }
+#cwrap[data-mode="D"] #cap2, #cwrap[data-mode="D"] #cap2 *, #cwrap[data-mode="D"] #asN, #cwrap[data-mode="D"] #asN * { line-height: 1.4 !important; }
+#cwrap[data-mode="D"] #contamCrossmatchBar > .xm-fov,
+#cwrap[data-mode="D"] #contamCrossmatchBar > #externalCrossmatchLinks { padding: 8px 14px; row-gap: 8px; }
+#cwrap[data-mode="D"] #asN > div, #cwrap[data-mode="D"] #asN .metric-box { padding: 8px 14px !important; }
+
+/* Contrast slider: exactly the Band slider of Scan colors (dots on the line, round orange handle) */
+#cwrap #diffGain { height: 20px; background: none; border-radius: 0; --t: 60px; }
+#cwrap #diffGain::-webkit-slider-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #diffGain::-moz-range-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #diffGain::-webkit-slider-runnable-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+#cwrap #diffGain::-moz-range-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+
+/* texts on the difference picture: "Subtracted ..." on top, the white "DIFFERENCE SUBTRACTION" line right under it */
+#cwrap #diffT { top: 10px; }
+#cwrap .diff-hud {
+  top: 46px;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(3, 5, 8, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* =============================================================
+ * Watch it move: same rules as Scan colors / Difference, arranged for this view
+ *   left: info box, the close-ups in one row, the metrics, the motion chart, the notes   |   right: the picture,
+ *   the object picker, Pass slider + Play, the four options   |   below, full width: Cutout FOV | Cross-Match
+ * ============================================================= */
+#cwrap[data-mode="M"] #cg { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto auto; column-gap: 24px; row-gap: 8px; align-items: start; }
+#cwrap[data-mode="M"] #cg > div:first-child { display: contents; }
+#cwrap[data-mode="M"] #cg > aside { grid-column: 1; grid-row: 1 / span 3; display: flex; flex-direction: column; min-height: 0; }
+#cwrap[data-mode="M"] #cg #mv { grid-column: 2; grid-row: 1; width: 100%; margin: 0; aspect-ratio: 4 / 3; justify-self: stretch; }
+#cwrap[data-mode="M"] #cg #grM { grid-column: 2; grid-row: 2; width: 100%; margin: 0; }
+#cwrap[data-mode="M"] #cg .ring-toggle { grid-column: 2; grid-row: 3; justify-self: start; align-self: start; margin: 0; }
+#cwrap[data-mode="M"] #cg #contamCrossmatchBar,
+#cwrap[data-mode="M"] #cg #aladinEmbedBox { grid-column: 1 / -1; width: 100%; margin: 0; box-sizing: border-box; }
+#cwrap[data-mode="M"] #cg #contamCrossmatchBar { grid-row: 4; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+#cwrap[data-mode="M"] #cg #aladinEmbedBox { grid-row: 5; }
+
+/* right: object picker full width, then "Pass" + slider + Play on one line, then the four options in 2 x 2 */
+#cwrap[data-mode="M"] #cg #grM { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; row-gap: 8px; align-items: center; }
+#cwrap[data-mode="M"] #cg #grM > span.row { grid-column: 1 / -1; grid-row: 1; width: 100%; margin: 0; }
+#cwrap[data-mode="M"] #cg #grM > span.row .sel-dd { width: 100%; }
+#cwrap[data-mode="M"] #cg #grM label[for="ms"] { grid-column: 1; grid-row: 2; }
+#cwrap[data-mode="M"] #cg #grM #ms { grid-column: 2; grid-row: 2; width: 100%; min-width: 0; margin: 0; }
+#cwrap[data-mode="M"] #cg #grM #mp { grid-column: 3; grid-row: 2; min-width: 90px; }
+#cwrap[data-mode="M"] #cg #grM .toggle-pill {
+  grid-column: auto;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#cwrap[data-mode="M"] #cg #grM .toggle-pill:hover,
+#cwrap[data-mode="M"] #cg #grM .toggle-pill:has(input:checked) { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+#cwrap[data-mode="M"] #cg #grM .toggle-pill input { margin: 0; }
+#cwrap[data-mode="M"] #cg #grM .toggle-pill:has(input:checked) span { color: var(--warm) !important; text-shadow: none !important; font-weight: 400 !important; }
+
+/* Pass slider: the Band slider look (dots on the line, round orange handle) */
+#cwrap #ms { height: 20px; background: none; border-radius: 0; --t: 100px; }
+#cwrap #ms::-webkit-slider-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #ms::-moz-range-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #ms::-webkit-slider-runnable-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+#cwrap #ms::-moz-range-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+
+/* left: the blocks, the text of each one even (same size, font, colour); boxes in the card style */
+#cwrap[data-mode="M"] #cg > aside #cap2 { order: 1; margin: 0; }
+#cwrap[data-mode="M"] #cg > aside #asM { order: 2; display: flex; flex-direction: column; }
+#cwrap[data-mode="M"] #cg > aside #asM > h3 { text-align: left; margin: 10px 0 6px; }
+#cwrap[data-mode="M"] #cg #strip { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; gap: 6px; margin: 0 0 4px; }
+#cwrap[data-mode="M"] #cg #strip .cell-date { font-size: 10px; }
+#cwrap[data-mode="M"] #cg #asN { margin-top: 8px; }
+#cwrap[data-mode="M"] #cap2,
+#cwrap[data-mode="M"] #cap2 *,
+#cwrap[data-mode="M"] #asN,
+#cwrap[data-mode="M"] #asN *:not(svg):not(svg *) {
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  color: #fff !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  opacity: 1 !important;
+}
+#cwrap[data-mode="M"] #asN > div,
+#cwrap[data-mode="M"] #asN .metric-box {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 16px !important;
+  padding: 8px 14px !important;
+  margin: 0 0 8px !important;
+  box-shadow: none !important;
+}
+#cwrap[data-mode="M"] #asN .metric-grid { gap: 4px 14px; margin: 4px 0; }
+#cwrap[data-mode="M"] #asN p { margin: 4px 0 0 !important; }
+#cwrap[data-mode="M"] #asN svg { max-height: 150px; width: 100%; }
+#cwrap[data-mode="M"] #cwrap-pad { display: none; }
+#cwrap[data-mode="M"] { padding-top: 12px; padding-bottom: 12px; }
+#cwrap[data-mode="M"] #chh { margin-bottom: 8px; }
+#cwrap[data-mode="M"] .mode-toolbar { margin-bottom: 10px; }
+#cwrap[data-mode="M"] #contamCrossmatchBar > .xm-fov,
+#cwrap[data-mode="M"] #contamCrossmatchBar > #externalCrossmatchLinks { padding: 8px 14px; row-gap: 8px; }
+
+/* Watch it move, part 2: 4-column control grid (picker full width, Pass + slider + Play, options 2 x 2) and a more compact left column */
+#cwrap[data-mode="M"] #cg #grM { grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+#cwrap[data-mode="M"] #cg #grM > span.row { grid-column: 1 / -1; }
+#cwrap[data-mode="M"] #cg #grM label[for="ms"] { grid-column: 1; }
+#cwrap[data-mode="M"] #cg #grM #ms { grid-column: 2 / 4; }
+#cwrap[data-mode="M"] #cg #grM #mp { grid-column: 4; width: 100%; }
+#cwrap[data-mode="M"] #cg #grM .toggle-pill { grid-column: span 2; justify-content: flex-start; white-space: nowrap; }
+#cwrap[data-mode="M"] #cg #grM .toggle-pill:nth-of-type(n) { min-width: 0; }
+#cwrap[data-mode="M"] #asN .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px 10px; }
+#cwrap[data-mode="M"] #asN svg { max-height: 105px; }
+#cwrap[data-mode="M"] #cg #strip canvas { border-radius: 8px; }
+#cwrap[data-mode="M"] #cg > aside #asM > h3 { margin: 8px 0 4px; }
+#cwrap[data-mode="M"] #asN .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 14px; }
+#cwrap[data-mode="M"] #asN svg { max-height: 150px; }
+
+/* Scan colors: the Target ring toggle under the picture block, the boxes one row lower */
+#cwrap[data-mode="C"] #cg { grid-template-rows: auto auto 1fr auto auto; }
+#cwrap[data-mode="C"] #cg > aside { grid-row: 1 / span 3; }
+#cwrap[data-mode="C"] #cg .ring-toggle { grid-column: 2; grid-row: 3; justify-self: start; align-self: start; margin: 0; }
+#cwrap[data-mode="C"] #cg #contamCrossmatchBar { grid-row: 4; }
+#cwrap[data-mode="C"] #cg #aladinEmbedBox { grid-row: 5; }
+
+/* Scan colors: "Target ring" as a full-width row of the right column, exactly between Play / Download and the Cross-Match box */
+#cwrap[data-mode="C"] #cg .ring-toggle {
+  grid-column: 2;
+  grid-row: 3;
+  justify-self: stretch;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#cwrap[data-mode="C"] #cg .ring-toggle:hover,
+#cwrap[data-mode="C"] #cg .ring-toggle:has(input:checked) { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+#cwrap[data-mode="C"] #cg .ring-toggle input { margin: 0; }
+#cwrap[data-mode="C"] #cg { row-gap: 8px; }
+#cwrap[data-mode="C"] { padding-top: 16px; padding-bottom: 16px; }
+
+/* "Target ring" as the same full-width button row in Difference and Watch it move */
+#cwrap:is([data-mode="D"], [data-mode="M"]) #cg .ring-toggle {
+  grid-column: 2;
+  grid-row: 3;
+  justify-self: stretch;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#cwrap:is([data-mode="D"], [data-mode="M"]) #cg .ring-toggle:hover,
+#cwrap:is([data-mode="D"], [data-mode="M"]) #cg .ring-toggle:has(input:checked) { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+#cwrap:is([data-mode="D"], [data-mode="M"]) #cg .ring-toggle input { margin: 0; }
+
+/* Watch it move: the four options are four equal buttons, 2 x 2, perfectly symmetric */
+#cwrap[data-mode="M"] #cg #grM { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 10px; row-gap: 10px; }
+#cwrap[data-mode="M"] #cg #grM .toggle-pill {
+  grid-column: span 2;
+  box-sizing: border-box;
+  width: 100%;
+  height: 38px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 10px;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  text-align: center;
+}
+#cwrap[data-mode="M"] #cg #grM .toggle-pill span { flex: 0 1 auto; }
+#cwrap[data-mode="M"] #cg #grM > span.row .sel-btn { height: 38px; }
+#cwrap[data-mode="M"] #cg #grM #mp { height: 38px; min-height: 38px; }
+
+/* =============================================================
+ * Flip timeline: same rules as the other modes
+ *   left: info box, the observation timeline, the flux chart   |   right: the picture, Date slider + Play, Target ring
+ *   below, full width: Cutout FOV | Cross-Match
+ * ============================================================= */
+#cwrap[data-mode="F"] { padding-top: 14px; padding-bottom: 14px; }
+#cwrap[data-mode="F"] #chh { margin-bottom: 8px; }
+#cwrap[data-mode="F"] .mode-toolbar { margin-bottom: 10px; }
+#cwrap[data-mode="F"] #cg { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto auto; column-gap: 24px; row-gap: 8px; align-items: start; }
+#cwrap[data-mode="F"] #cg > div:first-child { display: contents; }
+#cwrap[data-mode="F"] #cg > aside { grid-column: 1; grid-row: 1 / span 3; display: flex; flex-direction: column; min-height: 0; }
+#cwrap[data-mode="F"] #cg #sw { grid-column: 2; grid-row: 1; width: 100%; margin: 0; aspect-ratio: 4 / 3; justify-self: stretch; }
+#cwrap[data-mode="F"] #cg #grF { grid-column: 2; grid-row: 2; width: 100%; margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); column-gap: 10px; align-items: center; }
+#cwrap[data-mode="F"] #cg #grF label { grid-column: 1; }
+#cwrap[data-mode="F"] #cg #grF #fs { grid-column: 2; width: 100%; min-width: 0; margin: 0; }
+#cwrap[data-mode="F"] #cg #grF #fp { grid-column: 3; width: 100%; height: 38px; min-height: 38px; }
+#cwrap[data-mode="F"] #cg #contamCrossmatchBar,
+#cwrap[data-mode="F"] #cg #aladinEmbedBox { grid-column: 1 / -1; width: 100%; margin: 0; box-sizing: border-box; }
+#cwrap[data-mode="F"] #cg #contamCrossmatchBar { grid-row: 4; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+#cwrap[data-mode="F"] #cg #aladinEmbedBox { grid-row: 5; }
+#cwrap[data-mode="F"] #cg #contamCrossmatchBar > .xm-fov,
+#cwrap[data-mode="F"] #cg #contamCrossmatchBar > #externalCrossmatchLinks { padding: 8px 14px; row-gap: 8px; }
+
+/* Date slider: the Band slider look (dots on the line, round orange handle) */
+#cwrap #fs { height: 20px; background: none; border-radius: 0; --t: 80px; }
+#cwrap #fs::-webkit-slider-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #fs::-moz-range-thumb { width: 20px; height: 20px; background: var(--warm); border: 0; box-shadow: 0 0 0 3px rgba(255, 184, 107, 0.25); }
+#cwrap #fs::-webkit-slider-runnable-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+#cwrap #fs::-moz-range-track {
+  height: 20px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 3.5px, transparent 4px) calc(10px - var(--t) / 2) 50% / var(--t) 100% repeat-x,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 10px 50% / calc(100% - 20px) 4px no-repeat;
+}
+
+/* "Target ring" as the same full-width button row */
+#cwrap[data-mode="F"] #cg .ring-toggle {
+  grid-column: 2;
+  grid-row: 3;
+  justify-self: stretch;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#cwrap[data-mode="F"] #cg .ring-toggle:hover,
+#cwrap[data-mode="F"] #cg .ring-toggle:has(input:checked) { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+#cwrap[data-mode="F"] #cg .ring-toggle input { margin: 0; }
+
+/* left: the three blocks, titles on the left, the text of each one even (same size, font, colour) */
+#cwrap[data-mode="F"] #cg > aside #cap2 { order: 1; margin: 0; }
+#cwrap[data-mode="F"] #cg > aside #asE { order: 2; display: flex; flex-direction: column; }
+#cwrap[data-mode="F"] #cg > aside #asE h3 { text-align: left; margin: 10px 0 4px; }
+#cwrap[data-mode="F"] #cap2,
+#cwrap[data-mode="F"] #cap2 *,
+#cwrap[data-mode="F"] #asE > p {
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  color: #fff !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  opacity: 1 !important;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+#cwrap[data-mode="F"] #asE > p { padding: 0; }
+#cwrap[data-mode="F"] #asE #tlx { margin: 4px 8px 12px; }
+#cwrap[data-mode="F"] #asE #chart svg { max-height: 190px; width: 100%; }
+#cwrap[data-mode="F"] #tgB { left: 50%; right: auto; transform: translateX(-50%); white-space: nowrap; }
+
+/* Watch it move: the Pass slider runs from right after the "Pass" text up to the Play button */
+#cwrap[data-mode="M"] #cg #grM label[for="ms"] { grid-column: 1; grid-row: 2; width: 34px; margin: 0; z-index: 1; }
+#cwrap[data-mode="M"] #cg #grM #ms { grid-column: 1 / 4; grid-row: 2; width: calc(100% - 44px); margin: 0 0 0 44px; justify-self: stretch; }
+
+
+/* =============================================================
+ * Swipe two dates: the same arrangement as Flip timeline
+ * ============================================================= */
+#cwrap[data-mode="S"] { padding-top: 14px; padding-bottom: 14px; }
+#cwrap[data-mode="S"] #chh { margin-bottom: 8px; }
+#cwrap[data-mode="S"] .mode-toolbar { margin-bottom: 10px; }
+#cwrap[data-mode="S"] #cg { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr auto auto; column-gap: 24px; row-gap: 8px; align-items: start; }
+#cwrap[data-mode="S"] #cg > div:first-child { display: contents; }
+#cwrap[data-mode="S"] #cg > aside { grid-column: 1; grid-row: 1 / span 3; display: flex; flex-direction: column; min-height: 0; }
+#cwrap[data-mode="S"] #cg #sw { grid-column: 2; grid-row: 1; width: 100%; margin: 0; aspect-ratio: 4 / 3; justify-self: stretch; }
+#cwrap[data-mode="S"] #cg #contamCrossmatchBar,
+#cwrap[data-mode="S"] #cg #aladinEmbedBox { grid-column: 1 / -1; width: 100%; margin: 0; box-sizing: border-box; }
+#cwrap[data-mode="S"] #cg #contamCrossmatchBar { grid-row: 4; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+#cwrap[data-mode="S"] #cg #aladinEmbedBox { grid-row: 5; }
+#cwrap[data-mode="S"] #cg #contamCrossmatchBar > .xm-fov,
+#cwrap[data-mode="S"] #cg #contamCrossmatchBar > #externalCrossmatchLinks { padding: 8px 14px; row-gap: 8px; }
+
+/* "Target ring" as the same full-width button row */
+#cwrap[data-mode="S"] #cg .ring-toggle {
+  grid-column: 2;
+  grid-row: 3;
+  justify-self: stretch;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#cwrap[data-mode="S"] #cg .ring-toggle:hover,
+#cwrap[data-mode="S"] #cg .ring-toggle:has(input:checked) { background: rgba(255, 184, 107, 0.16); border-color: var(--warm); color: var(--warm); }
+#cwrap[data-mode="S"] #cg .ring-toggle input { margin: 0; }
+
+/* left: the three blocks, titles on the left, the text of each one even (same size, font, colour) */
+#cwrap[data-mode="S"] #cg > aside #cap2 { order: 1; margin: 0; }
+#cwrap[data-mode="S"] #cg > aside #asE { order: 2; display: flex; flex-direction: column; }
+#cwrap[data-mode="S"] #cg > aside #asE h3 { text-align: left; margin: 10px 0 4px; }
+#cwrap[data-mode="S"] #cap2,
+#cwrap[data-mode="S"] #cap2 *,
+#cwrap[data-mode="S"] #asE > p {
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  color: #fff !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  opacity: 1 !important;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+#cwrap[data-mode="S"] #asE > p { padding: 0; }
+#cwrap[data-mode="S"] #asE #tlx { margin: 4px 8px 12px; }
+#cwrap[data-mode="S"] #asE #chart svg { max-height: 190px; width: 100%; }
+
+#cwrap[data-mode="S"] #cg #grS { grid-column: 2; grid-row: 2; width: 100%; margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 10px; align-items: center; }
+#cwrap[data-mode="S"] #cg #grS .sel-dd { width: 100%; min-width: 0; }
+#cwrap[data-mode="S"] #cg #sw { cursor: ew-resize; }
+
+/* Observation timeline: each date number sits right on its tick, the month label exactly under its numbers */
+#cwrap #tlx { height: 62px; margin-bottom: 14px; }
+#cwrap .tk span { display: block; line-height: 14px; text-align: center; }
+#cwrap .gl { top: 46px; color: #fff; font-family: inherit; font-size: 11px; transform: translateX(-50%); }
+
+/* Swipe two dates: the left date in the left corner of the picture, the right date in the right corner */
+#cwrap[data-mode="S"] #tgA { left: 10px; right: auto; transform: none; }
+#cwrap[data-mode="S"] #tgB { right: 10px; left: auto; transform: none; }
+
+/* =============================================================
+ * Phones (700px and below): the explorer is one column, in a sensible order. Desktop is not touched.
+ * ============================================================= */
+@media (max-width: 700px) {
+  #cwrap { padding: 16px 12px 18px !important; border-radius: 22px; }
+  #cwrap #chh h2 { font-size: 22px; padding: 0 36px; }
+  #cwrap .mode-toolbar { flex-wrap: wrap !important; gap: 8px; }
+  #cwrap .mode-toolbar .mode-tab { flex: 1 1 calc(50% - 8px) !important; white-space: normal !important; min-height: 40px; }
+  #cwrap[data-mode] #cg { display: flex !important; flex-direction: column; gap: 10px !important; }
+  #cwrap[data-mode] #cg > div:first-child { display: contents; }
+  #cwrap[data-mode] #cg > *, #cwrap[data-mode] #cg #sw, #cwrap[data-mode] #cg #mv, #cwrap[data-mode] #cg #cs, #cwrap[data-mode] #cg #diffView,
+  #cwrap[data-mode] #cg .row, #cwrap[data-mode] #cg .ring-toggle { grid-column: auto !important; grid-row: auto !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; justify-self: stretch !important; }
+  #cwrap[data-mode] #cg > aside { order: 20; }
+  #cwrap[data-mode] #cg #contamCrossmatchBar { order: 30; grid-template-columns: 1fr !important; gap: 10px !important; }
+  #cwrap[data-mode] #cg #aladinEmbedBox { order: 40; }
+  #cwrap[data-mode] #cg #grS, #cwrap[data-mode] #cg #grD { grid-template-columns: auto minmax(0, 1fr) !important; }
+  #cwrap[data-mode] #cg #grM { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  #cwrap[data-mode] #cg #grM .toggle-pill { grid-column: span 1 !important; font-size: 12px; padding: 0 6px; }
+  #cwrap[data-mode] #cg #grM label[for="ms"] { grid-column: 1 / -1 !important; }
+  #cwrap[data-mode] #cg #grM #ms { grid-column: 1 / 2 !important; margin: 0 !important; width: 100% !important; }
+  #cwrap[data-mode] #cg #grM #mp { grid-column: 2 / 3 !important; }
+  #cwrap[data-mode="C"] #cg #grC, #cwrap[data-mode="F"] #cg #grF { width: 100% !important; }
+  #cwrap #strip, #cwrap[data-mode] #cg #strip { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  #cwrap #externalCrossmatchLinks { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  #cwrap #externalCrossmatchLinks > .xm-label { grid-column: 1 / -1 !important; justify-self: start !important; }
+  #cwrap #externalCrossmatchLinks > #aladinEmbedBtn { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  #cwrap #externalCrossmatchLinks > a { grid-column: auto !important; grid-row: auto !important; font-size: 12px; padding: 4px; }
+  #cwrap #contamCrossmatchBar > .xm-fov { grid-template-columns: auto minmax(0, 1fr) !important; }
+}
+@media (max-width: 700px) {
+  #cwrap[data-mode] #cg #grM > span.row { grid-column: 1 / -1 !important; grid-row: 1 !important; width: 100% !important; }
+  #cwrap[data-mode] #cg #grM label[for="ms"] { grid-column: 1 / -1 !important; grid-row: 2 !important; width: auto !important; }
+  #cwrap[data-mode] #cg #grM #ms { grid-column: 1 / 2 !important; grid-row: 3 !important; margin: 0 !important; }
+  #cwrap[data-mode] #cg #grM #mp { grid-column: 2 / 3 !important; grid-row: 3 !important; }
+  #cwrap[data-mode] #cg #grM .toggle-pill { grid-row: auto !important; }
 }

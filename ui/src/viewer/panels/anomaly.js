@@ -2,6 +2,7 @@ import { $ } from '../dom';
 import { openModal, closeModal, dialogOf } from '../ui/modal';
 import { showToast } from '../ui/toast';
 import { downloadJson } from '../ui/download';
+import { enhanceSelect } from '../ui/dropdown';
 import { st, series } from '../explorer/state';
 
 // Share ▸ "Flag Candidate" (#anomalyModal): a citizen-science discovery report (JSON) for the target and pass
@@ -56,6 +57,8 @@ export function generateAnomalyReport() {
 }
 
 export function initAnomaly() {
+  enhanceSelect($('#candidateClassification'));
+  enhanceSelect($('#candidateConfidence'));
   $('#flagAnomalyBtn').onclick = () => {
     openModal(modal(), dialogOf(modal()));
     fillSummary();

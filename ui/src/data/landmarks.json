@@ -4,87 +4,87 @@
     0,
     0,
     "Toward the middle of the map",
-    "The middle of the map, where the Milky Way's glow is strongest.",
-    "We start at the middle of the map. In ordinary light, thick dust hides this part of the sky. SPHEREx sees infrared light, which passes through much of that dust, so the glowing band is our own galaxy, the Milky Way, seen edge-on from inside. The center of the galaxy lies roughly twenty-six thousand light-years from us."
+    "The middle of the map, where the Milky Way's glow is strongest.\n\nThe brightest, most crowded region of our galaxy, where stars and glowing dust pile up toward the constellation Sagittarius. A supermassive black hole sits at its heart, hidden behind thick dust that blocks visible light. That is why infrared maps like this one can reveal what our eyes cannot.",
+    "We start at the middle of the map. In ordinary light, thick dust hides this part of the sky. SPHEREx sees infrared light, which passes through much of that dust, so the glowing band is our own galaxy, the Milky Way, seen edge-on from inside. The center of the galaxy lies roughly twenty-six thousand light-years from us. The brightest, most crowded region of our galaxy, where stars and glowing dust pile up toward the constellation Sagittarius. A supermassive black hole sits at its heart, hidden behind thick dust that blocks visible light. That is why infrared maps like this one can reveal what our eyes cannot."
   ],
   [
     "Bubbles above the plane",
     6,
     22,
     "Gas and dust bubbles",
-    "Red shows cosmic dust, blue shows hot hydrogen gas, white shows stars.",
-    "Above the glowing band are bubbles and curls of gas and dust. In this map, red is cosmic dust, blue is hot hydrogen gas, and white is starlight. These are infrared colors our eyes cannot see, so they were mapped to visible ones."
+    "Red shows cosmic dust, blue shows hot hydrogen gas, white shows stars.\n\nTwo enormous clouds of hot gas rising above and below the galaxy’s disk, like giant balloons. They are thought to be leftovers from violent outbursts of the central black hole, or from past waves of star formation. They show that the heart of our galaxy has not always been quiet.",
+    "Above the glowing band are bubbles and curls of gas and dust. In this map, red is cosmic dust, blue is hot hydrogen gas, and white is starlight. These are infrared colors our eyes cannot see, so they were mapped to visible ones. Two enormous clouds of hot gas rising above and below the galaxy’s disk, like giant balloons. They are thought to be leftovers from violent outbursts of the central black hole, or from past waves of star formation. They show that the heart of our galaxy has not always been quiet."
   ],
   [
     "A big blue bubble",
     259,
     3,
     "A shell of hot gas",
-    "A large shell of hot hydrogen gas, drawn in blue, at galactic longitude about 260 degrees.",
-    "Here is a large shell of hot hydrogen gas, drawn in blue. Bubbles like this are often blown out by the winds of massive stars and by exploding stars."
+    "A large shell of hot hydrogen gas, drawn in blue, at galactic longitude about 260 degrees.\n\nA vast cavity of very thin, hot gas surrounding our own Solar System, known as the Local Bubble. It was blown open by a chain of supernova explosions long ago. Its edges are now rich in gas and dust, and new stars are forming there.",
+    "Here is a large shell of hot hydrogen gas, drawn in blue. Bubbles like this are often blown out by the winds of massive stars and by exploding stars. A vast cavity of very thin, hot gas surrounding our own Solar System, known as the Local Bubble. It was blown open by a chain of supernova explosions long ago. Its edges are now rich in gas and dust, and new stars are forming there."
   ],
   [
     "Large Magellanic Cloud",
     280.2,
     -33.1,
     "Large Magellanic Cloud",
-    "A small neighbor galaxy of the Milky Way, a bright knot well below the glowing band.",
-    "Well below the band is the Large Magellanic Cloud, a small galaxy that orbits the Milky Way, about one hundred and sixty thousand light-years away. It shows up here as a bright knot of stars and glowing gas."
+    "A small neighbor galaxy of the Milky Way, a bright knot well below the glowing band.\n\nThe brightest companion galaxy of the Milky Way, a fuzzy patch of light in the southern sky. It is full of young stars and glowing nebulae, including the Tarantula Nebula, one of the most active star-forming regions nearby. Its shape is slowly being reshaped by the gravity of our galaxy.",
+    "Well below the band is the Large Magellanic Cloud, a small galaxy that orbits the Milky Way, about one hundred and sixty thousand light-years away. It shows up here as a bright knot of stars and glowing gas. The brightest companion galaxy of the Milky Way, a fuzzy patch of light in the southern sky. It is full of young stars and glowing nebulae, including the Tarantula Nebula, one of the most active star-forming regions nearby. Its shape is slowly being reshaped by the gravity of our galaxy."
   ],
   [
     "Small Magellanic Cloud",
     302.5,
     -44.1,
     "Small Magellanic Cloud",
-    "Another small galaxy next to the Milky Way, seen as a faint smudge.",
-    "Nearby is the Small Magellanic Cloud, another companion galaxy, roughly two hundred thousand light-years away. It is fainter and smaller than its neighbor."
+    "Another small galaxy next to the Milky Way, seen as a faint smudge.\n\nA smaller, fainter companion galaxy next to the Large Cloud, stretched and distorted by the gravitational pull of its neighbors. Streams of gas connect the two Clouds. Its pulsating stars also helped astronomers learn how to measure distances across the universe.",
+    "Nearby is the Small Magellanic Cloud, another companion galaxy, roughly two hundred thousand light-years away. It is fainter and smaller than its neighbor. A smaller, fainter companion galaxy next to the Large Cloud, stretched and distorted by the gravitational pull of its neighbors. Streams of gas connect the two Clouds. Its pulsating stars also helped astronomers learn how to measure distances across the universe."
   ],
   [
     "Barnard's Star (Proper Motion)",
     31.0,
     14.1,
     "Barnard's Star",
-    "High proper-motion red dwarf star in Ophiuchus.",
-    "Barnard's Star moves faster across our sky than any other known star, shifting over 10 arcseconds each year across SPHEREx scans."
+    "High proper-motion red dwarf star in Ophiuchus.\n\nA faint red dwarf very close to us that moves across the sky faster than any other known star. Over a human lifetime it visibly shifts against the background stars. This makes it the perfect example of what “proper motion” means.",
+    "Barnard's Star moves faster across our sky than any other known star, shifting over 10 arcseconds each year across SPHEREx scans. A faint red dwarf very close to us that moves across the sky faster than any other known star. Over a human lifetime it visibly shifts against the background stars. This makes it the perfect example of what “proper motion” means."
   ],
   [
     "Planet X Candidate (450 AU)",
     175.4,
     -23.3,
     "Planet X Candidate",
-    "Hypothetical outer solar system world at 450 AU.",
-    "At 450 AU from the Sun, a hypothetical outer planet reflects almost no sunlight, but SPHEREx can search for its thermal emission and parallactic shift across survey passes."
+    "Hypothetical outer solar system world at 450 AU.\n\nA hypothetical giant planet far beyond Neptune, which has never been directly seen. Its existence is suggested by the strange alignment of orbits of distant icy objects. It remains unconfirmed, and finding it would change how we see our own Solar System.",
+    "At 450 AU from the Sun, a hypothetical outer planet reflects almost no sunlight, but SPHEREx can search for its thermal emission and parallactic shift across survey passes. A hypothetical giant planet far beyond Neptune, which has never been directly seen. Its existence is suggested by the strange alignment of orbits of distant icy objects. It remains unconfirmed, and finding it would change how we see our own Solar System."
   ],
   [
     "WISE 0855 (Cold Brown Dwarf)",
     235.0,
     23.4,
     "WISE 0855",
-    "Sub-freezing brown dwarf 7.5 light-years away drifting 8.1 arcsec/yr.",
-    "WISE 0855 is colder than water ice. Optical telescopes see blank sky, but SPHEREx detects it in infrared."
+    "Sub-freezing brown dwarf 7.5 light-years away drifting 8.1 arcsec/yr.\n\nA “failed star” so cold that its temperature is close to that of Earth. It gives off almost no visible light, only a faint infrared glow, so only infrared telescopes could discover it. That makes it a perfect target for an infrared mission like SPHEREx.",
+    "WISE 0855 is colder than water ice. Optical telescopes see blank sky, but SPHEREx detects it in infrared. A “failed star” so cold that its temperature is close to that of Earth. It gives off almost no visible light, only a faint infrared glow, so only infrared telescopes could discover it. That makes it a perfect target for an infrared mission like SPHEREx."
   ],
   [
     "Epsilon Indi B (Brown Dwarf Binary)",
     336.1,
     -48.1,
     "Epsilon Indi B",
-    "Cold binary brown dwarf pair traveling 4.7 arcsec/yr.",
-    "A pair of sub-stellar brown dwarfs orbiting each other 11.9 light-years away in the southern constellation Indus."
+    "Cold binary brown dwarf pair traveling 4.7 arcsec/yr.\n\nTwo brown dwarfs, objects too big to be planets but too small to become true stars, orbiting each other. They are the closest pair of their kind to us. Together they circle a nearby orange star that also hosts a giant planet.",
+    "A pair of sub-stellar brown dwarfs orbiting each other 11.9 light-years away in the southern constellation Indus. Two brown dwarfs, objects too big to be planets but too small to become true stars, orbiting each other. They are the closest pair of their kind to us. Together they circle a nearby orange star that also hosts a giant planet."
   ],
   [
     "RW Aurigae (Dust Eclipse)",
     174.2,
     -6.0,
     "RW Aurigae",
-    "Young eruptive star occulted by tidal circumstellar dust streams.",
-    "Periodic deep eclipses caused by dust filaments sweeping across the young T Tauri star."
+    "Young eruptive star occulted by tidal circumstellar dust streams.\n\nA young star still surrounded by leftover material from its birth. A close encounter with its companion star pulled streams of dust out of the disk, and when they pass in front of the star, it dims unpredictably. It is a rare chance to watch a planetary system’s raw material in action.",
+    "Periodic deep eclipses caused by dust filaments sweeping across the young T Tauri star. A young star still surrounded by leftover material from its birth. A close encounter with its companion star pulled streams of dust out of the disk, and when they pass in front of the star, it dims unpredictably. It is a rare chance to watch a planetary system’s raw material in action."
   ],
   [
     "R Draconis (Mira Variable)",
     98.5,
     38.2,
     "R Draconis",
-    "Pulsating red giant star with 245.6-day infrared brightness cycle.",
-    "R Draconis expands, cools, and pulses rhythmically, blowing enriched gas and dust into interstellar space."
+    "Pulsating red giant star with 245.6-day infrared brightness cycle.\n\nAn aging red giant that slowly swells and shrinks, so its brightness rises and falls in a regular cycle. It sheds dusty material into space as it pulsates. Stars like this offer a glimpse of the Sun’s far future.",
+    "R Draconis expands, cools, and pulses rhythmically, blowing enriched gas and dust into interstellar space. An aging red giant that slowly swells and shrinks, so its brightness rises and falls in a regular cycle. It sheds dusty material into space as it pulsates. Stars like this offer a glimpse of the Sun’s far future."
   ]
 ]

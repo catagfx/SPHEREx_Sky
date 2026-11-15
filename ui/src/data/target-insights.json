@@ -15,18 +15,18 @@
       "points": [
         { "x": 40, "y": 42, "label": "Pass 1 (23 Aug 2025): Baseline 0.0″ (Earth Apex)", "sub": "0.0″" },
         { "x": 150, "y": 88, "label": "Pass 2 (11 Feb 2026): Annual Parallax π = 458.4″ at 450 AU", "sub": "π = 458.4″" },
-        { "x": 260, "y": 45, "label": "Pass 3 (15 Feb 2026): 12-Month Orbit Reflex Closure (~39″/yr drift)", "sub": "12-Mo Loop" }
+        { "x": 260, "y": 45, "label": "Pass 3 (15 Feb 2026): 12 Month Orbit Reflex Closure (~39″/yr drift)", "sub": "12 Mo Loop" }
       ],
       "axis": [
         { "x": 40, "t": "Pass 1 (0.0″)", "anchor": "start" },
         { "x": 150, "t": "Pass 2 (π = 458.4″)", "anchor": "middle" },
         { "x": 260, "t": "Pass 3 (Loop)", "anchor": "end" }
       ],
-      "hint": "Illustrative 450 AU parallactic reflex loop (π = 206,265″/450 ≈ 458.4″). Click points to inspect multi-pass field."
+      "hint": "Illustrative 450 AU parallactic reflex loop (π = 206,265″/450 ≈ 458.4″). Click points to inspect multi pass field."
     },
     "note": {
       "title": "Scientific Honesty &amp; Detection Limits",
-      "text": "Reflected sunlight drops as 1/r⁴ (pure solar radiative equilibrium at 450 AU is ~13 K; internal Kelvin–Helmholtz core heat raises it to ~40–47 K). Because a single SPHEREx exposure reaches m ≈ 17, a 450 AU planet is 3–5 magnitudes fainter and requires multi-pass shift-and-stack co-addition."
+      "text": "Reflected sunlight drops as 1/r⁴ (pure solar radiative equilibrium at 450 AU is ~13 K; internal Kelvin–Helmholtz core heat raises it to ~40–47 K). Because a single SPHEREx exposure reaches m ≈ 17, a 450 AU planet is 3–5 magnitudes fainter and requires multi pass shift-and-stack co-addition."
     }
   },
   "wise0855": {
@@ -52,7 +52,7 @@
         { "x": 150, "t": "Pass 2 (+4.1″)", "anchor": "middle" },
         { "x": 260, "t": "Pass 3 (+8.0″)", "anchor": "end" }
       ],
-      "hint": "Linear astrometric proper motion. Click points to inspect multi-pass drift."
+      "hint": "Linear astrometric proper motion. Click points to inspect multi pass drift."
     }
   },
   "epsindi": {
@@ -78,7 +78,7 @@
         { "x": 175, "t": "Pass 2 (+4.7″)", "anchor": "middle" },
         { "x": 260, "t": "Pass 3 (+6.7″)", "anchor": "end" }
       ],
-      "hint": "Binary proper motion vector. Click points to inspect multi-pass drift."
+      "hint": "Binary proper motion vector. Click points to inspect multi pass drift."
     }
   },
   "barnard": {
@@ -92,7 +92,7 @@
       ]
     },
     "tracker": {
-      "title": "Barnard’s Star Proper Motion Vector (µ = 10.36″/yr)",
+      "title": "Barnard's Star Proper Motion Vector (µ = 10.36″/yr)",
       "path": "M 40,78 L 155,50 L 260,26",
       "points": [
         { "x": 40, "y": 78, "label": "Pass 1 (24 Aug 2025): Reference 0.00″ (Flux 246.3 MJy/sr)", "sub": "0.00″" },
@@ -104,7 +104,7 @@
         { "x": 155, "t": "Pass 2 (+5.7″)", "anchor": "middle" },
         { "x": 260, "t": "Pass 3 (+10.2″)", "anchor": "end" }
       ],
-      "hint": "Fastest stellar proper motion in our sky. Click points to inspect multi-pass drift."
+      "hint": "Fastest stellar proper motion in our sky. Click points to inspect multi pass drift."
     }
   },
   "rwaur": {

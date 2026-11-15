@@ -51,7 +51,7 @@ function asideHtml(frameA, frameB) {
     '<div class="metric-item"><span>Static Star Residual</span><strong style="color:#cfd5ea;">0 (128 Neutral Gray)</strong></div>' +
     '<div class="metric-item"><span>Motion Signature</span><strong style="color:var(--warm);">Bright/Dark Dipole</strong></div>' +
     '</div>' +
-    '<p class="small" style="margin:8px 0 0;"><strong>Astrophysical Method:</strong> In digital difference imaging, stationary cosmic background stars cancel out completely to zero. Moving bodies (asteroids, high-proper-motion stars, and Planet X candidates) produce a classic negative dark depression at Epoch A and a positive bright peak at Epoch B.</p></div>' +
+    '<p class="small" style="margin:8px 0 0;"><strong>Astrophysical Method:</strong> In digital difference imaging, stationary cosmic background stars cancel out completely to zero. Moving bodies (asteroids, high proper motion stars, and Planet X candidates) produce a classic negative dark depression at Epoch A and a positive bright peak at Epoch B.</p></div>' +
     (series().aside || '');
 }
 
@@ -95,11 +95,23 @@ export function renderDifference() {
   }
 
   $('#diffT').textContent = 'Subtracted: Epoch ' + (st.idb + 1) + ' (' + frameLabel(frameB) + ') minus Epoch ' + (st.ida + 1) + ' (' + frameLabel(frameA) + ')';
+  setGainDots();
   const aside = $('#asN');
   if (aside) aside.innerHTML = asideHtml(frameA, frameB);
 }
 
+/** Contrast slider: a dot for every step on the line (css/explorer.css reads --t, the pixel distance between two dots). */
+function setGainDots() {
+  const s = $('#diffGain');
+  if (!s) return;
+  const w = s.getBoundingClientRect().width;
+  const steps = Math.max(1, Math.round((+s.max - +s.min) / (+s.step || 1)));
+  if (w > 40) s.style.setProperty('--t', ((w - 20) / steps).toFixed(3) + 'px');
+}
+
 export function initDifference() {
+  window.addEventListener('resize', setGainDots);
+  $('#mD').addEventListener('click', () => requestAnimationFrame(() => requestAnimationFrame(setGainDots)));
   $('#sda').onchange = function () { st.ida = +this.value; renderDifference(); };
   $('#sdb').onchange = function () { st.idb = +this.value; renderDifference(); };
   $('#diffGain').oninput = function () { st.diffGain = +this.value; renderDifference(); };

@@ -8,6 +8,7 @@ import { openChange } from '../explorer';
 import { setSeries } from '../explorer/series';
 import { applyCutoutFov } from '../explorer/crossmatch';
 import { openIrsa, startIrsaJob } from './irsa';
+import { enhanceSelect } from '../ui/dropdown';
 
 // Header ▸ "Search RA/Dec" (#searchModal): type coordinates or pick a benchmark, then pan the globe there,
 // open the target's multi-pass data (catalog match within 0.4°), or process an IRSA cutout for any other field.
@@ -65,6 +66,7 @@ function inspectData() {
 }
 
 export function initSearch() {
+  enhanceSelect($('#searchFovSelect'));
   $('#searchBtn').onclick = () => {
     openModal(modal(), dialogOf(modal()));
     $('#raInput').focus();

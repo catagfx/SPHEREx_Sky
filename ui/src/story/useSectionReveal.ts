@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { prefersReducedMotion, isEmbed } from '../core/env';
+import { view } from '../viewer/sky/view';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -20,13 +21,37 @@ const clearProps = 'transform,filter,opacity,clipPath';
  * Plays once; clears its inline styles afterwards so CSS hovers and the viewer's hover springs keep working.
  * Sections do not all have every part (media, controls...): empty target lists are skipped.
  */
-export function useSectionReveal<T extends HTMLElement>() {
+export function useSectionReveal<T extends HTMLElement>(replay = false) {
   const ref = useRef<T>(null);
 
   useLayoutEffect(() => {
     const section = ref.current;
     const card = section?.querySelector<HTMLElement>('.showcase-card');
     if (!section || !card || instant) return;
+
+    if (replay) {
+      // Plays on EVERY arrival (down or back up), on the same trigger as the sky (viewer/story/sky-sync.js: the
+      // section reaching mid-screen), so the card comes in together with the background flight: it fades in
+      // while zooming out a little (1.1 -> 1), like the sky pulling back. Hidden again once off screen.
+      const hidden = () => gsap.set(card, { opacity: 0, scale: calm ? 1 : 1.1, transformOrigin: '50% 50%' });
+      // lasts exactly as long as the sky's flight (view.anim, started by viewer/story/sky-sync.js on the same trigger,
+      // so it is read one frame later); 1.1 s when there is none
+      const show = () => {
+        gsap.killTweensOf(card);
+        requestAnimationFrame(() => {
+          const anim = (view as { anim?: { dur: number } | null }).anim;
+          const flight = anim ? anim.dur / 1000 : 1.1;
+          gsap.fromTo(card, { opacity: 0, scale: calm ? 1 : 1.1 }, { opacity: 1, scale: 1, duration: calm ? 0.7 : flight, ease: 'power2.out', clearProps });
+        });
+      };
+      hidden();
+      const st = ScrollTrigger.create({
+        trigger: section, start: 'top center', end: 'bottom center',
+        onEnter: show, onEnterBack: show, onLeave: hidden, onLeaveBack: hidden,
+      });
+      const safety = window.setTimeout(() => { const r = section.getBoundingClientRect(); if (r.top < window.innerHeight / 2 && r.bottom > window.innerHeight / 2) show(); }, 1600);
+      return () => { window.clearTimeout(safety); st.kill(); gsap.killTweensOf(card); gsap.set(card, { clearProps }); };
+    }
 
     if (calm) {
       gsap.set(card, { opacity: 0 });

@@ -16,7 +16,13 @@ export const isAugust = (i) => EPOCHS[i].d.slice(5, 7) === '08';
 const dMin = Math.min.apply(0, days);
 const dMax = Math.max.apply(0, days);
 /** Timeline position (percent): spread evenly across 6–92 %. */
-const timelineX = (i) => 6 + ((days[i] - dMin) / Math.max(1, dMax - dMin)) * 86;
+const MIN_GAP = 12; // percent: two dates close in time never overlap
+const xs = [];
+days.forEach((d, i) => {
+  const proportional = 6 + ((d - dMin) / Math.max(1, dMax - dMin)) * 86;
+  xs.push(i === 0 ? proportional : Math.max(proportional, xs[i - 1] + MIN_GAP));
+});
+const timelineX = (i) => xs[i];
 
 const ticks = [];
 
@@ -69,9 +75,9 @@ export function renderEpochs() {
     $('#tgA').textContent = 'A  ' + niceDate(A.d);
     $('#sa').value = st.ia;
     $('#sb').value = st.ib;
-    $('#spos').value = st.pos;
   } else {
     $('#fs').value = st.cur;
+    setDateDots();
   }
 
   $('#tgB').textContent = (swipe ? 'B  ' : '') + niceDate(b.d);
@@ -103,12 +109,19 @@ function buildTimeline() {
     tl.appendChild(b);
     ticks.push(b);
   });
-  [['August 2025', 6], ['March 2026', 50], ['September 2026', 90]].forEach(([text, x]) => {
+  // one month label under each group of dates, centred exactly on its numbers
+  const groups = new Map();
+  EPOCHS.forEach((e, i) => {
+    const key = e.d.slice(0, 7);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(timelineX(i));
+  });
+  groups.forEach((list, key) => {
     const s = document.createElement('span');
     s.className = 'gl';
-    s.textContent = text;
-    s.style.left = x + '%';
-    s.style.transform = 'translateX(-' + (x > 50 ? 50 : 0) + '%)';
+    s.textContent = new Date(key + '-15T00:00:00Z').toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+    s.style.left = (list.reduce((a, b) => a + b, 0) / list.length) + '%';
+    s.style.transform = 'translateX(-50%)';
     tl.appendChild(s);
   });
 }
@@ -121,8 +134,10 @@ function initSwipeDrag() {
     st.pos = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
     render();
   };
+  sw.addEventListener('dragstart', (e) => e.preventDefault()); // a dragged <img> would cancel the pointer events
   sw.addEventListener('pointerdown', (e) => {
     if (st.mode !== 'S') return;
+    e.preventDefault();
     dragging = true;
     sw.setPointerCapture(e.pointerId);
     move(e);
@@ -131,7 +146,17 @@ function initSwipeDrag() {
   ['pointerup', 'pointercancel'].forEach((n) => sw.addEventListener(n, () => { dragging = false; }));
 }
 
+/** Date slider (Flip timeline): a dot for every date on the line (css/explorer.css reads --t, the pixel distance between two dots). */
+function setDateDots() {
+  const s = $('#fs');
+  if (!s) return;
+  const w = s.getBoundingClientRect().width;
+  if (w > 40) s.style.setProperty('--t', ((w - 20) / Math.max(1, NE - 1)).toFixed(3) + 'px');
+}
+
 export function initEpochs() {
+  window.addEventListener('resize', setDateDots);
+  $('#mF').addEventListener('click', () => requestAnimationFrame(() => requestAnimationFrame(setDateDots)));
   ['#sa', '#sb'].forEach((sel) => {
     EPOCHS.forEach((e, i) => {
       const o = document.createElement('option');
@@ -144,7 +169,6 @@ export function initEpochs() {
   buildTimeline();
   initSwipeDrag();
 
-  $('#spos').oninput = function () { st.pos = +this.value; render(); };
   $('#sa').onchange = function () { st.ia = +this.value; render(); };
   $('#sb').onchange = function () { st.ib = +this.value; render(); };
   $('#fs').oninput = function () { st.cur = +this.value; render(); };

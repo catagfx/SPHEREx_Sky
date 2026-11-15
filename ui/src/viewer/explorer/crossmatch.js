@@ -52,14 +52,39 @@ export function updateCrossmatch() {
   const frame = $('#aladinIframe');
   if (box && !box.hidden && frame) {
     if (frame.dataset.src !== aladinUrl) {
-      frame.src = aladinUrl;
-      frame.dataset.src = aladinUrl;
+      loadAladin(frame, aladinUrl);
     }
     const readout = $('#aladinCoordReadout');
     if (readout) {
-      readout.textContent = (s.name || 'Target') + ' · RA ' + ra.toFixed(4) + '°, Dec ' + (dec >= 0 ? '+' : '') + dec.toFixed(4) + '° · FOV ' + fov + '°';
+      readout.textContent = (s.name || 'Target') + ', RA ' + ra.toFixed(4) + '°, Dec ' + (dec >= 0 ? '+' : '') + dec.toFixed(4) + '°, FOV ' + fov + '°';
     }
   }
+}
+
+// The embedded view needs the CDS servers: show "loading" while it comes up, and a clear way out when it cannot
+// (offline, blocked, slow) instead of an empty black frame.
+let loadTimer = 0;
+function setStatus(text, kind) {
+  const el = $('#aladinStatus');
+  if (!el) return;
+  el.textContent = text;
+  el.dataset.kind = kind || '';
+  el.hidden = !text;
+}
+
+function loadAladin(frame, url) {
+  clearTimeout(loadTimer);
+  frame.dataset.src = url;
+  if (navigator.onLine === false) {
+    setStatus('You are offline. Connect to the internet to see the live Aladin Lite view, or open it later with the Aladin button.', 'warn');
+    return;
+  }
+  setStatus('Loading the live sky from CDS Aladin Lite...', 'load');
+  frame.onload = () => { clearTimeout(loadTimer); setStatus('', ''); };
+  frame.src = url;
+  loadTimer = setTimeout(() => {
+    setStatus('The live view is taking long or is blocked here. Use the Aladin button to open it in a new tab.', 'warn');
+  }, 9000);
 }
 
 /** Zoom the cutout views to match the chosen FOV (0.15° = closer, 0.50° = wider). */
@@ -86,7 +111,13 @@ export function initCrossmatch() {
       if (!box) return;
       box.hidden = !box.hidden;
       this.textContent = box.hidden ? 'Toggle Live Aladin / WISE View' : 'Hide Live Aladin / WISE View';
-      if (!box.hidden) updateCrossmatch();
+      this.setAttribute('aria-pressed', String(!box.hidden));
+      if (!box.hidden) {
+        updateCrossmatch();
+        const dlg = $('#chg');
+        requestAnimationFrame(() => box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
+        if (dlg) dlg.scrollTop = dlg.scrollTop; // keep the dialog scroll position valid
+      }
     };
   }
   const fovEl = $('#cutoutFovSelect');

@@ -28,6 +28,6 @@ export const LANDMARKS = landmarks;
 export const CONSTELLATIONS = constellations;
 
 export const ABOUT = [
-  'About SPHEREx',
+  'About SPHEREx SKY',
   "SPHEREx launched in March 2025. It maps the whole sky in 102 colors of near-infrared light (0.75 to 5.0 µm) every six months, making four all-sky maps in its two-year primary mission. The data are public through NASA's IRSA archive.",
 ];

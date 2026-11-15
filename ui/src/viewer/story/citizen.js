@@ -23,10 +23,12 @@ export function initCitizenSection() {
   };
   $('#storyFlagBtn').onclick = () => $('#flagAnomalyBtn').click();
 
-  $('#storyOpenIrsaModalBtn').onclick = () => {
+  $('#storyOpenIrsaModalBtn').onclick = (e) => {
+    e.currentTarget.blur(); // no focus state left behind: both buttons look identical again
     openIrsa(val('#storyIrsaRa'), val('#storyIrsaDec'), val('#storyIrsaName'), val('#storyIrsaEmail'));
   };
-  $('#storyIrsaSubmitBtn').onclick = () => {
+  $('#storyIrsaSubmitBtn').onclick = (e) => {
+    e.currentTarget.blur();
     openIrsa(val('#storyIrsaRa') || '269.4521', val('#storyIrsaDec') || '4.6934', val('#storyIrsaName') || "Barnard's Star", val('#storyIrsaEmail'));
     setTimeout(() => startIrsaJob(), 250);
   };

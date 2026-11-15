@@ -11,6 +11,7 @@ import { openChange } from '../explorer';
 import { setSeries, capFrames, addSeriesOption, renderSeries } from '../explorer/series';
 import { renderSpectrum } from '../explorer/spectrum';
 import { setTelemetry } from '../explorer/telemetry';
+import { enhanceSelect } from '../ui/dropdown';
 
 // Data ▸ "Data Releases & JSON Ingest" (#releaseModal): pick the survey release (passes available), re-index the
 // local FITS archive, load a custom candidate from JSON, or download the whole catalog as JSON.
@@ -83,6 +84,7 @@ function loadCustomCandidate() {
 }
 
 export function initRelease() {
+  enhanceSelect($('#surveyReleaseSelect'));
   $('#releaseMenuBtn').onclick = () => {
     closeDropdowns();
     openModal(modal(), dialogOf(modal()));

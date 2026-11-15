@@ -14,6 +14,7 @@ import { initSpectrum, renderSpectrum, nextChannel } from './spectrum';
 import { initDifference, renderDifference } from './difference';
 import { initCrossmatch } from './crossmatch';
 import { loadTelemetry } from './telemetry';
+import { enhanceSelect } from '../ui/dropdown';
 
 // "See it change" (#chg): the time-domain explorer dialog. This module owns the dialog, the mode toolbar and
 // the shared render(); each mode draws itself (epochs.js S/F, series.js M, spectrum.js C, difference.js D).
@@ -34,7 +35,8 @@ export function render() {
   $('#asE').hidden = M || C || D;
   $('#asM').hidden = !(M || D);
   $('#asC').hidden = !C;
-  $('#rgl').hidden = C;
+  $('#rgl').hidden = false;   // the target ring toggle works in every mode
+  $('#cwrap').dataset.mode = st.mode;   // css/explorer.css lays the dialog out per mode
   $('#mM').setAttribute('aria-pressed', M);
   $('#mC').setAttribute('aria-pressed', C);
   $('#mD').setAttribute('aria-pressed', D);
@@ -108,7 +110,6 @@ function bindPlay(sel, key, ms, step) {
   };
 }
 
-const COMET_SERIES = [];
 
 /** Where the target was in pass `frame`: its "RA x°, Dec y°" note, else the catalog coordinates. */
 function targetPosition(s, frame) {
@@ -121,22 +122,31 @@ function targetPosition(s, frame) {
  * "Locate in 360° Sky": close the dialog and fly to what it shows: the selected target where it was in the
  * selected pass (modes M / C / D), or Barnard's Star landmark (swipe / flip modes).
  */
+// the explorer's targets and the landmarks of the globe they correspond to (LANDMARKS index)
+const LANDMARK_OF = { barnard: 5, planetx: 6, wise0855: 7, epsindi: 8, rwaur: 9, rdraconis: 10 };
+
 function locateInSky() {
   const s = series();
   const fieldMode = st.mode === 'M' || st.mode === 'C' || st.mode === 'D';
-  const pos = fieldMode && s && COMET_SERIES.indexOf(s.id) < 0 ? targetPosition(s, st.FR[st.fi]) : null;
+  // the target on screen (field modes) or Barnard's Star (swipe / flip): the landmark of that very target
+  const idx = fieldMode && s ? LANDMARK_OF[s.id] : LANDMARK_OF.barnard;
+  const h = idx !== undefined ? LANDMARKS[idx] : null;
+  // open the globe in Landmarks mode, so the landmark is there with its strip and label
+  window.dispatchEvent(new CustomEvent('spherex:free-look', { detail: { mode: 'landmarks' } }));
+  closeChange();
+  if (h) {
+    fly(h);
+    showCard(h[3], h[4]);
+    return;
+  }
+  // a target without a landmark (JSON ingest, processed IRSA job): fly to its position
+  const pos = fieldMode && s ? targetPosition(s, st.FR[st.fi]) : null;
   if (pos) {
     const g = radecToGal(pos.ra, pos.dec);
     const name = s.name || s.label;
-    closeChange();
     fly([name, g.l, g.b], 35);
     showCard(name, s.blurb || s.caption || '');
-    return;
   }
-  const h = LANDMARKS[5];
-  closeChange();
-  fly(h);
-  showCard(h[3], h[4]);
 }
 
 export function initExplorer() {
@@ -163,6 +173,7 @@ export function initExplorer() {
   $('#chb').onclick = () => openChange('S');
   $('#fly2').onclick = locateInSky;
 
+  document.querySelectorAll('#cwrap select').forEach(enhanceSelect);
   setSeries(0);
   loadTelemetry(() => { if (!$('#chg').hidden) render(); });
 }

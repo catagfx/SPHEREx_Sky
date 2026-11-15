@@ -20,6 +20,15 @@ const DEFAULT_BANDS = [
 ];
 
 /** The spectrum shown in mode C: { isComet, targetName, wMin, wMax, ticks, unit, points[] }. */
+/** Band slider: one dot per band on the line (css/explorer.css reads --t, the pixel distance between two dots). */
+function setBandDots() {
+  const s = $('#cw');
+  if (!s) return;
+  const w = s.getBoundingClientRect().width;
+  if (w > 40) s.style.setProperty('--t', ((w - 20) / Math.max(1, st.CN - 1)).toFixed(3) + 'px');
+}
+window.addEventListener('resize', setBandDots);
+
 export function activeSpectrum() {
   const s = series();
   if (!s || COMET_SERIES.indexOf(s.id) > -1) {
@@ -47,7 +56,7 @@ export function activeSpectrum() {
       const fr = frames[idx % Math.max(1, frames.length)] || frames[0] || { u: 'assets/m_ba_0.jpg', x: 0.5, y: 0.5, d: '2025-08-15', t: '00:00', b: b.det };
       return {
         wl: b.wl_um, f: b.flux_mjy_sr, u: fr.u, x: fr.x, y: fr.y, d: fr.d, t: fr.t || '00:00',
-        b: 'SPHEREx ' + b.det + ' (' + b.wl_um.toFixed(2) + ' µm) — ' + b.note + ' · ' + b.flux_mjy_sr.toFixed(3) + ' MJy/sr',
+        b: 'SPHEREx ' + b.det + ' (' + b.wl_um.toFixed(2) + ' µm)' + (b.note ? ', ' + b.note : '') + ', ' + b.flux_mjy_sr.toFixed(3) + ' MJy/sr',
         det: b.det,
         note: b.note,
       };
@@ -89,18 +98,20 @@ export function renderSpectrum() {
   const ring = $('#csR');
   ring.style.left = e.x * 100 + '%';
   ring.style.top = e.y * 100 + '%';
-  $('#csT').textContent = e.wl.toFixed(3) + ' µm · ' + e.det + ' (channel ' + (st.ci + 1) + ' of ' + st.CN + ')';
+  ring.hidden = !$('#rgk').checked;
+  $('#csT').textContent = e.wl.toFixed(3) + ' µm, ' + e.det + ' (channel ' + (st.ci + 1) + ' of ' + st.CN + ')';
   $('#cw').value = st.ci;
+  setBandDots();
 
   $('#cap2').innerHTML = spec.isComet
     ? cometCaption(e)
-    : '<b>' + spec.targetName + ' — ' + e.wl.toFixed(2) + ' µm (' + e.det + ')</b><br>Measured FITS Surface Brightness: <b style="color:#8fd3ff;">' +
-      e.f.toFixed(3) + ' MJy/sr</b> · ' + (e.note || 'Level 2 LVF spectrophotometry') + '<br><span class="dm">' + e.b + '</span>';
+    : '<b>' + spec.targetName + ', ' + e.wl.toFixed(2) + ' µm (' + e.det + ')</b><br>Measured FITS Surface Brightness: <b style="color:#8fd3ff;">' +
+      e.f.toFixed(3) + ' MJy/sr</b>, ' + (e.note || 'Level 2 LVF spectrophotometry') + '<br><span class="dm">' + e.b + '</span>';
 
   const x = (w) => chartX(w, spec.wMin, spec.wMax);
   let svg = '<svg viewBox="0 0 300 136" role="img" aria-label="Spectrophotometric brightness versus wavelength."><line x1="30" y1="104" x2="292" y2="104" stroke="#2a3558"/>';
   spec.ticks.forEach((w) => { svg += '<text x="' + x(w) + '" y="120" fill="#8e98b8" font-size="9" text-anchor="middle">' + w.toFixed(1) + '</text>'; });
-  svg += '<text x="161" y="132" fill="#8e98b8" font-size="9" text-anchor="middle">wavelength (µm) — ' + spec.unit + '</text>';
+  svg += '<text x="161" y="132" fill="#8e98b8" font-size="9" text-anchor="middle">wavelength (µm), ' + spec.unit + '</text>';
   if (spec.isComet) {
     svg += '<line x1="' + x(4.26) + '" y1="8" x2="' + x(4.26) + '" y2="104" stroke="#8fd3ff" stroke-dasharray="4 4"/><text x="' + (x(4.26) + 4) + '" y="16" fill="#8fd3ff" font-size="9">carbon dioxide, 4.26 µm</text>';
   } else {

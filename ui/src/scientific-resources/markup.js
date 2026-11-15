@@ -151,7 +151,7 @@ export function createModal(doc = document) {
   const headings = el(doc, 'div', 'sr-dialog-headings');
   const title = el(doc, 'h2', 'sr-title', 'Scientific Resources');
   title.id = TITLE_ID;
-  headings.append(el(doc, 'p', 'sr-eyebrow', 'Canadian Space Agency · NEOSSat'), title);
+  headings.append(title);
   const close = el(doc, 'button', 'sr-close');
   close.type = 'button';
   close.setAttribute('aria-label', 'Close Scientific Resources');

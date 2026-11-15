@@ -2,6 +2,7 @@ import { $, $$ } from '../dom';
 import { FIELD } from '../../data';
 import { openModal, closeModal, dialogOf } from '../ui/modal';
 import { showToast } from '../ui/toast';
+import { enhanceSelect } from '../ui/dropdown';
 import { parseCoord } from '../sky/coords';
 import { openChange } from '../explorer';
 import { setSeries, addSeriesOption } from '../explorer/series';
@@ -105,7 +106,7 @@ function registerTarget(item) {
 function bannerHtml(job) {
   const em = job.email_result || {};
   const tag = job.is_synthetic
-    ? '<div style="margin-bottom:6px;padding:4px 8px;border-radius:6px;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.5);color:#fde68a;font-weight:700;">⚠️ ILLUSTRATIVE SYNTHETIC SIMULATION (NOT REAL IRSA DATA) — IRSA Hits: ' + (job.total_irsa_hits || 0) + '</div>'
+    ? '<div style="margin-bottom:6px;padding:4px 8px;border-radius:6px;background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.5);color:#fde68a;font-weight:700;">⚠️ ILLUSTRATIVE SYNTHETIC SIMULATION (NOT REAL IRSA DATA), IRSA Hits: ' + (job.total_irsa_hits || 0) + '</div>'
     : '<div style="margin-bottom:6px;padding:4px 8px;border-radius:6px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);color:#bbf7d0;font-weight:700;">✓ VERIFIED NASA / IPAC IRSA SPHEREx LEVEL 2 SCIENCE DATA (' + (job.total_irsa_hits || 3) + ' covering footprints)</div>';
   if (em.delivered || em.status === 'sent' || em.status === 'sent_smtp' || em.status === 'sent_mx') {
     return { bg: 'rgba(57, 229, 140, 0.12)', border: 'rgba(57, 229, 140, 0.4)',
@@ -133,8 +134,8 @@ function frameCard(f, idx, stamp) {
     '<img src="' + annotated + '?t=' + stamp + '" alt="Pass ' + pass + '">' +
     '<div class="irsa-frame-meta">' +
       '<strong>Pass ' + pass + ': ' + (f.d || f.date || '') + '</strong><br>' +
-      '<span>' + (f.t || f.time_ut || '') + ' UT · Det D' + det + ' (' + (f.wl || f.wavelength_um || '1.5') + ' µm)</span><br>' +
-      '<span style="color:var(--dim);">Obs: ' + (f.obs_id || '') + ' · Flag: ' + (f.contam_flag || '0x00').slice(0, 4) + '</span>' +
+      '<span>' + (f.t || f.time_ut || '') + ' UT, Det D' + det + ' (' + (f.wl || f.wavelength_um || '1.5') + ' µm)</span><br>' +
+      '<span style="color:var(--dim);">Obs: ' + (f.obs_id || '') + ', Flag: ' + (f.contam_flag || '0x00').slice(0, 4) + '</span>' +
     '</div>' +
     '<div class="irsa-frame-links">' +
       '<a href="' + annotated + '" target="_blank" rel="noopener">Annotated JPG</a>' +
@@ -264,6 +265,8 @@ export function startIrsaJob(autoOpenViewer) {
 }
 
 export function initIrsa() {
+  enhanceSelect($('#irsaDetSelect'));
+  enhanceSelect($('#irsaFovSelect'));
   $('#irsaRequestBtn').onclick = () => openIrsa();
   $('#closeIrsa').onclick = () => closeModal(modal(), dialogOf(modal()));
   $('#saveSmtpBtn').onclick = saveSmtp;

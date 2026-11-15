@@ -1,138 +1,304 @@
-# The Sky, Again and Again: Stand Inside the SPHEREx Sky
+# SPHEREx Sky: The Sky, Again and Again
 
 > **NASA Space Apps Challenge** — *Planet X and SPHEREx* Track  
 > A browser-native 3D celestial observatory, multi-epoch FITS cutout pipeline, and time-domain discovery platform for NASA's 102-band infrared all-sky survey.
 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://catagfx.github.io/SPHEREx_Sky/)
+[![Cloud Backend](https://img.shields.io/badge/Render%20Cloud-Backend%20Live-46E3B7?style=for-the-badge&logo=render)](https://spherex-sky-backend.onrender.com/)
+[![WebXR](https://img.shields.io/badge/WebXR-Meta%20Quest%203%20%2F%202%20%2F%20Pro-blueviolet?style=for-the-badge&logo=oculus)](https://catagfx.github.io/SPHEREx_Sky/)
+[![Three.js](https://img.shields.io/badge/Three.js-WebGL%20%2B%20WebXR-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
 ---
 
-## Quick Start (Run Locally on Any Computer)
+## 🌐 Live Demonstrations
 
-This project is 100% portable and works out-of-the-box on any Linux, macOS, or Windows machine without hardcoded paths. All pre-fetched NASA IRSA TAP catalog rows (`data/movers_hits.csv`) and 36 real calibrated SPHEREx Level 2 FITS cutouts (`data/movers_cutouts/*.fits` across 6 targets with 6 frames each) are bundled directly inside the repository.
+| Platform | URL | Capabilities |
+| :--- | :--- | :--- |
+| **Production Frontend** | **[https://catagfx.github.io/SPHEREx_Sky/](https://catagfx.github.io/SPHEREx_Sky/)** | 3D All-Sky Globe, Story Tour, 20 Constellations, 6 Benchmark Targets, WebXR Immersive Mode, 31 Pre-rendered Audio Voiceovers |
+| **Cloud API & Voice Server** | **[https://spherex-sky-backend.onrender.com](https://spherex-sky-backend.onrender.com)** | Real-time NASA IRSA Level 2 Cutouts, WCS Reprojection, FITS Telemetry API, SMTP Delivery, LiveKit WebRTC Voice Gateway |
+| **Meta Quest VR (WebXR)** | **[Open in Quest Browser](https://catagfx.github.io/SPHEREx_Sky/)** | 1-Click "Enter VR", 360° Floating Carousel, Controller Pointer & Hand Pinch Tracking, Upright Orbit Flight, Spatial Audio |
 
-### 1. Start the Full-Stack Server (Recommended — Includes Live IRSA Cutout & Email API)
-```bash
-git clone https://github.com/catagfx/SPHEREx-Sky.git
-cd SPHEREx-Sky
-pip install numpy astropy matplotlib pillow requests reproject
-python3 server.py
+---
+
+## 📑 Table of Contents
+
+1. [Overview & Scientific Vision](#-overview--scientific-vision)
+2. [Key Architecture & Features](#-key-architecture--features)
+   - [3D Celestial Sphere & Dual-Layer Infrared Shader](#1-360-all-sky-celestial-globe-webgl--threejs)
+   - [Meta Quest WebXR VR Observatory](#2-meta-quest-webxr-virtual-observatory)
+   - [Classical Constellations & 31 Vocal Narrations](#3-classical-constellations--vocal-audio-pipeline)
+   - [Time-Domain Target Explorer & Science Modes](#4-time-domain-target-explorer--scientific-analysis-modes)
+   - [NASA IRSA IPAC On-Demand Cutout Pipeline](#5-on-demand-nasa-irsa-ipac-cutout--email-studio)
+   - [LiveKit Voice Seminars & Collaborative VR](#6-livekit-voice-seminars--collaborative-vr)
+3. [Benchmark Scientific Targets](#-benchmark-scientific-targets)
+4. [Local Setup & Configuration Guide](#-local-setup--configuration-guide)
+   - [Prerequisites](#prerequisites)
+   - [1. Clone & Install Dependencies](#1-clone--install-dependencies)
+   - [2. Start the Local Unified Server](#2-start-the-local-unified-server)
+   - [3. Start with Frontend Development (Vite HMR)](#3-start-with-frontend-development-vite-hmr)
+   - [4. Run in Local VR (HTTPS SAN Mode)](#4-run-in-local-vr-https-san-mode)
+   - [5. Run Automated VR & E2E Test Suite](#5-run-automated-test-suite)
+5. [Cloud Deployment Architecture (Option 2)](#-cloud-deployment-architecture)
+6. [Known Limitations & Scientific Honesty](#-known-limitations--scientific-honesty)
+7. [Team & Contributors](#-team--contributors)
+8. [Data Attribution & Citation](#-data-attribution--citation)
+
+---
+
+## 🔭 Overview & Scientific Vision
+
+NASA's **SPHEREx** (Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer) maps the entire celestial sphere every 6 months across **102 near- and mid-infrared spectral bands** ($0.75\,\mu\text{m} - 5.0\,\mu\text{m}$).
+
+**SPHEREx Sky** transforms this monumental dataset into a real-time, interactive celestial laboratory accessible from any desktop browser, mobile phone, or Meta Quest VR headset:
+- **Spatial Dimension**: Seamlessly explore the 3D infrared sky with real celestial coordinates (RA/Dec and Galactic $l, b$).
+- **Spectral Dimension**: Switch between near-infrared starlight ($0.75-1.6\,\mu\text{m}$) and mid-infrared interstellar dust/ice emission ($2.4-5.0\,\mu\text{m}$).
+- **Temporal Dimension**: Track high-proper-motion stars, sub-stellar brown dwarf binaries, extreme dust-eclipsing variable stars, and hypothetical trans-Neptunian bodies across multiple survey epochs.
+
+---
+
+## ⚡ Key Architecture & Features
+
+```mermaid
+flowchart TD
+    subgraph ClientLayer["Frontend Client (Browser & Meta Quest VR)"]
+        UI["React 18 + TypeScript<br/>(Story Tour, Panels, Telemetry)"]
+        Three["Three.js WebGL / WebXR<br/>(3D Sky Globe, 360° VR Carousel)"]
+        Audio["Web Audio API + Fastly CDN<br/>(31 Pre-rendered MP3 Voiceovers)"]
+    end
+
+    subgraph StaticHost["GitHub Pages (Global CDN)"]
+        Dist["dist/<br/>• index.html<br/>• js/ui.bundle.js<br/>• assets/ (textures, MP3s)<br/>• Service Worker (Offline PWA)"]
+    end
+
+    subgraph CloudBackend["Render.com Cloud Service (Docker)"]
+        PyServer["Python Server (server.py)<br/>• NASA IRSA IPAC TAP Queries<br/>• WCS FITS Reprojection Engine<br/>• Level 2 Bitmask Analysis"]
+        VoiceServer["Node.js Voice Server (Port 8787)<br/>• LiveKit WebRTC Token Service<br/>• Multi-User Audio Rooms"]
+    end
+
+    subgraph NASA["NASA / JPL-Caltech Archives"]
+        IRSA["NASA/IPAC IRSA TAP<br/>(spherex.obscore)"]
+        FITS["Calibrated Level 2 FITS<br/>(0.75 - 5.0 µm)"]
+    end
+
+    ClientLayer -->|Static Assets & VR Bundle| StaticHost
+    ClientLayer -->|Dynamic /api/... Requests| PyServer
+    PyServer -->|Internal Proxy| VoiceServer
+    PyServer -->|TAP / WCS Cutouts| IRSA
+    IRSA --> FITS
 ```
-*(Optional: For static-only exploration without the live Python FITS cutout API, you can also run `python3 -m http.server 8080`.)*
 
-### 2. Optional SMTP Configuration (For Email Delivery)
-To send processed FITS cutout packages via email, copy `.env.example` to `.env` (which is git-ignored so credentials are never committed):
-```bash
-cp .env.example .env
-# Edit .env with your SMTP_USER and 16-character Gmail App Password (SMTP_PASS)
-```
-If no SMTP credentials are configured, the **IRSA Cutout Studio** still processes all FITS cutouts, animated blink GIFs, and difference maps right on the page and generates a downloadable `.eml` package and browser email preview.
+### 1. 360° All-Sky Celestial Globe (WebGL & Three.js)
+- Renders NASA/JPL-Caltech SPHEREx survey maps on an inverted celestial sphere ($R = 500$).
+- **Dual-Layer Shader**: Continuously blend between near-infrared stars/galaxies ($0.75-1.6\,\mu\text{m}$) and mid-infrared dust/ice features ($2.4-5.0\,\mu\text{m}$) with a live compare slider.
+- **Precision Astrometry**: Fully functional coordinate conversion between equatorial $(\alpha, \delta)$ and galactic $(l, b)$ reference frames.
+- **PWA & Offline-First**: Built-in Service Worker (`sw.js`) caches all essential assets, shaders, and textures for planetarium demonstrations without internet access.
 
-### Develop: `npm run dev` (only needed if you change the front end)
-The whole front end is one Vite build of `ui/src/`: React + TypeScript (intro, Story Tour page), the three.js viewer (globe, time-domain explorer, data panels) as JavaScript modules, GSAP (ScrollTrigger, SplitText) and Lenis, all from npm — see `ui/README.md`. The production page loads the pre-built, committed `js/ui.bundle.js`, so `python server.py` still runs with **no npm at all** (and no CDN: the globe works offline).
+### 2. Meta Quest WebXR Virtual Observatory
+- **Full 6-DoF Immersive Exploration**: Native WebXR session supporting Meta Quest 2, 3, 3S, and Pro.
+- **Dark Glass Floating UI**: Ergonomically anchored 360° carousel and wrist status panels at natural eye height ($y = 1.35\,\text{m}$ to $1.65\,\text{m}$).
+- **Spatial Interaction**: Dual controller laser raycasting and natural hand pinch gestures.
+- **Zero-Flicker Upright Travel**: Smooth 550 ms slerp navigation aligning target celestial directions without disorientation or disorienting roll.
+
+### 3. Classical Constellations & 31 Vocal Audio Narrations
+- **20 Classical Constellations**: 3D celestial figures rendered with additive line glow and star centroids on the sky globe.
+- **Dedicated Tangent-Plane SVG Diagrams**: Project stars accurately even near celestial poles (e.g., Draco, Ursa Minor).
+- **Dual Narration Engine**: 
+  - **31 Pre-rendered Studio MP3 Voiceovers** (20 constellations + 11 landmarks) served with HTTP 206 Partial Content byte-range streaming.
+  - Automatic fallback to Web Audio API buffer decoding and Web Speech API Synthesis for universal cross-platform playback.
+
+### 4. Time-Domain Target Explorer & Scientific Analysis Modes
+Six interactive analysis modes for investigating moving and variable infrared phenomena:
+- `M` — **Multi-Epoch Blink**: Automated sequential playback across survey epochs to detect astrometric motion or brightness shifts.
+- `S` — **Multi-Pass Split View**: Synchronized side-by-side epoch comparison.
+- `B` — **Animated Blink Comparator**: High-contrast toggling to expose sub-pixel motion.
+- `D` — **Difference Image Subtraction ($I_B - I_A$)**: Real-time digital subtraction isolating flux changes and moving residuals.
+- `C` — **6-Band Infrared Spectrophotometry**: D1 through D6 spectral energy distributions (SED) with detector wavelength band bars ($0.75\,\mu\text{m}$ to $5.0\,\mu\text{m}$).
+- `Z` — **Quality Bitmask Contamination Overlay**: Visualizes masked saturation cores (`BIT 1: 0x02`) and high-surface-brightness flags (`BIT 0: 0x01`).
+
+### 5. On-Demand NASA IRSA IPAC Cutout & Email Studio
+- Direct query integration with the **NASA/IPAC Infrared Science Archive (IRSA)** TAP interface (`spherex.obscore`).
+- Real-time WCS reprojection onto a North-Up tangent plane via `scripts/find_and_cut_movers.py`.
+- Automated animated GIF compilation and difference map generation.
+- Optional SMTP email dispatch delivering full FITS packages directly to researchers.
+
+### 6. LiveKit Voice Seminars & Collaborative VR
+- Integrated WebRTC voice conferencing for classroom astronomy lectures and collaborative sky exploration.
+- Host controls, dynamic speaker tokens, and microphone device selection.
+
+---
+
+## 🪐 Benchmark Scientific Targets
+
+| Target | Scientific Classification | Coordinates (J2000) | SPHEREx Time-Domain Phenomenon |
+| :--- | :--- | :--- | :--- |
+| **Barnard’s Star** | High Proper Motion Red Dwarf (M4.0V) | $\alpha = 17^\text{h} 57^\text{m} 48.5^\text{s}$<br>$\delta = +04^\circ 41' 36''$ | Fastest known proper motion ($10.39''/\text{yr}$). Massive multi-pixel drift across SPHEREx 6-month survey passes. |
+| **Epsilon Indi B** | Sub-Stellar Brown Dwarf Binary (T1 + T6) | $\alpha = 22^\text{h} 04^\text{m} 10.5^\text{s}$<br>$\delta = -56^\circ 46' 58''$ | Closest brown dwarf pair to Earth ($11.9\,\text{ly}$). Distinct cool methane absorption in detectors D3–D5. |
+| **WISE 0855-0714** | Sub-Freezing Y-Dwarf ($T \approx 250\,\text{K}$) | $\alpha = 08^\text{h} 55^\text{m} 10.8^\text{s}$<br>$\delta = -07^\circ 14' 43''$ | Coldest known brown dwarf outside solar system ($7.4\,\text{ly}$). High proper motion ($8.1''/\text{yr}$) visible purely in thermal IR. |
+| **RW Aurigae** | Young T Tauri Binary with Dust Eclipses | $\alpha = 05^\text{h} 07^\text{m} 49.5^\text{s}$<br>$\delta = +30^\circ 24' 05''$ | Dramatic circumstellar disk eclipses causing multi-magnitude drops in near-IR flux. |
+| **R Draconis** | Mira Pulsating Variable Star | $\alpha = 16^\text{h} 32^\text{m} 40.2^\text{s}$<br>$\delta = +66^\circ 45' 18''$ | Periodic 245-day thermal pulsation with large amplitude variations across all 6 SPHEREx detectors. |
+| **Planet X** *(Candidate)* | Hypothetical 450 AU Trans-Neptunian Body | $\alpha = 04^\text{h} 12^\text{m} 02.4^\text{s}$<br>$\delta = +18^\circ 30' 00''$ | Internal heat model ($T_\text{eff} \approx 42\,\text{K}$) with annual trigonometric parallax shift ($\pi = 458.4''$ baseline per 6 months). |
+
+---
+
+## 💻 Local Setup & Configuration Guide
+
+### Prerequisites
+- **Python**: `3.10` or higher
+- **Node.js**: `18.x` or `20.x` (recommended)
+- **Git**
+- *Optional*: Modern WebXR-compatible browser (Google Chrome, Microsoft Edge, or Meta Quest Browser)
+
+---
+
+### 1. Clone & Install Dependencies
+
 ```bash
+# Clone the repository
+git clone https://github.com/catagfx/SPHEREx_Sky.git
+cd SPHEREx_Sky
+
+# Install Python backend dependencies
+pip install -r requirements.txt
+
+# Install Node.js frontend dependencies
 npm install
-npm run dev     # Python API (:8080) + Vite dev server with hot reload -> open http://localhost:5173
-npm run build   # rebuild js/ui.bundle.js (commit it) for the no-npm path
-npm test        # 132-check e2e suite + behaviour + intro flow (Playwright, headless)
-```
-Dev shortcuts: `?intro=0` skips the intro, `?motion=full|reduced|auto` forces the motion mode. Styles are plain CSS in `css/` (no build). Project rules — where code goes, animations, tests, merging another copy: **`CONTRIBUTING.md`**.
-
-### 3. Open in Browser (`http://localhost:8080`)
-- **Interactive App**: [http://localhost:8080/](http://localhost:8080/)
-- **Arbitrary Coordinate & FOV Deep Link**: [http://localhost:8080/?ra=133.795&dec=-7.245&fov=0.30&mode=M](http://localhost:8080/?ra=133.795&dec=-7.245&fov=0.30&mode=M)
-- **Direct to Planet X (Hypothetical 450 AU Model)**: [http://localhost:8080/#target=planetx&mode=M](http://localhost:8080/#target=planetx&mode=M)
-- **Direct to WISE 0855 (Sub-Freezing Brown Dwarf)**: [http://localhost:8080/#target=wise0855&mode=M](http://localhost:8080/#target=wise0855&mode=M)
-- **Direct to Epsilon Indi B (Binary Brown Dwarf)**: [http://localhost:8080/#target=epsindi&mode=M](http://localhost:8080/#target=epsindi&mode=M)
-- **Direct to Barnard's Star (Proper Motion)**: [http://localhost:8080/#target=barnard&mode=M](http://localhost:8080/#target=barnard&mode=M)
-- **Direct to RW Aurigae (Dust Eclipse Variable)**: [http://localhost:8080/#target=rwaur&mode=M](http://localhost:8080/#target=rwaur&mode=M)
-- **Direct to R Draconis (Mira Variable)**: [http://localhost:8080/#target=rdraconis&mode=M](http://localhost:8080/#target=rdraconis&mode=M)
-- **Direct to Multi-Band Infrared Spectroscopy (D1–D6)**: [http://localhost:8080/#target=barnard&mode=C](http://localhost:8080/#target=barnard&mode=C)
-- **Direct to Difference Image Subtraction ($I_B - I_A$)**: [http://localhost:8080/#target=planetx&mode=D](http://localhost:8080/#target=planetx&mode=D)
-- **Clean Embed Mode (for iframes)**: [http://localhost:8080/?embed=true#target=planetx&mode=M](http://localhost:8080/?embed=true#target=planetx&mode=M)
-
----
-
-## Directory Structure
-
-```
-spherex-sky/
-├── index.html                  # The page: header, dialogs, mount points (no inline styles)
-├── server.py                   # Starts the backend: python server.py [port]
-├── backend/                    # Python backend: HTTP routes, IRSA TAP + byte-range cutouts, FITS telemetry,
-│                               #   image rendering, email reports, the cutout job pipeline
-├── ui/src/                     # Front-end source (see ui/README.md)
-│   ├── intro/  story/          #   React + TypeScript: intro, Story Tour page
-│   ├── viewer/                 #   three.js globe, "See it change" explorer, data panels (JS modules)
-│   ├── core/                   #   shared: motion/embed flags, GSAP, Lenis, store
-│   └── data/                   #   curated SPHEREx targets, epochs, landmarks (JSON)
-├── js/ui.bundle.js             # Build output of ui/src (committed; never edited by hand)
-├── css/                        # base · header · sky · explorer · dialogs · intro · story · hero (plain CSS)
-├── tests/                      # e2e suite (132 checks), behaviour, intro flow, render/style snapshots, API compare
-├── .env.example                # Template for optional local SMTP environment variables (git-safe)
-├── data/                       # Bundled portable NASA IRSA data for offline & multi-machine reliability
-│   ├── movers_hits.csv         # 3,976 real NASA IRSA TAP observation records across benchmark targets
-│   └── movers_cutouts/         # 36 real calibrated SPHEREx Level 2 FITS cutouts (*.fits)
-├── scripts/                    # Reproducible NASA/JPL data processing & validation pipeline
-│   ├── find_and_cut_movers.py         # SPHEREx Level 2 IRSA FITS cutout & WCS reprojection engine (used by backend/)
-│   ├── dev.mjs                        # `npm run dev`: backend + Vite dev server
-│   ├── fetch_horizons_ephemerides.py  # JPL Horizons small-body ephemeris query script
-│   ├── process_irsa_cutouts.py        # IRSA cutout processor & per-detector multi-pass band co-addition
-│   └── generate_benchmarks.py         # Ground-truth astrometric & physical validator
-├── assets/                     # Calibrated sky textures & multi-epoch target cutouts
-│   ├── sky_stars.jpg           # Re-projected all-sky stars & galaxies layer (0.75–1.6 µm)
-│   ├── sky_dust.jpg            # Re-projected all-sky dust & gas layer (2.4–5.0 µm)
-│   └── field_*.jpg             # Multi-epoch cutouts (6 frames each for Barnard's Star, Epsilon Indi B, WISE 0855, RW Aurigae, R Draconis, Planet X)
-├── manifest.json               # Progressive Web App manifest
-├── sw.js                       # Service Worker for offline astronomical field use
-├── SUBMISSION.md               # Full NASA Space Apps submission text, pitch script & slides
-├── CONTRIBUTING.md             # Project rules: structure, animations, tests, merging
-└── README.md                   # Documentation and data pipeline guide
 ```
 
 ---
 
-## Key Features
+### 2. Start the Local Unified Server
 
-### 1. 360° All-Sky Celestial Globe (Three.js WebGL & WebXR)
-- Re-projects NASA/JPL-Caltech SPHEREx all-sky survey maps into an inverted celestial sphere.
-- **Dual-Layer Shader**: Blends near-infrared stars/galaxies ($0.75 - 1.6\,\mu\text{m}$) and mid-infrared gas/dust ($2.4 - 5.0\,\mu\text{m}$).
-- **Tools**: Live compare divider, celestial RA/Dec grid, gyroscope mobile look, auto-rotation, and WebXR immersive VR.
+Run the Python unified server which serves the static web application, the IRSA cutout engine, and the FITS telemetry API:
 
-### 2. Arbitrary Coordinate Search, FOV Zoom & Shareable URL State
-- Enter celestial coordinates in decimal degrees (`RA: 133.795°, Dec: -7.245°`) or sexagesimal notation (`08h 55m 10.8s, -07° 14′ 43″`).
-- **Shareable URL Routing**: Supports arbitrary `?ra=<RA>&dec=<Dec>&fov=<FOV>&mode=<M|S|B|D|C>` query or hash parameters so any sky coordinate and zoom state can be bookmarked or shared.
-- **Cutout Angular Field of View (FOV) Selector**: Switch between `0.15° × 0.11°` (Deep Zoom), `0.30° × 0.23°` (Standard), and `0.50° × 0.38°` (Wide Field) directly in the viewer and IRSA Cutout Studio.
+```bash
+python3 server.py 8080
+```
+Open **[http://localhost:8080/](http://localhost:8080/)** in your browser.
 
-### 3. On-Demand NASA IRSA IPAC Cutout & Email Delivery Studio
-- Queries live NASA/IPAC IRSA TAP (`spherex.obscore`) with bundled fallback to `data/movers_hits.csv` and `data/movers_cutouts/*.fits`.
-- Reprojects 3 multi-epoch FITS passes onto a common North-Up WCS tangent plane, extracts an on-the-fly multi-band infrared spectrum, generates an animated 3-pass blink GIF and digital difference image (`Pass 3 − Pass 1`), and optionally emails the telemetry package.
-
-### 4. SPHEREx Level 2 Contamination Flags & External Archive Cross-Match
-- Displays **SPHEREx Level 2 Bitmask Quality Flags** (`FLAG 0x00: CLEAN L2` vs. `FLAG 0x02: BRIGHT STAR CORE MASKED`) explaining pipeline artifact masking around saturated stars.
-- One-click **External Archive Cross-Match** buttons inside the viewer dynamically link the active target's `(RA, Dec, FOV)` to **CDS SIMBAD**, **Aladin Lite (Gaia DR3 + AllWISE overlay)**, and **NASA/IPAC IRSA Finder Chart**.
-
-### 5. The Search for Planet X (Hypothetical 450 AU Model)
-- Demonstrates why a hypothetical Neptune-mass body at $d = 450\text{ AU}$ reflects almost no sunlight ($1/r^4$ falloff): pure solar radiative equilibrium at $450\text{ AU}$ is only $T_{\text{eq}} \approx 278\text{ K} / \sqrt{450} \approx 13.1\text{ K}$, whereas internal Kelvin-Helmholtz gravitational core heat maintains an effective temperature of **$T_{\text{eff}} \approx 40\text{--}47\text{ K}$** (Fortney et al. 2016; Linder & Mordasini 2016).
-- Exhibits the true annual trigonometric parallax at $450\text{ AU}$, $\pi = 1\text{ AU} / 450\text{ AU} = 206,265'' / 450 = \mathbf{458.4''}$ ($7.64\text{ arcmin}$ baseline shift per 6-month pass), stacked onto real SPHEREx Taurus ecliptic background frames (`RA 63.01°, Dec +18.50°`).
-
-### 6. Per-Detector Multi-Pass Band Co-Addition ($\text{SNR} \times \sqrt{N}$)
-- Because SPHEREx's 6 detector arrays (`D1`–`D6`) cover 6 distinct wavelength bands ($0.75 - 5.0\,\mu\text{m}$), scientific co-addition stacks $N$ sequential survey passes **within the same detector band** ($\text{SNR} \propto \sqrt{N}$, e.g. $\sqrt{3} \approx 1.73\times$ for 3 passes or $\sqrt{4} = 2.00\times$ across the 2-year nominal survey), preserving spectral purity while suppressing uncorrelated read noise.
+*(Optional)* Start the voice server for real-time LiveKit audio rooms:
+```bash
+node voice-server/server.js
+```
 
 ---
 
-## Known Limitations & Scientific Honesty
+### 3. Start with Frontend Development (Vite HMR)
 
-1. **Real NASA IRSA Level 2 Data vs. Hypothetical Models**:
-   - All 5 benchmark moving/variable targets (**Barnard's Star**, **WISE 0855-0714**, **Epsilon Indi B**, **RW Aurigae**, **R Draconis**) use **real calibrated NASA/IPAC IRSA SPHEREx Level 2 Quick Release observations** with 6 multi-epoch frames each.
-   - **Planet X (450 AU)** has not yet been discovered in nature; therefore, its card is explicitly badged `[Hypothetical 450 AU Model]` and illustrates how a $458.4''$ annual parallax shift looks superimposed on real SPHEREx Detector D6 Taurus background frames.
-2. **Uncached Arbitrary Coordinates**:
-   - When querying arbitrary coordinates in the **IRSA Cutout Studio**, the server queries the live NASA IRSA TAP archive (`25s` timeout). If the target coordinates have no public multi-epoch SPHEREx Level 2 coverage or if the user is offline, the server honestly reports `status: "no_coverage"` by default rather than silently fabricating data. Users may optionally check *"Allow clearly labeled Illustrative Synthetic Simulation"* for offline classroom demonstrations, which stamps every generated frame and Obs ID with `[SYNTHETIC ILLUSTRATIVE SIMULATION — NOT REAL IRSA DATA]`.
-3. **Browser-Side Difference Imaging & Co-Addition**:
-   - In the interactive browser canvas, difference subtraction ($I_B - I_A$) and multi-pass band co-addition operate on WCS-registered 8-bit/16-bit display renders derived from the underlying `MJy/sr` FITS cutouts, while `find_and_cut_movers.py` performs full 32-bit floating-point FITS WCS reprojection (`astropy.wcs`).
+If you are modifying React components, CSS, or shaders in `ui/src/`, use the unified development script:
+
+```bash
+# Starts both Python backend (:8080) and Vite dev server (:5173) with Hot Module Replacement
+npm run dev
+```
+Open **[http://localhost:5173/](http://localhost:5173/)**.
+
+To rebuild the production standalone bundle after modifying code:
+```bash
+npm run build:pages
+```
 
 ---
 
-## Data Citation & Credits
+### 4. Run in Local VR (HTTPS SAN Mode)
 
-- **Official NASA / IPAC IRSA SPHEREx Citation**:  
+WebXR requires a secure context (HTTPS). To test on your Meta Quest headset over your local Wi-Fi:
+
+```bash
+# Generates local SSL certificates with LAN IP Subject Alternative Names
+SPX_HTTPS=1 python3 server.py 8080
+```
+Then open `https://<YOUR_LAN_IP>:8080` in the **Meta Quest Browser**.
+
+---
+
+### 5. Run Automated Test Suite
+
+SPHEREx Sky includes a headless Playwright test suite covering E2E workflows, user gestures, and simulated Quest 3 WebXR controller interactions:
+
+```bash
+# Run full automated test suite (18/18 VR tests + E2E checks)
+npm test
+
+# Run only the automated WebXR headset suite
+node tests/vr.mjs
+```
+
+---
+
+## ☁️ Cloud Deployment Architecture
+
+The production platform operates as a modern **hybrid architecture**:
+
+```
+                  ┌───────────────────────────────────────────────┐
+                  │                 USER / CLIENT                 │
+                  │        (Desktop, Mobile, Meta Quest VR)       │
+                  └───────────────┬───────────────┬───────────────┘
+                                  │               │
+     Static Web & WebXR Assets    │               │  Dynamic REST & Voice API
+     (HTML, CSS, JS Bundle, MP3s) │               │  (/api/irsa-cutout, /api/rooms)
+                                  ▼               ▼
+                  ┌──────────────────────┐ ┌──────────────────────┐
+                  │     GitHub Pages     │ │      Render.com      │
+                  │   Fastly Global CDN  │ │     Cloud Docker     │
+                  │                      │ │                      │
+                  │ catagfx.github.io/   │ │ spherex-sky-backend. │
+                  │ SPHEREx_Sky/         │ │ onrender.com         │
+                  └──────────────────────┘ └──────────┬───────────┘
+                                                      │
+                                                      ▼
+                                           ┌──────────────────────┐
+                                           │    NASA IRSA IPAC    │
+                                           │   Level 2 Archive    │
+                                           └──────────────────────┘
+```
+
+1. **Frontend Hosting (GitHub Pages)**:
+   - Configured via [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
+   - Automatically builds `npm run build:pages` and deploys on push to `main`.
+   - Free worldwide CDN distribution with automatic SSL certificate provisioning.
+2. **Backend Service (Render.com Docker Container)**:
+   - Configured via [`Dockerfile`](Dockerfile) and [`render.yaml`](render.yaml).
+   - Unified process runner via [`scripts/start-cloud.sh`](scripts/start-cloud.sh) orchestrates Python IRSA endpoints and Node.js voice gateway in a single container.
+   - Built-in CORS headers allow seamless requests from `https://catagfx.github.io`.
+
+---
+
+## ⚖️ Known Limitations & Scientific Honesty
+
+1. **Real NASA IRSA Observations vs. Planet X Model**:
+   - All 5 moving and variable stars (**Barnard's Star**, **WISE 0855**, **Epsilon Indi B**, **RW Aurigae**, **R Draconis**) are powered by **real calibrated NASA/IPAC IRSA Level 2 Quick Release FITS files**.
+   - **Planet X (450 AU)** is a hypothetical scientific candidate model demonstrating a calculated $458.4''$ annual trigonometric parallax baseline stacked over real SPHEREx Taurus ecliptic background frames.
+2. **Live IRSA TAP Archive Coverage**:
+   - For arbitrary coordinate searches, if NASA IRSA has no public multi-epoch coverage for that region, the platform transparently reports `status: "no_coverage"` instead of fabricating false science data. An optional illustrative mode can be enabled for classroom demonstrations, with every frame clearly stamped as synthetic.
+3. **Browser Float Precision**:
+   - In-browser difference imaging ($I_B - I_A$) operates on WCS-aligned display renders for instant 60 FPS scrubbing, while the Python pipeline (`scripts/find_and_cut_movers.py`) performs 32-bit floating-point FITS WCS reprojection.
+
+---
+
+## 👥 Team & Contributors
+
+Proudly designed and developed for the **NASA Space Apps Challenge**:
+
+- **Bocioc Marian-Catalin**
+- **Tanase Filip Andrei**
+- **Batrineanu Tudor Mihai**
+- **Pupaza Andrei Cristian**
+- **Toia Codrin Nicolae**
+
+---
+
+## 📜 Data Attribution & Citation
+
+- **SPHEREx Mission & Level 2 Data**:  
   SPHEREx Science Team (2025), *SPHEREx Level 2 Quick Release Archive*, NASA/IPAC Infrared Science Archive, **DOI: [10.26131/IRSA629](https://doi.org/10.26131/IRSA629)**.
-- **Ephemerides & Astrometry**: NASA JPL Horizons On-Line Ephemeris System, ESA Gaia DR3, and CDS SIMBAD.
+- **Orbital Ephemerides**: NASA JPL Horizons On-Line Ephemeris System.
+- **Astrometric Cross-Matches**: ESA Gaia DR3, CDS SIMBAD, and AllWISE Infrared Catalog.
+- **Audio Voiceovers**: Synthesized and mastered using educational voice models.
+
+---
+
+<p align="center">
+  <b>SPHEREx Sky</b> • Standing inside NASA's infrared universe.
+</p>

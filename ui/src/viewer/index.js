@@ -23,6 +23,7 @@ import { initIrsa } from './panels/irsa';
 import { initNavigation } from './navigation';
 import { initStory } from './story';
 import { initRoutes } from './routes';
+import { initVoice } from './voice';
 import { exposeApi } from './api';
 import { initScientificResources } from '../scientific-resources/index.js';
 
@@ -73,4 +74,5 @@ export function startViewer() {
   initStory();
   initMicroInteractions();
   initRoutes();
+  initVoice();
 }

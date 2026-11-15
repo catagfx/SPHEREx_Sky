@@ -8,6 +8,7 @@ import path from 'node:path';
 //   dev   (`npm run dev`)  Vite serves index.html with HMR for ui/src and proxies /api to the Python backend.
 //   build (`npm run build`) one classic IIFE script -> js/ui.bundle.js (committed), so plain
 //                          `python server.py` keeps working with no npm.
+const VOICE_API = process.env.VOICE_TARGET || 'http://127.0.0.1:8787'; // voice-server/ (rooms + LiveKit tokens)
 const API = process.env.API_TARGET || 'http://127.0.0.1:8080';
 // `npm run dev:vr`: https on the local network with an auto-generated IP SAN certificate.
 const HTTPS = !!process.env.SPX_HTTPS;
@@ -76,7 +77,7 @@ export default defineConfig(({ command }) => ({
           },
         }
       : {}),
-    proxy: { '/api': { target: API, changeOrigin: true } },
+    proxy: { '/api/rooms': { target: VOICE_API, changeOrigin: true }, '/api': { target: API, changeOrigin: true } },
     watch: { ignored: ['**/ui/src/data/field/**', '**/assets/**', '**/js/ui.bundle.js', '**/.playwright*/**', '**/.certs/**'] },
   },
   build: {

@@ -4,13 +4,13 @@ import { dir } from './scene';
 import { radecToGal } from './coords';
 import { fly, flyToView } from './camera';
 import { view } from './view';
+import { playNarration, stopAllNarration, pauseAllNarration, resumeAllNarration, isAudioPlaying } from '../audio/narration';
 
 // Classical constellation overlay on the globe (Explore ▸ Constellations).
 //   on the sky: lines + star dots per constellation (three.js, additive glow)
 //   per constellation: a title pill at the centroid (always visible in this mode)
 //   click a pill: camera flies to the figure (focus), the side panel opens on the right, and the
-//                 Web Speech API speaks the description in English with a female voice
-//                 (auto-start in both web and VR; a Play/Pause button is also provided).
+//                 narration audio plays (supports both Meta Quest Browser MP3 fallback and SpeechSynthesis).
 
 const R = 450;                              // just inside the sky sphere (r=500)
 const BASE_COLOR = new THREE.Color(0xaee4ff);
@@ -26,46 +26,19 @@ let sky = null;                               // kept so we can read sky.ren.xr.
 let savedView = null;                         // camera pose captured when a constellation is selected, restored on close
 
 /* ============================================================
- *  Speech synthesis (English female voice), used for the description read-aloud
+ *  Narration helper (uses MP3 asset fallback + Web Speech API)
  * ============================================================ */
 
-let pickedVoice = null;
-function pickVoice() {
-  if (!('speechSynthesis' in window)) return null;
-  const voices = speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  // common female English voices across Windows / macOS / Chrome
-  const femaleRe = /zira|hazel|samantha|allison|ava|susan|karen|moira|tessa|victoria|serena|eva|catherine|fiona|female|woman/i;
-  return (
-    voices.find((v) => /^en/i.test(v.lang) && femaleRe.test(v.name)) ||
-    voices.find((v) => /^en/i.test(v.lang) && /google/i.test(v.name)) ||
-    voices.find((v) => /^en/i.test(v.lang)) ||
-    voices[0]
-  );
-}
-if ('speechSynthesis' in window) {
-  // voices load async on some browsers (Chrome fires `voiceschanged`)
-  speechSynthesis.onvoiceschanged = () => { pickedVoice = pickVoice(); };
-  pickedVoice = pickVoice();
-}
-
-function speak(text, onEnd) {
-  if (!('speechSynthesis' in window) || !text) return false;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US';
-  u.rate = 1.0;
-  u.pitch = 1.05;
-  u.volume = 1.0;
-  if (!pickedVoice) pickedVoice = pickVoice();
-  if (pickedVoice) u.voice = pickedVoice;
-  if (onEnd) u.onend = onEnd;
-  speechSynthesis.speak(u);
-  return true;
+function speakConstellation(entry, onEnd) {
+  if (!entry || !entry.def) return false;
+  const idx = CONSTELLATIONS.indexOf(entry.def);
+  const src = idx >= 0 ? `assets/audio/constellations/${idx}.mp3` : null;
+  const text = fullNarration(entry.def);
+  return playNarration({ src, text, onEnd });
 }
 
 function stopSpeaking() {
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  stopAllNarration();
 }
 
 /* ============================================================
@@ -160,15 +133,14 @@ function buildPanel() {
   const audioBtn = el.querySelector('.const-audio-btn');
   audioBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (!('speechSynthesis' in window)) return;
-    if (speechSynthesis.speaking && !speechSynthesis.paused) {
-      speechSynthesis.pause();
+    if (isAudioPlaying()) {
+      pauseAllNarration();
       setAudioState('paused');
-    } else if (speechSynthesis.paused) {
-      speechSynthesis.resume();
+    } else if (audioBtn.getAttribute('data-state') === 'paused') {
+      resumeAllNarration();
       setAudioState('playing');
     } else if (selected) {
-      const ok = speak(fullNarration(selected.def), () => setAudioState('idle'));
+      const ok = speakConstellation(selected, () => setAudioState('idle'));
       setAudioState(ok ? 'playing' : 'idle');
     }
   });
@@ -212,15 +184,9 @@ function showPanel(def) {
   });
 
   panel.classList.add('is-open');
-  // Audio: in VR, start automatically; on the web, wait for the user to press Play.
-  const inVR = !!(sky && sky.ren && sky.ren.xr && sky.ren.xr.isPresenting);
-  if (inVR) {
-    const ok = speak(fullNarration(def), () => setAudioState('idle'));
-    setAudioState(ok ? 'playing' : 'idle');
-  } else {
-    stopSpeaking();                             // never carry audio across constellations on the web
-    setAudioState('idle');
-  }
+  // Audio: auto-play in both Web and VR when selected
+  const ok = speakConstellation(selected, () => setAudioState('idle'));
+  setAudioState(ok ? 'playing' : 'idle');
 }
 
 function hidePanel() {
@@ -446,6 +412,56 @@ export function setConstellationsVisible(on) {
     restoreAllGroups();
     hidePanel();
   }
+}
+
+/** VR constellation selection with isolated focus */
+export function selectConstellationVR(idx) {
+  if (idx < 0 || idx >= entries.length) {
+    clearConstellationSelectionVR();
+    return;
+  }
+  const entry = entries[idx];
+  if (selected && selected !== entry) {
+    selected.selected = false;
+    applyMaterial(selected);
+  }
+  entry.selected = true;
+  selected = entry;
+  focusGroup(entry);
+  applyMaterial(entry);
+}
+
+/** Clears VR constellation focus and restores all constellation figures */
+export function clearConstellationSelectionVR() {
+  if (selected) {
+    selected.selected = false;
+    applyMaterial(selected);
+    selected = null;
+    restoreAllGroups();
+  }
+}
+
+/**
+ * Animated fluttering glow on the selected constellation figure.
+ * Called every frame from sky.onXRFrame / xrFrame.
+ */
+export function updateConstellationFlutter(time) {
+  if (!selected) return;
+  const t = typeof time === 'number' ? time : performance.now() * 0.001;
+  // Multi-frequency fluttering pulsation
+  const flutter = Math.sin(t * 6.2) * 0.35 + Math.sin(t * 14.1) * 0.15;
+  const shimmer = Math.max(0, Math.min(1, 0.5 + flutter));
+
+  // Pulse line opacity and color from hot magenta to bright starlight
+  selected.lineMat.opacity = 0.65 + 0.35 * shimmer;
+  selected.lineMat.color.setRGB(
+    1.0,
+    0.41 + 0.52 * shimmer,
+    0.82 + 0.18 * shimmer
+  );
+  // Flutter star point size
+  selected.dotMat.size = 8.5 + 6.0 * shimmer;
+  selected.dotMat.opacity = 0.85 + 0.15 * shimmer;
 }
 
 /** Every frame: place each DOM tag over its centroid. */

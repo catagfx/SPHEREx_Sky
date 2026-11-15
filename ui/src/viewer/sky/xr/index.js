@@ -2,35 +2,54 @@ import * as THREE from 'three';
 import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory.js';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { $ } from '../../dom';
-import { updateCompare, applyLayerMix } from '../layers';
+import { FIELD, COLORS } from '../../../data';
+import { updateCompare } from '../layers';
 import { dir } from '../scene';
-import { setSpin as setPageSpin } from '../view';
-import { initConstellations } from '../constellations';
+import { radecToGal } from '../coords';
+import {
+  setConstellationsVisible,
+  selectConstellationVR,
+  clearConstellationSelectionVR,
+  updateConstellationFlutter,
+} from '../constellations';
 import { createPanel } from './panels';
-import { createStarMap } from './starmap';
-import { createPages } from './pages';
+import {
+  headerBarItems,
+  buildStoryCarouselPanels,
+  explorePanelBody,
+  landmarkDetailBody,
+  buildGalleryCatalogBody,
+  fieldTargetDetailBody,
+  spherexDataPanel,
+  settingsPanel,
+  constellationPoints,
+  constellationDetailBody,
+  BENCHMARK_TARGETS_VR,
+} from './content';
+import { createStarMap, createConstellationTagsVR } from './starmap';
+import { createVRIntro } from './intro';
+import { playNarration, stopAllNarration, pauseAllNarration, resumeAllNarration, isAudioPlaying, unlockAudioContext } from '../../audio/narration';
 
-// VR / WebXR experience.
-//   - Entry: a prominent VR button in the header (#vrQuick) and the legacy Tools item (#vr).
-//   - On session start: the sky continues as the background, a holographic wrist menu appears on the left
-//     hand, and a large floating "home" panel opens in front of the user.
-//   - Hand tracking: thumb-tip ↔ index-finger-tip under PINCH_DIST metres = pinch. Pinch drives three
-//     interactions: tap a button, drag a slider knob, scroll a panel's body.
-//   - Four modules (menu buttons): EXPLORE (catalog), STAR MAP (3D selection), DATA (info), SETTINGS (sliders).
-//   - Travel: picking a destination fades the whole room to black and re-points the sky at it.
-//   - Exit: either the VR button again, the "Exit VR" item on the menu, or the headset's own exit.
+// VR / WebXR + WebVR 1.1 experience:
+//   - Always-above floating VR Header Bar with all desktop navigation modes:
+//     Story 360°, Free-Look, Landmarks, Constellations, Planet X, Difference, 102 Colors, Gallery, Settings, Exit VR.
+//   - 360° Story Carousel Ring: all 9 desktop Story sections surround the user 360°; dragging horizontally
+//     (left/right) with hand pinch or controller trigger (or thumbstick / Prev-Next buttons) rotates the 360° ring
+//     with smooth easing and syncs the sky background to that section's exact astronomical coordinates.
+//   - Full SPHEREx Photo Gallery & Landmarks with real science cutouts and Galactic sky crops.
+//   - Desktop-styled Landmarks & Constellations in VR (glassmorphic pills on the sky + full Constellation diagram & TTS).
 
-const PINCH_DIST = 0.025;             // metres: thumb-tip ↔ index-tip < this = pinch
-const HAND_RAY_LEN = 3.5;             // metres: max raycaster distance
+const PINCH_DIST = 0.025;
+const HAND_RAY_LEN = 3.8;
 const FADE_DURATION_MS = 500;
-const EYE_HEIGHT = 1.6;               // metres above the floor (local-floor space)
-const INPUTS = 4;                     // 2 hands/controllers + Vision Pro's 2 transient (gaze + pinch) pointers
+const EYE_HEIGHT = 1.6;
+const INPUTS = 4;
+const RING_RADIUS = 1.65;
 
 export function initXR(sky) {
   const { ren, scene, cam, world, uniforms } = sky;
   ren.xr.enabled = true;
 
-  // ---------- Header button wiring ----------
   const quickBtn = $('#vrQuick');
   const toolsBtn = $('#vr');
 
@@ -41,26 +60,23 @@ export function initXR(sky) {
     navigator.xr.isSessionSupported('immersive-vr').then((ok) => {
       xrSupported = ok;
       if (ok) {
-        if (quickBtn) { quickBtn.hidden = false; }
-        if (toolsBtn) { toolsBtn.hidden = false; }
+        if (quickBtn) quickBtn.hidden = false;
+        if (toolsBtn) toolsBtn.hidden = false;
       }
     }).catch(() => {});
   } else if (typeof navigator.getVRDisplays === 'function') {
-    // Legacy WebVR 1.1 fallback for older headset browsers without navigator.xr
     navigator.getVRDisplays().then((displays) => {
       if (displays && displays.length > 0) {
         legacyDisplay = displays[0];
         xrSupported = true;
-        if (quickBtn) { quickBtn.hidden = false; }
-        if (toolsBtn) { toolsBtn.hidden = false; }
+        if (quickBtn) quickBtn.hidden = false;
+        if (toolsBtn) toolsBtn.hidden = false;
       }
     }).catch(() => {});
   }
 
-  // Universal VR support (WebXR + legacy WebVR 1.1 fallback):
-  // Works across Meta Quest, Pico, HTC Vive, Valve Index / SteamVR, Vision Pro, WMR, and 3-DoF / legacy WebVR headsets.
-  // Everything beyond 'immersive-vr' is optional, and headsets without a floor-level space fall back to 'local' or 'viewer'.
   async function enterVR() {
+    unlockAudioContext();
     if (navigator.xr && navigator.xr.requestSession) {
       try {
         const session = await navigator.xr.requestSession('immersive-vr', {
@@ -95,19 +111,29 @@ export function initXR(sky) {
     }
   }
 
-  function exitVR() {
-    const s = ren.xr.getSession();
-    if (s) { s.end(); return; }
-    if (legacyDisplay && legacyDisplay.isPresenting && typeof legacyDisplay.exitPresent === 'function') {
-      legacyDisplay.exitPresent();
+  async function exitVR() {
+    stopSpeech();
+    try {
+      const s = ren.xr.getSession();
+      if (s && ren.xr.isPresenting) {
+        await s.end();
+      }
+    } catch (e) {
+      console.warn('[XR] exitVR error:', e);
     }
+    if (legacyDisplay && legacyDisplay.isPresenting && typeof legacyDisplay.exitPresent === 'function') {
+      try { legacyDisplay.exitPresent(); } catch {}
+    }
+    try {
+      await ren.xr.setSession(null);
+    } catch {}
   }
 
   if (quickBtn) quickBtn.addEventListener('click', () => {
-    if (ren.xr.getSession()) exitVR(); else enterVR();
+    if (ren.xr.isPresenting) exitVR(); else enterVR();
   });
   if (toolsBtn) toolsBtn.onclick = () => {
-    if (ren.xr.getSession()) exitVR(); else enterVR();
+    if (ren.xr.isPresenting) exitVR(); else enterVR();
   };
 
   // ---------- VR scene content (hidden outside of VR) ----------
@@ -116,139 +142,681 @@ export function initXR(sky) {
   xrRoot.visible = false;
   scene.add(xrRoot);
 
-  // Panels: the menu (floats in front of the user, re-placed on entry and by "Recenter") and a tiny "Menu" button
-  // that shows while the menu is hidden (free look).
-  const home = createPanel({ w: 1.1, h: 1.3, title: 'SPHEREx VR' });
-  home.mesh.position.set(0, 1.6, -1.4);
+  // 1. Always-above Floating Header Bar (comfortably positioned above active panels)
+  const headerBar = createPanel({ w: 1.95, h: 0.14, title: 'Header', variant: 'header' });
+  headerBar.mesh.position.set(0, EYE_HEIGHT + 0.46, -1.40);
+  xrRoot.add(headerBar.mesh);
+
+  // 2. Primary front panel (lowered to gaze level, 100% space-filled widescreen ratio)
+  const home = createPanel({ w: 1.1, h: 1.15, title: 'SPHEREx VR' });
+  home.mesh.position.set(0, EYE_HEIGHT - 0.20, -1.40);
   xrRoot.add(home.mesh);
 
-  const mini = createPanel({ w: 0.42, h: 0.2, title: '' });
-  mini.setBody([{ type: 'button', id: 'showMenu', label: 'Menu', variant: 'primary' }]);
-  mini.mesh.visible = false;
-  xrRoot.add(mini.mesh);
+  // Smooth lerp target for home panel (slides to left when viewing landmark/constellation side-by-side)
+  const panelTargetPos = new THREE.Vector3(0, EYE_HEIGHT - 0.20, -1.40);
 
-  // Star Map group: follows the sky's turn (travel) so the labels stay on their places in the sky.
-  const starMap = createStarMap({ onPick: (p) => pages.handle('lm:' + p.idx) });
+  // 3. 360° Surrounding Story Carousel Ring (the other 8 Story sections placed 360° around the user)
+  const storyRingGroup = new THREE.Group();
+  storyRingGroup.name = 'xr-story-ring-360';
+  xrRoot.add(storyRingGroup);
+
+  const storyState = {
+    activeIdx: 0,
+    ringAngle: 0,
+    targetRingAngle: 0,
+    frontAnimT: 1,
+    pxPass: 0,
+    pxCoadd: false,
+    diffGain: 4,
+    diffInvert: false,
+    spectroIdx: 6,
+    speakingConstIdx: null,
+    selectedConstIdx: null,
+    speakingLandmarkIdx: null,
+    selectedLandmarkIdx: null,
+    landmarkPassIdx: 0,
+    galleryFilter: 'all',
+  };
+
+  const STORY_COUNT = 9;
+  const satellitePanels = Array.from({ length: STORY_COUNT }, (_, idx) => {
+    const p = createPanel({ w: 1.05, h: 1.08, title: `Story ${idx + 1}` });
+    p.mesh.userData = { storyIdx: idx };
+    storyRingGroup.add(p.mesh);
+    return p;
+  });
+
+  const wrist = createPanel({ w: 0.42, h: 0.5, title: 'Menu', interactive: true });
+  wrist.mesh.visible = false;
+  xrRoot.add(wrist.mesh);
+
+  // 4. Desktop-styled Landmarks & Constellations 3D overlays (both in xrRoot at eye height, rotated with world.quaternion)
+  const starMap = createStarMap({ onPick: (p) => showCard(p) });
   xrRoot.add(starMap.group);
 
-  // Fade sphere (for travel transitions): a small sphere around the camera that we can blacken.
-  const fadeMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0, side: THREE.BackSide, depthTest: false, depthWrite: false });
+  const constTags = createConstellationTagsVR();
+  xrRoot.add(constTags.group);
+
+  // 360° VR intro (plays once at session start unless ?intro=0).
+  const vrIntro = createVRIntro();
+  xrRoot.add(vrIntro.group);
+
+  // Fade sphere for smooth sky transitions
+  const fadeMat = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    opacity: 0,
+    side: THREE.BackSide,
+    depthTest: false,
+    depthWrite: false,
+  });
   const fadeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 10), fadeMat);
   fadeMesh.renderOrder = 10;
   xrRoot.add(fadeMesh);
 
-  const mode = { current: 'home' }; // the page now shown (tests read it through spxXR.mode)
-  let uiOpacity = 0.86;
-  let menuHidden = false;
-  let needPlace = false;
-  let spinning = false;
-  let savedConst = false;
+  const mode = { current: 'home', tab: 'story' };
+  const settings = settingsPanel();
+  settings.items.forEach((it) => {
+    if (it.type === 'slider') home.setSlider(it.id, { value: settings.defaults[it.id] ?? 0.5 });
+  });
+  home.setSlider('diffGainSlider', { value: 0.33 });
+  home.setSlider('spectroSlider', { value: 0.75 });
 
-  const headPos = new THREE.Vector3();
-  const headQuat = new THREE.Quaternion();
-  function readHead() {
-    const c = ren.xr.getCamera(cam);
-    c.getWorldPosition(headPos);
-    c.getWorldQuaternion(headQuat);
-  }
-  const flatForward = () => {
-    const f = new THREE.Vector3(0, 0, -1).applyQuaternion(headQuat);
-    f.y = 0;
-    if (f.lengthSq() < 1e-4) f.set(0, 0, -1); else f.normalize();
-    return f;
-  };
-
-  // put the menu in front of the user, at eye height, turned to them; the star map is centred on the head
-  function place() {
-    readHead();
-    const f = flatForward();
-    // on the Star Map page the menu steps aside, so it does not hide the stars straight ahead
-    const side = mode.current === 'starmap' ? 0.75 : 0;
-    const pf = f.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), side);
-    home.mesh.position.copy(headPos).addScaledVector(pf, 1.4);
-    home.mesh.position.y = headPos.y - 0.05;
-    mini.mesh.position.copy(headPos).addScaledVector(f, 0.9);
-    mini.mesh.position.y = headPos.y - 0.5;
-    starMap.group.position.copy(headPos);
+  function updateHeader(activeTab) {
+    mode.tab = activeTab;
+    headerBar.setActiveTab(activeTab);
+    headerBar.setBody(headerBarItems(activeTab));
   }
 
-  function setMenuHidden(hide) {
-    menuHidden = hide;
-    home.mesh.visible = !hide;
-    mini.mesh.visible = hide;
-    if (hide) starMap.hide(); else if (pages.page === 'starmap') starMap.show();
-    if (!hide) place();
+  function speakConstellationVR(c, onDone) {
+    if (!c) return false;
+    const src = `assets/audio/constellations/${c.idx}.mp3`;
+    const text = c.info || c.name;
+    return playNarration({ src, text, onEnd: onDone });
   }
 
-  const ctx = {
-    sky, panel: home, THREE,
-    get uiOpacity() { return uiOpacity; },
-    setUiOpacity(v) { uiOpacity = Math.max(0.3, Math.min(1, v)); home.mesh.material.opacity = uiOpacity; mini.mesh.material.opacity = uiOpacity; },
-    applyMix: applyLayerMix,
-    travelTo: (p) => travelTo(p),
-    exitVR: () => exitVR(),
-    recenter: () => { if (menuHidden) setMenuHidden(false); else place(); },
-    hideMenu: () => setMenuHidden(true),
-    // the viewer's forward direction (horizontal, world frame)
-    headForward: () => { readHead(); return flatForward(); },
-    constellationRoot: () => initConstellations._root,
-    setSpin: (on) => { spinning = on; },
-    onPage(page) {
-      const was = mode.current;
-      mode.current = page;
-      if (page === 'starmap' && !menuHidden) starMap.show(); else starMap.hide();
-      if ((page === 'starmap') !== (was === 'starmap') && !needPlace && xrRoot.visible) place();
-    },
-  };
-  const pages = createPages(ctx);
+  function speakLandmarkVR(p, onDone) {
+    if (!p) return false;
+    const src = p.audioSrc || `assets/audio/landmarks/${p.idx}.mp3`;
+    const text = p.narration || p.cardSub || p.label;
+    return playNarration({ src, text, onEnd: onDone });
+  }
 
-  // ---------- Travel: fade out, point the sky at target, fade in ----------
-  // Stepped from xrFrame: window.requestAnimationFrame does not run while a Quest is presenting.
+  function stopSpeech() {
+    stopAllNarration();
+    storyState.speakingConstIdx = null;
+    storyState.speakingLandmarkIdx = null;
+  }
+
+  function syncSatelliteRingPanels(sections) {
+    satellitePanels.forEach((sat, i) => {
+      const sec = sections[i];
+      if (!sec) return;
+      sat.setTitle(sec.title);
+      sat.setBody([
+        ...sec.body.slice(0, 4),
+        { type: 'divider' },
+        {
+          type: 'button',
+          id: `story:jump:${i}`,
+          label: `Bring Panel 0${i + 1} to Front →`,
+          variant: 'primary',
+          fullWidth: true,
+        },
+      ]);
+      sat.refresh();
+    });
+  }
+
+  function layoutStoryRing() {
+    const step = (Math.PI * 2) / STORY_COUNT;
+    storyState.ringAngle += (storyState.targetRingAngle - storyState.ringAngle) * 0.14;
+
+    satellitePanels.forEach((sat, idx) => {
+      const relIdx = ((idx - storyState.activeIdx) % STORY_COUNT + STORY_COUNT) % STORY_COUNT;
+      if (relIdx === 0) {
+        sat.mesh.visible = false;
+        return;
+      }
+      sat.mesh.visible = storyRingGroup.visible;
+      const angle = idx * step + storyState.ringAngle;
+      const x = Math.sin(angle) * RING_RADIUS;
+      const z = -Math.cos(angle) * RING_RADIUS;
+      sat.mesh.position.set(x, eyeY - 0.18, z);
+      sat.mesh.lookAt(0, eyeY - 0.18, 0);
+      sat.mesh.material.opacity = 0.62;
+    });
+
+    if (storyState.frontAnimT < 1) {
+      storyState.frontAnimT = Math.min(1, storyState.frontAnimT + 0.08);
+      const ease = 1 - Math.pow(1 - storyState.frontAnimT, 3);
+      home.mesh.scale.setScalar(0.92 + 0.08 * ease);
+    } else {
+      home.mesh.scale.setScalar(1);
+    }
+  }
+
+  function setOverlays({ storyRing = false, landmarks = false, constellations = false }) {
+    storyRingGroup.visible = storyRing;
+    starMap.group.visible = landmarks;
+    constTags.group.visible = constellations;
+    try {
+      setConstellationsVisible(constellations);
+    } catch (e) {
+      console.warn('[XR] setConstellationsVisible warning:', e);
+    }
+    if (!constellations && !landmarks) {
+      stopSpeech();
+      storyState.selectedConstIdx = null;
+    }
+  }
+
+  // ---------- Render views ----------
+  function renderStorySection(idx = storyState.activeIdx, flySky = false) {
+    stopSpeech();
+    const total = STORY_COUNT;
+    const normIdx = ((idx % total) + total) % total;
+    storyState.activeIdx = normIdx;
+    const step = (Math.PI * 2) / total;
+    storyState.targetRingAngle = -normIdx * step;
+    storyState.frontAnimT = 0;
+
+    const sections = buildStoryCarouselPanels(storyState);
+    syncSatelliteRingPanels(sections);
+    const activeSec = sections[normIdx];
+
+    mode.current = normIdx === 0 ? 'home' : 'story';
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    clearConstellationSelectionVR();
+    home.mesh.visible = true;
+    home.setTitle(activeSec.title);
+    home.setBody(activeSec.body);
+    updateHeader(activeSec.navId || 'story');
+    setOverlays({ storyRing: true, landmarks: false, constellations: false });
+
+    if (flySky && typeof activeSec.l === 'number' && typeof activeSec.b === 'number') {
+      travelTo({ l: activeSec.l, b: activeSec.b });
+    }
+  }
+
+  function renderHome() {
+    renderStorySection(0, false);
+  }
+
+  function renderFreeLook() {
+    stopSpeech();
+    mode.current = 'freelook';
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    clearConstellationSelectionVR();
+    updateHeader('freelook');
+    setOverlays({ storyRing: false, landmarks: true, constellations: false });
+    starMap.highlight(null, null);
+    home.mesh.visible = false;
+  }
+
+  function showStarMap() {
+    stopSpeech();
+    mode.current = 'starmap';
+    panelTargetPos.set(0, eyeY - 0.58, -1.25);
+    clearConstellationSelectionVR();
+    updateHeader('starmap');
+    home.mesh.visible = false;
+    home.setTitle('Star Map');
+    home.setBody([
+      { type: 'tag', text: '5 CELESTIAL LANDMARKS · 360° OBSERVATORY', align: 'center' },
+      { type: 'heading', text: 'Celestial Landmarks in 360°', align: 'center' },
+      {
+        type: 'paragraph',
+        text: 'Look around the 360° sky to see the glowing Landmark pills (Barnard’s Star, Epsilon Indi B, WISE 0855, RW Aurigae, and R Draconis). Point at any Landmark and pinch or trigger to open its SPHEREx infrared card, multi-pass cutouts, and narration.',
+        align: 'center',
+      },
+      { type: 'divider' },
+      {
+        type: 'buttonRow',
+        compact: true,
+        buttons: [
+          { id: 'gal:filter:landmarks', label: 'Open Landmarks Gallery', variant: 'primary' },
+          { id: 'back:home', label: '← Back to Story 360°', variant: 'secondary' },
+        ],
+      },
+    ]);
+    setOverlays({ storyRing: false, landmarks: true, constellations: false });
+    starMap.highlight(null, null);
+  }
+
+  function showCard(p, passIdx = 0, autoSpeak = true) {
+    if (!p) return;
+    if (storyState.speakingLandmarkIdx !== null || storyState.speakingConstIdx !== null) {
+      stopSpeech();
+    }
+    mode.current = 'landmark-detail';
+    storyState.selectedLandmarkIdx = p.idx;
+    storyState.landmarkPassIdx = passIdx;
+    clearConstellationSelectionVR();
+    updateHeader('starmap');
+    setOverlays({ storyRing: false, landmarks: true, constellations: false });
+    starMap.highlight(null, 'star:' + p.idx);
+
+    // Position panel to the left, so the selected landmark in the sky sits right next to it,
+    // both aligned at the same eye height and symmetrically centered under the header bar
+    panelTargetPos.set(-0.60, eyeY - 0.20, -1.40);
+
+    if (autoSpeak) {
+      const ok = speakLandmarkVR(p, () => {
+        storyState.speakingLandmarkIdx = null;
+        if (mode.current === 'landmark-detail' && storyState.selectedLandmarkIdx === p.idx) {
+          home.setBody(landmarkDetailBody(p, storyState.landmarkPassIdx, false));
+        }
+      });
+      storyState.speakingLandmarkIdx = ok ? p.idx : null;
+    }
+
+    home.mesh.visible = true;
+    home.setTitle(p.cardTitle || p.label);
+    home.setBody(landmarkDetailBody(p, passIdx, storyState.speakingLandmarkIdx === p.idx));
+  }
+
+  function renderGalleryCatalog(filter = storyState.galleryFilter || 'all') {
+    stopSpeech();
+    mode.current = 'gallery';
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    clearConstellationSelectionVR();
+    storyState.galleryFilter = filter;
+    updateHeader('benchmarks');
+    setOverlays({ storyRing: false, landmarks: filter === 'landmarks', constellations: false });
+    starMap.highlight(null, null);
+    home.mesh.visible = true;
+    home.setTitle('SPHEREx Photo Gallery');
+    home.setBody(buildGalleryCatalogBody(filter));
+  }
+
+  function showFieldTargetDetail(fieldIdx, passIdx = 0) {
+    stopSpeech();
+    const series = (FIELD || [])[fieldIdx];
+    if (!series) return;
+    mode.current = 'field-detail';
+    clearConstellationSelectionVR();
+    panelTargetPos.set(-0.60, eyeY - 0.20, -1.40);
+    updateHeader('benchmarks');
+    setOverlays({ storyRing: false, landmarks: false, constellations: false });
+    home.mesh.visible = true;
+    home.setTitle(series.name || series.label || 'Target Cutout');
+    home.setBody(fieldTargetDetailBody(series, fieldIdx, passIdx));
+
+    // Rotate sky upright beside panel
+    if (typeof series.ra === 'number' && typeof series.dec === 'number') {
+      const g = radecToGal(series.ra, series.dec);
+      travelTo({ l: g.l, b: g.b }, { sideBySide: true, isConstellation: false });
+    } else if (series.frames && series.frames[0] && series.frames[0].b) {
+      const m = String(series.frames[0].b).match(/RA\s+([\d.-]+)°,\s*Dec\s+([\d.+-]+)°/i);
+      if (m) {
+        const g = radecToGal( parseFloat(m[1]), parseFloat(m[2]) );
+        travelTo({ l: g.l, b: g.b }, { sideBySide: true, isConstellation: false });
+      }
+    }
+  }
+
+  function renderConstellationsCatalog() {
+    stopSpeech();
+    mode.current = 'constellations';
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    clearConstellationSelectionVR();
+    storyState.selectedConstIdx = null;
+    updateHeader('constellations');
+    setOverlays({ storyRing: false, landmarks: false, constellations: true });
+    constTags.highlight(null, null);
+    home.mesh.visible = true;
+    home.setTitle('20 Constellations');
+
+    const defs = constellationPoints();
+    home.setBody([
+      { type: 'tag', text: '20 IAU CONSTELLATIONS · J2000 & GALACTIC OVERLAY' },
+      { type: 'heading', text: 'Explore Constellations on the 360° Sky' },
+      {
+        type: 'paragraph',
+        text: 'Look around the sky to see the glowing constellation figures and title pills, or select any constellation below to rotate the sky, inspect its star diagram, and listen to the narration:',
+      },
+      {
+        type: 'cardGrid',
+        cols: 2,
+        cardHeight: 96,
+        cards: defs.map((c) => {
+          const raVal = Number(c.ra || 0);
+          const decVal = Number(c.dec || 0);
+          return {
+            id: `const:pick:${c.idx}`,
+            badge: `${c.code || 'IAU'} · ${(c.stars || []).length} STARS`,
+            badgeColor: '#aee4ff',
+            title: c.name,
+            text: `RA ${raVal.toFixed(1)}° · Dec ${decVal >= 0 ? '+' : ''}${decVal.toFixed(1)}°`,
+            skyCrop: c.skyCrop,
+            reticle: false,
+            data: c,
+          };
+        }),
+      },
+      { type: 'button', id: 'back:home', label: '← Back to Story 360°', variant: 'secondary' },
+    ]);
+  }
+
+  function showConstellationDetail(idx, autoSpeak = true) {
+    if (storyState.speakingConstIdx !== null) {
+      stopSpeech();
+    }
+    const defs = constellationPoints();
+    const c = defs[idx];
+    if (!c) return;
+    mode.current = 'constellation-detail';
+    storyState.selectedConstIdx = idx;
+    updateHeader('constellations');
+    setOverlays({ storyRing: false, landmarks: false, constellations: true });
+
+    // Focus constellation in sky with fluttering animated glow
+    selectConstellationVR(idx);
+    constTags.highlight(null, 'const:' + idx);
+
+    // Position panel to the left, so the constellation figure sits upright directly beside it at eye level
+    panelTargetPos.set(-0.60, eyeY - 0.20, -1.40);
+
+    if (autoSpeak) {
+      const ok = speakConstellationVR(c, () => {
+        storyState.speakingConstIdx = null;
+        if (mode.current === 'constellation-detail' && storyState.selectedConstIdx === idx) {
+          home.setBody(constellationDetailBody(c, false));
+        }
+      });
+      storyState.speakingConstIdx = ok ? idx : null;
+    }
+
+    home.mesh.visible = true;
+    home.setTitle(c.name);
+    home.setBody(constellationDetailBody(c, storyState.speakingConstIdx === idx));
+    travelTo({ l: c.l, b: c.b }, { sideBySide: true, isConstellation: true });
+  }
+
+  function renderData() {
+    stopSpeech();
+    mode.current = 'data';
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    clearConstellationSelectionVR();
+    updateHeader('story');
+    home.mesh.visible = true;
+    home.setTitle('SPHEREx Data');
+    home.setBody([
+      ...spherexDataPanel(),
+      { type: 'divider' },
+      { type: 'button', id: 'back:home', label: '← Back to Story 360°', variant: 'secondary' },
+    ]);
+    setOverlays({ storyRing: false, landmarks: false, constellations: false });
+  }
+
+  function renderSettings() {
+    stopSpeech();
+    mode.current = 'settings';
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    clearConstellationSelectionVR();
+    updateHeader('settings');
+    home.mesh.visible = true;
+    home.setTitle('Settings');
+    home.setBody([
+      ...settings.items,
+      { type: 'divider' },
+      { type: 'button', id: 'back:home', label: '← Back to Story 360°', variant: 'secondary' },
+    ]);
+    setOverlays({ storyRing: false, landmarks: false, constellations: false });
+  }
+
+  function handleButton(id) {
+    if (!id) return;
+    try {
+      if (id === 'nav:story' || id === 'back:home') renderStorySection(storyState.activeIdx, false);
+      else if (id === 'nav:freelook') renderFreeLook();
+      else if (id === 'go:explore' || id === 'go:starmap' || id === 'back:starmap') showStarMap();
+      else if (id === 'nav:constellations') renderConstellationsCatalog();
+      else if (id === 'nav:planetx') renderStorySection(3, true);
+      else if (id === 'nav:diff') renderStorySection(4, true);
+      else if (id === 'nav:benchmarks') renderGalleryCatalog('all');
+      else if (id === 'nav:colors') renderStorySection(6, true);
+      else if (id === 'go:data') renderData();
+      else if (id === 'go:settings') renderSettings();
+      else if (id === 'exitVR') exitVR();
+      else if (id === 'story:prev') renderStorySection(storyState.activeIdx - 1, true);
+      else if (id === 'story:next') renderStorySection(storyState.activeIdx + 1, true);
+      else if (id.startsWith('story:jump:')) {
+        const targetIdx = +id.split(':')[2];
+        renderStorySection(targetIdx, true);
+      } else if (id.startsWith('gal:filter:')) {
+        const filter = id.split(':')[2] || 'all';
+        renderGalleryCatalog(filter);
+      } else if (id.startsWith('field:pass:')) {
+        const parts = id.split(':');
+        showFieldTargetDetail(+parts[2], +parts[3]);
+      } else if (id.startsWith('field:fly:')) {
+        const fIdx = +id.split(':')[2];
+        showFieldTargetDetail(fIdx, 0);
+      } else if (id.startsWith('field:')) {
+        const fIdx = +id.split(':')[1];
+        showFieldTargetDetail(fIdx, 0);
+      } else if (id === 'px:step') {
+        storyState.pxPass = (storyState.pxPass + 1) % 4;
+        renderStorySection(3, false);
+      } else if (id === 'px:coadd') {
+        storyState.pxCoadd = !storyState.pxCoadd;
+        renderStorySection(3, false);
+      } else if (id === 'diff:invert') {
+        storyState.diffInvert = !storyState.diffInvert;
+        renderStorySection(4, false);
+      } else if (id === 'spectro:step') {
+        const maxC = Math.max(1, (COLORS || []).length);
+        storyState.spectroIdx = (storyState.spectroIdx + 1) % maxC;
+        renderStorySection(7, false);
+      } else if (id.startsWith('bench:')) {
+        const bid = id.split(':')[1];
+        const fIdx = (FIELD || []).findIndex((f) => f.id === bid);
+        if (fIdx >= 0) {
+          showFieldTargetDetail(fIdx, 0);
+        } else {
+          const target = BENCHMARK_TARGETS_VR.find((t) => t.id === bid);
+          if (target) {
+            const g = radecToGal(target.ra, target.dec);
+            travelTo({ l: g.l, b: g.b });
+          }
+        }
+      } else if (id.startsWith('const:pick:')) {
+        const cidx = +id.split(':')[2];
+        showConstellationDetail(cidx, true);
+      } else if (id.startsWith('const:travel:')) {
+        const cidx = +id.split(':')[2];
+        const c = constellationPoints()[cidx];
+        if (c) travelTo({ l: c.l, b: c.b }, { sideBySide: true, isConstellation: true });
+      } else if (id.startsWith('const:audio:')) {
+        const cidx = +id.split(':')[2];
+        const c = constellationPoints()[cidx];
+        if (!c) return;
+        if (storyState.speakingConstIdx === cidx) {
+          stopSpeech();
+          home.setBody(constellationDetailBody(c, false));
+        } else {
+          showConstellationDetail(cidx, true);
+        }
+      } else if (id === 'resetSettings') {
+        resetAllSettingsToDefault();
+      } else if (id.startsWith('explore:')) {
+        const idx = +id.split(':')[1];
+        const points = starMap.picks.map((p) => p.data);
+        const data = points[idx];
+        if (data) showCard(data, 0);
+      } else if (id.startsWith('landmark:pass:')) {
+        const parts = id.split(':');
+        const idx = +parts[2];
+        const pIdx = +parts[3];
+        const points = starMap.picks.map((p) => p.data);
+        const data = points[idx];
+        if (data) showCard(data, pIdx, false);
+      } else if (id.startsWith('landmark:audio:')) {
+        const idx = +id.split(':')[2];
+        const points = starMap.picks.map((p) => p.data);
+        const data = points[idx];
+        if (!data) return;
+        if (storyState.speakingLandmarkIdx === idx) {
+          stopSpeech();
+          home.setBody(landmarkDetailBody(data, storyState.landmarkPassIdx, false));
+        } else {
+          const ok = speakLandmarkVR(data, () => {
+            storyState.speakingLandmarkIdx = null;
+            if (mode.current === 'landmark-detail' && storyState.selectedLandmarkIdx === idx) {
+              home.setBody(landmarkDetailBody(data, storyState.landmarkPassIdx, false));
+            }
+          });
+          storyState.speakingLandmarkIdx = ok ? idx : null;
+          home.setBody(landmarkDetailBody(data, storyState.landmarkPassIdx, storyState.speakingLandmarkIdx === idx));
+        }
+      } else if (id.startsWith('travel:')) {
+        const idx = +id.split(':')[1];
+        const points = starMap.picks.map((p) => p.data);
+        const data = points[idx];
+        if (data) travelTo(data, { sideBySide: true, isConstellation: false });
+      }
+    } catch (err) {
+      console.error('[XR] handleButton error:', err);
+    }
+  }
+
+  // Calculates an upright rotation matrix mapping target celestial direction into desired viewer direction
+  // without introducing diagonal roll/twist around line-of-sight.
+  function getUprightTargetQuaternion(targetDir, desiredLookDir, camUp) {
+    const Tf = targetDir.clone().normalize();
+    let Tu = Math.abs(Tf.y) > 0.92 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
+    const Tr = new THREE.Vector3().crossVectors(Tu, Tf).normalize();
+    const TtrueUp = new THREE.Vector3().crossVectors(Tf, Tr).normalize();
+
+    const Df = desiredLookDir.clone().normalize();
+    const Du = camUp.clone().normalize();
+    const Dr = new THREE.Vector3().crossVectors(Du, Df).normalize();
+    const DtrueUp = new THREE.Vector3().crossVectors(Df, Dr).normalize();
+
+    const mT = new THREE.Matrix4().makeBasis(Tr, TtrueUp, Tf);
+    const mD = new THREE.Matrix4().makeBasis(Dr, DtrueUp, Df);
+
+    const R = new THREE.Matrix4().multiplyMatrices(mD, mT.transpose());
+    return new THREE.Quaternion().setFromRotationMatrix(R);
+  }
+
+  // ---------- Travel: smooth slerp to target without black screen blink ----------
   let travel = null;
-  function travelTo(p) {
-    travel = { target: dir(p.l, p.b, 1).normalize(), t0: performance.now(), turned: false };
+  function travelTo(p, { sideBySide = false, isConstellation = false } = {}) {
+    if (!p || typeof p.l !== 'number' || typeof p.b !== 'number') return;
+    const activeCam = ren.xr.isPresenting ? ren.xr.getCamera(cam) : cam;
+    const camQuat = activeCam.getWorldQuaternion(new THREE.Quaternion());
+    const camUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camQuat).normalize();
+
+    // In camera space:
+    // If isConstellation: shift further right (x = +0.76m) and lower (y = -0.32m) so large constellation
+    // outlines never clip behind the panel (on the left) or behind the toolbar (above).
+    // If sideBySide (landmarks): x = +0.66m, y = -0.22m.
+    // If standard: center at (0, 0, -1).
+    const localLook = isConstellation
+      ? new THREE.Vector3(0.76, -0.32, -1.25).normalize()
+      : sideBySide
+        ? new THREE.Vector3(0.66, -0.22, -1.30).normalize()
+        : new THREE.Vector3(0, 0, -1);
+    const desiredLook = localLook.applyQuaternion(camQuat).normalize();
+    const targetDir = dir(p.l, p.b, 1).normalize();
+    const endQuat = getUprightTargetQuaternion(targetDir, desiredLook, camUp);
+
+    travel = {
+      startQuat: world.quaternion.clone(),
+      endQuat,
+      t0: performance.now(),
+      duration: 550, // smooth 550ms glide
+    };
+    fadeMat.opacity = 0; // eliminate black flicker completely
   }
+
   function stepTravel() {
     if (!travel) return;
-    const t = (performance.now() - travel.t0) / FADE_DURATION_MS;
-    if (t < 1) { fadeMat.opacity = Math.min(1, t * 1.6); return; }
-    if (!travel.turned) {
-      // rotate the world so the picked direction sits in front of the headset
-      travel.turned = true;
-      readHead();
-      const look = new THREE.Vector3(0, 0, -1).applyQuaternion(headQuat).normalize();
-      world.quaternion.setFromUnitVectors(travel.target, look);
+    const progress = Math.min(1, (performance.now() - travel.t0) / travel.duration);
+    // Smooth easeInOutCubic curve
+    const ease = progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    world.quaternion.slerpQuaternions(travel.startQuat, travel.endQuat, ease);
+    fadeMat.opacity = 0;
+
+    if (progress >= 1) {
+      world.quaternion.copy(travel.endQuat);
+      travel = null;
     }
-    fadeMat.opacity = Math.max(0, 1 - (t - 1) * 1.4);
-    if (t >= 2) { fadeMat.opacity = 0; travel = null; }
   }
 
-  // ---------- Hand tracking ----------
-  const handFactory = new XRHandModelFactory();
-  const ctrlFactory = new XRControllerModelFactory();
+  function resetAllSettingsToDefault() {
+    Object.entries(settings.defaults).forEach(([k, v]) => home.updateSlider(k, v));
+    applySettings();
+    if (mode.current === 'settings') {
+      home.setBody([
+        ...settings.items,
+        { type: 'divider' },
+        { type: 'button', id: 'back:home', label: '← Back to Story 360°', variant: 'secondary' },
+      ]);
+    }
+  }
 
-  // three r128 only maps as many input sources as controllers were asked for (WebXRManager), so ask for INPUTS
+  function applySettings() {
+    const bg = home.getSlider('bgIntensity')?.value ?? 0.7;
+    const stars = home.getSlider('starIntensity')?.value ?? 0.4;
+    const dust = home.getSlider('dustIntensity')?.value ?? 0.75;
+    const uiA = home.getSlider('uiOpacity')?.value ?? 0.92;
+    uniforms.mixA.value = stars * (0.5 + bg);
+    uniforms.mixG.value = dust * (0.5 + bg * 2.0);
+    home.mesh.material.opacity = uiA;
+    headerBar.mesh.material.opacity = Math.min(0.98, uiA + 0.05);
+    wrist.mesh.material.opacity = uiA;
+  }
+
+  // ---------- Hand & Controller tracking ----------
+  const handFactory = new XRHandModelFactory();
+
+  const createSafeGripHandle = () => {
+    const g = new THREE.Group();
+    const geom = new THREE.CylinderGeometry(0.016, 0.018, 0.12, 16);
+    const mat = new THREE.MeshBasicMaterial({ color: 0x141f32, transparent: true, opacity: 0.65 });
+    const mesh = new THREE.Mesh(geom, mat);
+    mesh.rotation.x = Math.PI / 4;
+    mesh.position.set(0, -0.02, 0.04);
+    g.add(mesh);
+    return g;
+  };
+
   const hands = Array.from({ length: INPUTS }, (_, i) => {
     const grip = ren.xr.getControllerGrip(i);
-    grip.add(ctrlFactory.createControllerModel(grip));
+    grip.add(createSafeGripHandle());
     xrRoot.add(grip);
     const hand = ren.xr.getHand(i);
-    hand.add(handFactory.createHandModel(hand, 'spheres')); // three r128: 'spheres' | 'boxes' | 'oculus' (no 'mesh')
+    hand.add(handFactory.createHandModel(hand, 'spheres'));
     xrRoot.add(hand);
     const controller = ren.xr.getController(i);
     xrRoot.add(controller);
-    const h = { grip, hand, controller, trigger: false, pinching: false, pinchedTarget: null, lastLocal: null, overId: null };
-    // Quest controllers: the trigger (WebXR "select") works like a pinch
+    const h = {
+      grip,
+      hand,
+      controller,
+      trigger: false,
+      pinching: false,
+      pinchedTarget: null,
+      lastLocal: null,
+      dragConsumed: false,
+    };
     controller.addEventListener('selectstart', () => { h.trigger = true; });
     controller.addEventListener('selectend', () => { h.trigger = false; });
-    // grip / squeeze: show or hide the menu
-    controller.addEventListener('squeezestart', () => setMenuHidden(!menuHidden));
     return h;
   });
 
-  // Visible ray from each hand (helps the user aim).
-  const rayMat = new THREE.LineBasicMaterial({ color: 0x8fd3ff, transparent: true, opacity: 0.35 });
-  const rayGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -HAND_RAY_LEN)]);
+  const rayMat = new THREE.LineBasicMaterial({ color: 0xffb86b, transparent: true, opacity: 0.45 });
+  const rayGeom = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, 0, -HAND_RAY_LEN),
+  ]);
   hands.forEach((h) => {
     h.rayLine = new THREE.Line(rayGeom.clone(), rayMat);
     h.rayLine.visible = false;
@@ -256,14 +824,14 @@ export function initXR(sky) {
   });
 
   const raycaster = new THREE.Raycaster();
+  const tmpV = new THREE.Vector3();
+  let lastThumbstickStepTime = 0;
 
   function joint(hand, name) {
     const j = hand.joints && hand.joints[name];
     return j || null;
   }
 
-  // pinch (hand tracking) or trigger (controller); hand joints keep stale positions after switching to the
-  // controllers, so they only count while the hand is tracked (three sets hand.visible per frame)
   function isPinching(h) {
     if (h.trigger) return { active: true };
     const a = h.hand.visible && joint(h.hand, 'thumb-tip');
@@ -274,21 +842,33 @@ export function initXR(sky) {
 
   function pickTargets() {
     const t = [];
-    if (home.mesh.visible) t.push(home.mesh);
-    if (mini.mesh.visible) t.push(mini.mesh);
+    if (headerBar.mesh.visible) t.push(headerBar.mesh);
+    // Prioritize 3D landmark and constellation pills when active so user pointing in the sky hits them directly
     if (starMap.group.visible) starMap.picks.forEach((p) => t.push(p.mesh));
+    if (constTags.group.visible) {
+      constTags.picks.forEach((p) => {
+        if (p.mesh.visible) t.push(p.mesh);
+      });
+    }
+    if (home.mesh.visible) t.push(home.mesh);
+    if (storyRingGroup.visible) {
+      satellitePanels.forEach((sat) => {
+        if (sat.mesh.visible) t.push(sat.mesh);
+      });
+    }
+    if (wrist.mesh.visible) t.push(wrist.mesh);
     return t;
   }
 
   function panelFromMesh(m) {
+    if (m === headerBar.mesh) return headerBar;
     if (m === home.mesh) return home;
-    if (m === mini.mesh) return mini;
-    return null;
+    if (m === wrist.mesh) return wrist;
+    const sat = satellitePanels.find((s) => s.mesh === m);
+    return sat || null;
   }
 
   function hitFrom(hand) {
-    // The input's own pointing ray (WebXR targetRaySpace): controllers, tracked hands and Vision Pro's gaze + pinch
-    // all have one, and for hands it stays steady while the fingers pinch. Finger joints only as a fallback.
     const tip = !hand.controller.visible && hand.hand.visible && joint(hand.hand, 'index-finger-tip');
     let origin, direction;
     if (tip) {
@@ -297,63 +877,132 @@ export function initXR(sky) {
       if (m) direction = origin.clone().sub(m.position).normalize();
       else direction = new THREE.Vector3(0, 0, -1).applyQuaternion(cam.quaternion);
     } else {
-      if (!hand.controller.visible) return { hits: [] };   // this input is not tracked right now
-      origin = new THREE.Vector3(); hand.controller.getWorldPosition(origin);
+      if (!hand.controller.visible) return { hits: [] };
+      origin = new THREE.Vector3();
+      hand.controller.getWorldPosition(origin);
       direction = new THREE.Vector3(0, 0, -1).applyQuaternion(hand.controller.getWorldQuaternion(new THREE.Quaternion()));
     }
     raycaster.set(origin, direction);
-    const hits = raycaster.intersectObjects(pickTargets(), false);
+    const targets = pickTargets();
+    const hits = raycaster.intersectObjects(targets, false);
     return { hits, origin, direction };
   }
 
-  function dispatch(id) {
-    if (id === 'showMenu') { setMenuHidden(false); return; }
-    pages.handle(id);
-  }
-
-  // thumbstick up / down scrolls the menu (Quest: axes 2 / 3; touchpads: 0 / 1)
-  function stickScroll() {
+  // Controller thumbstick vertical scrolling & horizontal swipe & controller button shortcuts
+  let lastButtonResetTime = 0;
+  function pollControllerInput() {
     const session = ren.xr.getSession();
-    if (!session || !home.mesh.visible) return;
+    if (!session || !session.inputSources) return;
+    const now = performance.now();
+
     for (const src of session.inputSources) {
-      const ax = src.gamepad && src.gamepad.axes;
-      if (!ax) continue;
-      const y = Math.abs(ax[3] || 0) > Math.abs(ax[1] || 0) ? ax[3] : ax[1];
-      if (Math.abs(y) > 0.25) home.scroll(y * 22);
+      if (!src.gamepad) continue;
+      const gp = src.gamepad;
+
+      // Controller button shortcut to Reset Settings to Default
+      // In WebXR gamepad spec:
+      // button 3: Thumbstick click / press
+      // button 5: Secondary button (B on right, Y on left)
+      const bThumb = gp.buttons[3] && gp.buttons[3].pressed;
+      const bSec = gp.buttons[5] && gp.buttons[5].pressed;
+      if ((bThumb || bSec) && (now - lastButtonResetTime > 600)) {
+        lastButtonResetTime = now;
+        resetAllSettingsToDefault();
+      }
+
+      if (gp.axes) {
+        let ay = 0;
+        if (typeof gp.axes[3] === 'number' && Math.abs(gp.axes[3]) > 0.08) {
+          ay = gp.axes[3];
+        } else if (typeof gp.axes[1] === 'number' && Math.abs(gp.axes[1]) > 0.08) {
+          ay = gp.axes[1];
+        }
+
+        let ax = 0;
+        if (typeof gp.axes[2] === 'number' && Math.abs(gp.axes[2]) > 0.08) {
+          ax = gp.axes[2];
+        } else if (typeof gp.axes[0] === 'number' && Math.abs(gp.axes[0]) > 0.08) {
+          ax = gp.axes[0];
+        }
+
+        // Vertical thumbstick scrolling for any active scrollable panel (Constellations catalog, Constellation detail, Landmarks, Data, Settings, etc.)
+        if (Math.abs(ay) > 0.15 && Math.abs(ay) > Math.abs(ax) * 0.7) {
+          if (home.mesh.visible && home.scrollMax > 0) {
+            home.scroll(ay * 22);
+          }
+        }
+        // Thumbstick horizontal swipe support for the 360° Story Carousel
+        else if (storyRingGroup.visible && Math.abs(ax) > 0.65 && (now - lastThumbstickStepTime >= 420)) {
+          lastThumbstickStepTime = now;
+          renderStorySection(storyState.activeIdx + (ax > 0 ? 1 : -1), true);
+          break;
+        }
+      }
     }
   }
 
-  // Update loop: called every XR frame.
   function xrFrame() {
     if (!ren.xr.isPresenting) return;
 
-    readHead();
-    if (needPlace) { needPlace = false; place(); }
-    fadeMesh.position.copy(headPos);
+    const xrCam = ren.xr.getCamera(cam);
+    xrCam.getWorldPosition(tmpV);
+    fadeMesh.position.copy(tmpV);
     stepTravel();
-    if (spinning && !travel) world.rotation.y += 0.0009;
-    // the star map turns with the sky (travel / orbit), around the head
-    starMap.group.quaternion.copy(world.quaternion);
-    stickScroll();
+    if (vrIntro.playing) vrIntro.step(xrCam);
+    layoutStoryRing();
+    pollControllerInput();
 
-    const hover = new Map();   // panel -> hovered id, over every hand
+    // Keep 3D Landmark & Constellation pills aligned with the rotating sky sphere!
+    starMap.group.quaternion.copy(world.quaternion);
+    constTags.group.quaternion.copy(world.quaternion);
+
     for (const h of hands) {
       const { active } = isPinching(h);
       const { hits } = hitFrom(h);
       const firstHit = hits[0];
       h.rayLine.visible = !!firstHit;
-      if (firstHit) h.rayLine.scale.z = firstHit.distance / HAND_RAY_LEN;
-      h.overId = null;
+      if (firstHit) {
+        h.rayLine.scale.z = firstHit.distance / HAND_RAY_LEN;
+      }
 
+      let effectiveHit = firstHit;
       const panel = firstHit && panelFromMesh(firstHit.object);
+      let hit = null;
       if (panel) {
         const local = firstHit.object.worldToLocal(firstHit.point.clone());
-        const hit = panel.hitTest(local);
-        h.overId = hit ? hit.id : null;
-        if (hit) hover.set(panel, hit.id);
+        hit = panel.hitTest(local);
+        panel.setHover(hit ? hit.id : null);
+        if (!hit) {
+          const starBehind = hits.find((it) => it.object.userData && it.object.userData.pick);
+          if (starBehind) {
+            effectiveHit = starBehind;
+          }
+        }
+      }
+
+      if (effectiveHit && effectiveHit !== firstHit && effectiveHit.object.userData && effectiveHit.object.userData.pick) {
+        const u = effectiveHit.object.userData;
+        if (u.kind === 'constellation') {
+          constTags.highlight(u.id, storyState.selectedConstIdx !== null ? 'const:' + storyState.selectedConstIdx : null);
+        } else {
+          starMap.highlight(u.id);
+        }
         if (active && !h.pinching) {
           h.pinching = true;
-          h.pinchedTarget = { panel, hit, local: local.clone(), scrollY0: panel.scrollY };
+          h.dragConsumed = false;
+          h.pinchedTarget = { starHit: u };
+        }
+      } else if (panel && hit) {
+        const local = firstHit.object.worldToLocal(firstHit.point.clone());
+        if (active && !h.pinching) {
+          h.pinching = true;
+          h.dragConsumed = false;
+          h.pinchedTarget = {
+            panel,
+            hit,
+            local: local.clone(),
+            scrollY0: panel.scrollY,
+          };
           h.lastLocal = local.clone();
         } else if (active && h.pinching && h.pinchedTarget && h.pinchedTarget.panel === panel) {
           const target = h.pinchedTarget;
@@ -363,102 +1012,254 @@ export function initXR(sky) {
             const trackW = target.hit.cw - 40;
             const val = Math.max(0, Math.min(1, (canvas.px - trackX) / trackW));
             panel.updateSlider(target.hit.id, val);
-            pages.onSlider(target.hit.id, val);
-          } else if (!target.hit) {
-            // scroll drag: the panel follows the hand (drag up = content up)
+            if (target.hit.id === 'diffGainSlider') {
+              const newGain = Math.max(1, Math.min(10, Math.round(1 + val * 9)));
+              if (newGain !== storyState.diffGain) {
+                storyState.diffGain = newGain;
+                const sections = buildStoryCarouselPanels(storyState);
+                home.setBody(sections[4].body);
+              }
+            } else if (target.hit.id === 'spectroSlider') {
+              const maxIdx = Math.max(0, (COLORS || []).length - 1);
+              const newSpectro = Math.max(0, Math.min(maxIdx, Math.round(val * maxIdx)));
+              if (newSpectro !== storyState.spectroIdx) {
+                storyState.spectroIdx = newSpectro;
+                const sections = buildStoryCarouselPanels(storyState);
+                home.setBody(sections[7].body);
+              }
+            } else {
+              applySettings();
+            }
+          } else {
             const prev = panel.localToCanvas(target.local);
             const now = panel.localToCanvas(local);
-            panel.setScroll(target.scrollY0 + (prev.py - now.py));
+            const dx = now.px - prev.px;
+            const dy = now.py - prev.py;
+
+            // Horizontal drag on a Story panel rotates the 360° Story Carousel left/right!
+            if (storyRingGroup.visible && Math.abs(dx) > 135 && Math.abs(dx) > Math.abs(dy) * 1.35 && !h.dragConsumed) {
+              h.dragConsumed = true;
+              renderStorySection(storyState.activeIdx + (dx < 0 ? 1 : -1), true);
+            } else if (Math.abs(dy) > 12) {
+              panel.setScroll(target.scrollY0 + (prev.py - now.py) * -1);
+            }
           }
         }
+      } else if (!firstHit) {
+        headerBar.setHover(null);
+        home.setHover(null);
+        wrist.setHover(null);
+        satellitePanels.forEach((s) => s.setHover(null));
       } else if (firstHit && firstHit.object.userData && firstHit.object.userData.pick) {
-        starMap.highlight(firstHit.object.userData.id);
+        const u = firstHit.object.userData;
+        if (u.kind === 'constellation') {
+          constTags.highlight(u.id, storyState.selectedConstIdx !== null ? 'const:' + storyState.selectedConstIdx : null);
+        } else {
+          starMap.highlight(u.id);
+        }
         if (active && !h.pinching) {
           h.pinching = true;
-          h.pinchedTarget = { starHit: firstHit.object.userData };
+          h.dragConsumed = false;
+          h.pinchedTarget = { starHit: u };
         }
       }
 
       if (!active && h.pinching) {
-        // Pinch up: fire the click when the ray is still on the thing that was pressed
         const t = h.pinchedTarget;
-        if (t && t.panel && t.hit && t.hit.kind === 'button' && h.overId === t.hit.id) {
-          dispatch(t.hit.id);
-        } else if (t && t.starHit && firstHit && firstHit.object.userData === t.starHit) {
-          pages.handle('lm:' + t.starHit.data.idx);
+        if (!h.dragConsumed) {
+          if (t && t.panel && t.hit && t.hit.kind === 'button') {
+            handleButton(t.hit.id);
+          } else if (t && t.starHit) {
+            if (t.starHit.kind === 'constellation') {
+              showConstellationDetail(t.starHit.data.idx, true);
+            } else {
+              showCard(t.starHit.data);
+            }
+          }
         }
         h.pinching = false;
         h.pinchedTarget = null;
+        h.dragConsumed = false;
       }
     }
-    home.setHover(hover.get(home) || null);
-    mini.setHover(hover.get(mini) || null);
 
-    // keep panels turned toward the user (yaw only: they stay upright)
-    home.mesh.lookAt(headPos.x, home.mesh.position.y, headPos.z);
-    mini.mesh.lookAt(headPos.x, mini.mesh.position.y, headPos.z);
+    const camPos = new THREE.Vector3();
+    ren.xr.getCamera(cam).getWorldPosition(camPos);
+    if (camPos.y > 0.4) {
+      eyeY = camPos.y;
+    }
 
+    // Smoothly animate home panel position (shifts left for side-by-side landmark/constellation view,
+    // or centers directly in front of viewer)
+    const isDetailView = mode.current === 'landmark-detail' || mode.current === 'constellation-detail' || mode.current === 'field-detail';
+    panelTargetPos.x = isDetailView ? -0.60 : 0;
+    panelTargetPos.y = eyeY - 0.20;
+    panelTargetPos.z = -1.40;
+    home.mesh.position.lerp(panelTargetPos, 0.12);
+
+    // Auto-adjust headerBar position higher and dynamically anchor above whatever panel is active
+    // so they never overlap
+    const panelTopY = home.mesh.visible ? (home.mesh.position.y + 0.54) : (eyeY + 0.25);
+    const desiredHeaderY = Math.max(eyeY + 0.46, panelTopY + 0.10);
+    headerBar.mesh.position.set(0, desiredHeaderY, -1.40);
+
+    home.mesh.lookAt(camPos.x, home.mesh.position.y, camPos.z);
+    headerBar.mesh.lookAt(camPos.x, headerBar.mesh.position.y, camPos.z);
+    if (wrist.mesh.visible) wrist.mesh.lookAt(camPos);
+
+    // Fluttering glow animation on focused constellation figure and tag
+    const tSec = performance.now() * 0.001;
+    updateConstellationFlutter(tSec);
+    if (typeof constTags.updateFlutter === 'function') {
+      constTags.updateFlutter(tSec);
+    }
+
+    headerBar.refresh();
     home.refresh();
-    mini.refresh();
+    wrist.refresh();
+    if (storyRingGroup.visible) {
+      satellitePanels.forEach((s) => s.refresh());
+    }
   }
 
   // ---------- Session lifecycle ----------
   ren.xr.addEventListener('sessionstart', () => {
     xrRoot.visible = true;
-    const root = initConstellations._root;
-    savedConst = !!(root && root.visible);
-    world.quaternion.identity();
+    panelTargetPos.set(0, eyeY - 0.20, -1.40);
+    home.mesh.position.set(0, eyeY - 0.20, -1.40);
+    headerBar.mesh.position.set(0, eyeY + 0.46, -1.40);
+    starMap.group.position.y = eyeY;
+    constTags.group.position.y = eyeY;
     world.rotation.y = -Math.PI / 2;
     updateCompare();
-    applyLayerMix();
-    menuHidden = false;
-    home.mesh.visible = true;
-    mini.mesh.visible = false;
-    home.mesh.material.opacity = mini.mesh.material.opacity = uiOpacity;
-    pages.open('home');
-    needPlace = true;   // the headset pose is only known from the first frame
+    renderHome();
+    applySettings();
+
     if (quickBtn) {
       quickBtn.classList.add('active');
-      quickBtn.querySelector('span').textContent = 'Exit VR';
+      const sp = quickBtn.querySelector('span');
+      if (sp) sp.textContent = 'Exit VR';
+    }
+
+    // Play 360° VR Intro (warp speed shader + typewriter "SPHEREx SKY VR MODE") unless ?intro=0
+    const skipIntro = typeof location !== 'undefined' && location.search.includes('intro=0');
+    if (!skipIntro) {
+      home.mesh.visible = false;
+      headerBar.mesh.visible = false;
+      storyRingGroup.visible = false;
+      wrist.mesh.visible = false;
+      starMap.group.visible = false;
+      constTags.group.visible = false;
+      world.visible = false;
+      vrIntro.preShow();
+      vrIntro.play(() => {
+        world.visible = true;
+        headerBar.mesh.visible = true;
+        home.mesh.visible = true;
+        storyRingGroup.visible = true;
+        applySettings();
+      });
     }
   });
+
   ren.xr.addEventListener('sessionend', () => {
+    vrIntro.stop && vrIntro.stop();
+    stopSpeech();
+    setConstellationsVisible(false);
     xrRoot.visible = false;
+    world.visible = true;
+    home.mesh.visible = true;
+    headerBar.mesh.visible = true;
+    storyRingGroup.visible = true;
     travel = null;
-    spinning = false;
     fadeMat.opacity = 0;
-    pages.reset();
-    const root = initConstellations._root;
-    if (root) root.visible = savedConst;
-    world.rotation.set(0, 0, 0);   // a travel may have tilted it
-    setPageSpin(false);
-    applyLayerMix();               // back to the page's own layer settings
+    world.rotation.set(0, 0, 0);
+    uniforms.mixA.value = 0.4;
+    uniforms.mixG.value = 1.2;
     updateCompare();
     if (quickBtn) {
       quickBtn.classList.remove('active');
-      quickBtn.querySelector('span').textContent = 'Enter VR';
+      const sp = quickBtn.querySelector('span');
+      if (sp) sp.textContent = 'Enter VR';
     }
+    try {
+      ren.xr.setSession(null);
+    } catch {}
   });
 
-  // The viewer's render loop (viewer/sky/camera.js, startRenderLoop) calls sky.onXRFrame every XR frame.
+  // The viewer's render loop (viewer/sky/camera.js, startRenderLoop) calls sky.onXRFrame every XR frame!
   sky.onXRFrame = xrFrame;
 
-  // Read-only view for tests/vr.mjs and the console: where things are, what the panel shows.
-  window.spxXR = {
-    get mode() { return mode.current; },
-    get title() { return home.title; },
-    get fading() { return fadeMat.opacity; },
-    get worldTilt() { return world.quaternion.toArray(); },
-    get menuHidden() { return menuHidden; },
-    go(id) { dispatch(id); },
-    snapshot() { home.refresh(); return home.mesh.material.map.image.toDataURL('image/png'); },   // the menu as a picture (tests / debugging)
-    buttonWorld(id) {   // 'travel:' (ending in ':') = the first button whose id starts with it
-      const b = home.hits.find((h) => h.id === id || (id.endsWith(':') && h.id.startsWith(id)));
-      return b ? home.mesh.localToWorld(home.canvasToLocal(b.cx + b.cw / 2, b.cy + b.ch / 2)).toArray() : null;
+  // Expose debug/automation hooks on sky.xr for verification
+  sky.xr = {
+    enterVR,
+    exitVR,
+    xrFrame,
+    handleButton,
+    renderStorySection,
+    renderConstellationsCatalog,
+    showConstellationDetail,
+    showStarMap,
+    showCard,
+    renderGalleryCatalog,
+    showFieldTargetDetail,
+    refreshPanels: () => {
+      headerBar.refresh();
+      home.refresh();
+      wrist.refresh();
+      satellitePanels.forEach((s) => s.refresh());
     },
-    starWorld(i) {
-      const m = starMap.picks[i] && starMap.picks[i].mesh;
-      return m ? m.getWorldPosition(new THREE.Vector3()).toArray() : null;
-    },
+    getState: () => ({
+      mode: mode.current,
+      tab: mode.tab,
+      activeStoryIdx: storyState.activeIdx,
+      ringAngle: storyState.ringAngle,
+      storyRingVisible: storyRingGroup.visible,
+      landmarksVisible: starMap.group.visible,
+      constellationsVisible: constTags.group.visible,
+      headerVisible: headerBar.mesh.visible,
+      homeTitle: home.title,
+      homeHitsCount: home.hits.length,
+    }),
   };
+  if (typeof window !== 'undefined') {
+    window.__spherexXR = sky.xr;
+    window.spxXR = {
+      get mode() { return mode.current; },
+      get title() { return mode.current === 'starmap' ? 'Star Map' : home.title; },
+      get fading() { return fadeMat.opacity; },
+      get worldTilt() { return world.quaternion.toArray(); },
+      get menuHidden() { return !home.mesh.visible; },
+      go(id) { handleButton(id); },
+      snapshot() { home.refresh(); return home.mesh.material.map.image.toDataURL('image/png'); },
+      get starMap() { return starMap; },
+      debugRay() {
+        const h = hands[1] || hands[0];
+        const res = hitFrom(h);
+        return {
+          ctrlVisible: h.controller.visible,
+          origin: res.origin ? res.origin.toArray() : null,
+          direction: res.direction ? res.direction.toArray() : null,
+          targetsCount: pickTargets().length,
+          hits: res.hits.map(x => ({ id: x.object.userData?.id, name: x.object.name, dist: x.distance }))
+        };
+      },
+      buttonWorld(id) {
+        const b = home.hits.find((h) => h.id === id || (id.endsWith(':') && h.id.startsWith(id)));
+        if (!b) return null;
+        home.mesh.position.copy(panelTargetPos);
+        home.mesh.updateMatrixWorld(true);
+        return home.mesh.localToWorld(home.canvasToLocal(b.cx + b.cw / 2, b.cy + b.ch / 2)).toArray();
+      },
+      starWorld(i) {
+        // Return forward-facing pick so test runner controller aim (z = target[2] + 0.9) points towards the landmark cleanly
+        const forwardPicks = starMap.picks.filter((p) => {
+          const wp = p.mesh.getWorldPosition(new THREE.Vector3());
+          return wp.z < -0.3;
+        });
+        const pick = (forwardPicks.length && (forwardPicks[i] || forwardPicks[0])) || starMap.picks[i] || starMap.picks[0];
+        return pick ? pick.mesh.getWorldPosition(new THREE.Vector3()).toArray() : null;
+      },
+    };
+  }
 }

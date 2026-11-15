@@ -16,7 +16,12 @@ export function initLandmarks() {
     const b = document.createElement('button');
     b.className = 'hp' + (i >= 6 ? ' me' : '') + (i === 1 ? ' lf' : '');
     b.innerHTML = '<i></i><span>' + h[0] + '</span>';
-    b.onclick = () => { fly(h); showCard(h[3], h[4]); };
+    const audioSrc = `assets/audio/landmarks/${i}.mp3`;
+    const narrationText = h[5] || h[4];
+    b.onclick = () => {
+      fly(h);
+      showCard(h[0], h[4], audioSrc, narrationText);
+    };
     $('#hs').appendChild(b);
     buttons.push(b);
 

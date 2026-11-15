@@ -54,6 +54,23 @@ def _smtp_status(cfg):
     }
 
 
+class _PartialFile:
+    def __init__(self, f, length):
+        self.f = f
+        self.remaining = length
+
+    def read(self, size=-1):
+        if self.remaining <= 0:
+            return b""
+        to_read = self.remaining if size < 0 else min(size, self.remaining)
+        chunk = self.f.read(to_read)
+        self.remaining -= len(chunk)
+        return chunk
+
+    def close(self):
+        self.f.close()
+
+
 class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT_DIR, **kwargs)
@@ -65,7 +82,78 @@ class SPHERExRequestHandler(http.server.SimpleHTTPRequestHandler):
                 or any(part.lower() in ("voice-server", "node_modules") for part in parts)):
             self.send_error(404)
             return None
-        return super().send_head()
+
+        path = self.translate_path(self.path)
+        f = None
+        if os.path.isdir(path):
+            parts = urllib.parse.urlsplit(self.path)
+            if not parts.path.endswith('/'):
+                self.send_response(301)
+                new_parts = (parts[0], parts[1], parts[2] + '/', parts[3], parts[4])
+                new_url = urllib.parse.urlunsplit(new_parts)
+                self.send_header("Location", new_url)
+                self.end_headers()
+                return None
+            for index in "index.html", "index.htm":
+                index_candidate = os.path.join(path, index)
+                if os.path.exists(index_candidate):
+                    path = index_candidate
+                    break
+            else:
+                return super().send_head()
+
+        ctype = self.guess_type(path)
+        try:
+            f = open(path, 'rb')
+        except OSError:
+            self.send_error(404, "File not found")
+            return None
+
+        fs = os.fstat(f.fileno())
+        total_len = fs.st_size
+        range_header = self.headers.get('Range')
+
+        if range_header and range_header.startswith('bytes=') and ',' not in range_header:
+            try:
+                r_spec = range_header[6:].strip()
+                if '-' in r_spec:
+                    start_str, end_str = r_spec.split('-', 1)
+                    if not start_str:
+                        start = max(0, total_len - int(end_str))
+                        end = total_len - 1
+                    elif not end_str:
+                        start = int(start_str)
+                        end = total_len - 1
+                    else:
+                        start = int(start_str)
+                        end = min(total_len - 1, int(end_str))
+                else:
+                    start = int(r_spec)
+                    end = total_len - 1
+
+                if start <= end and start < total_len:
+                    f.seek(start)
+                    content_length = end - start + 1
+                    self.send_response(206)
+                    self.send_header("Content-Type", ctype)
+                    self.send_header("Content-Range", f"bytes {start}-{end}/{total_len}")
+                    self.send_header("Content-Length", str(content_length))
+                    self.send_header("Accept-Ranges", "bytes")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+                    self.end_headers()
+                    return _PartialFile(f, content_length)
+            except Exception:
+                pass
+
+        self.send_response(200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(total_len))
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+        self.end_headers()
+        return f
 
     def send_json(self, data, status=200):
         raw = json.dumps(data).encode("utf-8")

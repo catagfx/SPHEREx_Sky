@@ -29,11 +29,15 @@ let savedView = null;                         // camera pose captured when a con
  *  Narration helper (uses MP3 asset fallback + Web Speech API)
  * ============================================================ */
 
-function speakConstellation(entry, onEnd) {
-  if (!entry || !entry.def) return false;
-  const idx = CONSTELLATIONS.indexOf(entry.def);
+function speakConstellation(entryOrDef, onEnd) {
+  const def = entryOrDef?.def || entryOrDef;
+  if (!def) return false;
+  let idx = CONSTELLATIONS.indexOf(def);
+  if (idx < 0) {
+    idx = CONSTELLATIONS.findIndex((c) => c.name === def.name);
+  }
   const src = idx >= 0 ? `assets/audio/constellations/${idx}.mp3` : null;
-  const text = fullNarration(entry.def);
+  const text = fullNarration(def);
   return playNarration({ src, text, onEnd });
 }
 

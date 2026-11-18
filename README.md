@@ -8,7 +8,7 @@
 [![Cloud Backend](https://img.shields.io/badge/Render%20Cloud-Backend%20Live-46E3B7?style=for-the-badge&logo=render)](https://spherex-sky-backend.onrender.com/)
 [![WebXR](https://img.shields.io/badge/WebXR-Meta%20Quest%203%20%2F%202%20%2F%20Pro-blueviolet?style=for-the-badge&logo=oculus)](https://catagfx.github.io/SPHEREx_Sky/)
 [![Three.js](https://img.shields.io/badge/Three.js-WebGL%20%2B%20WebXR-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT%20%7C%20Apache%202.0%20%7C%20GPL%203.0-blue?style=for-the-badge)](LICENSE.md)
 
 ---
 
@@ -44,6 +44,7 @@
 6. [Known Limitations & Scientific Honesty](#-known-limitations--scientific-honesty)
 7. [Team & Contributors](#-team--contributors)
 8. [Data Attribution & Citation](#-data-attribution--citation)
+9. [License & Intellectual Property](#-license--intellectual-property)
 
 ---
 
@@ -298,6 +299,22 @@ Proudly designed and developed for the **NASA Space Apps Challenge** by **Team P
 - **Orbital Ephemerides**: NASA JPL Horizons On-Line Ephemeris System.
 - **Astrometric Cross-Matches**: ESA Gaia DR3, CDS SIMBAD, and AllWISE Infrared Catalog.
 - **Audio Voiceovers**: Synthesized and mastered using educational voice models.
+
+---
+
+## 📜 License & Intellectual Property
+
+SPHEREx Sky is **triple-licensed** under the terms of any of the following open-source licenses, at your choice:
+
+| License | SPDX Identifier | Details |
+| :--- | :--- | :--- |
+| **MIT License** | `MIT` | Permissive: Use, modify, copy, and distribute freely. ([LICENSE-MIT](LICENSE-MIT)) |
+| **Apache License 2.0** | `Apache-2.0` | Permissive with explicit patent protection and state changes notice. ([LICENSE-APACHE](LICENSE-APACHE)) |
+| **GNU GPL v3.0** | `GPL-3.0-or-later` | Copyleft: Modified redistributed versions must remain open source under the GPL. ([LICENSE-GPL](LICENSE-GPL)) |
+
+SPDX Expression: `MIT OR Apache-2.0 OR GPL-3.0-or-later`
+
+See [LICENSE.md](LICENSE.md) for full terms, conditions, and third-party data service acknowledgments.
 
 ---
 

@@ -1,91 +1,87 @@
-# Working on SPHEREx Sky
+# Contributing to SPHEREx Sky
 
-The rules that keep the project clean. Read this before adding a feature, an animation, or merging another copy
-of the project.
+Guidelines and architectural conventions that keep the project clean, reliable, and performant. Read this before adding a feature, modifying astronomical data, or updating WebXR VR experiences.
 
-## 1. Where things go
+Project developed by **Team PP.AP** for the **NASA Space Apps Challenge**.
 
-| What | Where |
-|---|---|
-| Page markup (header, dialogs) | `index.html` (ids are the contract with the viewer) |
-| Intro | `ui/src/intro/` + `css/intro.css` |
-| Story Tour page (hero + sections) | `ui/src/story/` (React) + `css/story.css`, `css/hero.css` (section 1) |
-| What a story section *does* (buttons, canvases) | `ui/src/viewer/story/<section>.js` |
-| 3D globe, camera, landmarks | `ui/src/viewer/sky/` + `css/sky.css` |
-| "See it change" explorer (5 modes) | `ui/src/viewer/explorer/` + `css/explorer.css` |
-| Dialogs (gallery, search, IRSA, ...) | `ui/src/viewer/panels/` + `css/dialogs.css` |
-| Header, modal, toast helpers | `ui/src/viewer/ui/` + `css/header.css`, `css/dialogs.css` |
-| Shared tokens, buttons, form fields | `css/base.css` |
-| Data (targets, epochs, landmarks, texts) | `ui/src/data/*.json` — data, never code |
-| Backend (API, IRSA, FITS, email) | `backend/` (`server.py` only starts it) |
-| Data pipeline scripts | `scripts/` |
-| Tests | `tests/` |
+---
 
-* One file = one job. If a file grows past ~300 lines or does two things, split it.
-* No inline `style="..."` in `index.html` (one exception: `#ui-boot`, it must paint before any CSS loads).
-  Put the rule in the CSS file of that area.
-* Dead code is deleted, not commented out. Git keeps the history.
-* `js/ui.bundle.js` is a build output: never edit it, run `npm run build`.
+## 1. Project Architecture & Directory Layout
 
-## 2. Animations
+| Area | Location | Description |
+|---|---|---|
+| **Page markup & modals** | `index.html` | Semantic HTML layout, modals, and container mount points (IDs form the DOM contract with JS modules). |
+| **Intro & Onboarding** | `ui/src/intro/` + `css/intro.css` | React introductory interactive experience and mission onboarding. |
+| **Story Tour (Hero & Sections)** | `ui/src/story/` + `css/story.css`, `css/hero.css` | React + TypeScript story narrative explaining SPHEREx's 102 infrared bands. |
+| **3D Celestial Globe & Camera** | `ui/src/viewer/sky/` + `css/sky.css` | Three.js inverted celestial sphere, coordinate math (RA/Dec and Galactic $l, b$), camera controller. |
+| **WebXR / VR Virtual Observatory** | `ui/src/viewer/sky/xr/` | Complete 6-DoF Meta Quest VR environment: 360° floating carousel, dark glass UI, controller rays, hand pinching. |
+| **Audio Narration Pipeline** | `ui/src/viewer/audio/` + `assets/audio/` | Web Audio API narration manager with HTTP 206 byte-range streaming for 20 constellations and 11 landmarks. |
+| **Constellations System** | `ui/src/viewer/sky/constellations.js` | 3D celestial figures, tangent-plane mini SVG diagrams, star chips, and automated audio tour triggers. |
+| **Time-Domain Explorer (5 modes)** | `ui/src/viewer/explorer/` + `css/explorer.css` | Multi-epoch blinking, split view, animated comparator, difference imaging ($I_B - I_A$), and 6-band SED. |
+| **Dialogs & Cutout Studio** | `ui/src/viewer/panels/` + `css/dialogs.css` | NASA IRSA cutout generator, telemetry review, search, and astronomical gallery. |
+| **Core API & Environment** | `ui/src/core/api.ts` + `ui/src/core/env.ts` | Centralized backend resolution (`window.SPX_API_URL`), motion preferences, and shared state. |
+| **Astronomical Datasets** | `ui/src/data/*.json` | Curated SPHEREx targets, epochs, landmarks, and scientific metadata (strictly pure JSON, never code). |
+| **Python Backend API** | `backend/` + `server.py` | HTTP server, IRSA TAP queries, WCS FITS reprojection, and Level 2 bitmask analysis. |
+| **LiveKit Voice Server** | `voice-server/` | Node.js Express server generating LiveKit WebRTC tokens for multi-user voice seminars. |
+| **Static Build Output** | `js/ui.bundle.js` | Compiled bundle produced by `npm run build` (never edit directly). |
+| **Static Site Distribution** | `dist/` + `scripts/build-site.mjs` | Self-contained static package deployed to GitHub Pages. |
+| **Testing Suite** | `tests/` | Playwright E2E suite (132 checks), simulated Quest 3 WebXR automated test runner (`tests/vr.mjs`). |
 
-Everything runs on **one** GSAP and **one** Lenis, from npm (`import gsap from 'gsap'`). Never add a CDN copy
-of GSAP, Lenis or three.js: two copies fight over the same elements.
+---
 
-* Scroll the page only through `glideTo()` / `topOf()` (`ui/src/story/scroll.ts`). It respects calm mode and the
-  section pager; `window.scrollTo` or a second Lenis would not.
-* Don't animate a property that something else already animates on the same element. Known owners:
-  `#hc` opacity / filter (Hero.tsx scroll dissolve), `#top` + `.bg-watermark` (viewer/ui/chrome.js entrance),
-  `#spFill` width (viewer/ui/header.js), the camera (viewer/sky/camera.js).
-* After an entrance, `clearProps` so CSS hovers keep working.
-* **Calm mode** (Windows "Animation effects" off, macOS "Reduce motion", or `?motion=reduced`): fades only, no
-  travelling / zooming / blur. Check `prefersReducedMotion` (`core/env.ts`); in CSS use `.reduce-motion`, not the
-  media query (the `?motion=` override must win). Test both modes.
-* New sky movement for a story section: add it to `SECTIONS` in `viewer/story/sky-sync.js`.
+## 2. Core Development Rules
 
-## 3. Ids and data
+1. **Single Responsibility**: One file = one clear responsibility. If a module exceeds ~300 lines or addresses two unrelated concerns, split it cleanly.
+2. **No Inline Styling**: Avoid inline `style="..."` attributes in `index.html` or components (with the sole exception of `#ui-boot` which must paint before CSS loads to eliminate flashes). Put styling in the matching CSS stylesheet.
+3. **Clean Code Hygiene**: Dead code is removed, never left commented out. Git keeps the historical record.
+4. **Bundle Workflow**: Never hand-edit `js/ui.bundle.js`. Always update TypeScript/JavaScript sources in `ui/src/` and run `npm run build` (or `npm run build:pages`).
+5. **DOM Element IDs**: The viewer binds directly by element ID. Renaming an ID in `index.html` requires updating all referencing modules (verify by searching `'#theId'`).
 
-* The viewer binds by element id. Renaming an id in `index.html` or a React component = updating the module that
-  uses it (search for `'#theId'`).
-* Story inputs are uncontrolled (`defaultValue`) and containers the viewer fills (`#storyBenchmarkGrid`) are
-  rendered empty: React must never re-render their children.
-* A new target = a new entry in `ui/src/data/field/*.json` (+ `target-insights.json` for its metrics panel,
-  + FITS cutouts in `data/movers_cutouts/` and `backend/config.py KNOWN_BENCHMARKS` if the backend serves it).
+---
 
-## 4. Run and test
+## 3. WebXR Virtual Reality Standards (Meta Quest)
 
-```bash
-npm install                 # once (Playwright uses your installed Chrome; else: npx playwright install chromium)
-pip install numpy astropy matplotlib pillow requests reproject
-npm run dev                 # http://localhost:5173 (backend on :8080)
-npm test                    # 132-check e2e suite + behaviour + intro flow, full and calm motion
-```
+* **Performance Target**: Maintain a stable 60–72 FPS inside the WebXR render loop (`ren.setAnimationLoop`).
+* **Ergonomic Elevation**: Anchor floating dark glass panels between $y = 1.35\,\text{m}$ and $y = 1.65\,\text{m}$ relative to eye position so users never need to crane their necks.
+* **Upright Celestial Navigation**: When navigating to landmarks or constellations (`travelTo`), use upright orthonormal basis matrices without introducing diagonal roll or twist around the line of sight.
+* **Dual Input Handlers**: All 3D UI elements must support both controller trigger laser raycasting and natural hand-pinch interactions (`t.hit.kind === 'button'`).
+* **Audio Playback in VR**: Meta Quest WebXR requires explicit user activation or unlocked AudioContext before streaming audio. Use `playNarration()` in `ui/src/viewer/audio/narration.js` to ensure HTTP 206 byte-range streaming.
 
-`npm test` uses the server at `BASE_URL` (default `http://localhost:8080`) or starts `python server.py` itself.
-`BASE_URL=http://localhost:5173 npm test` checks the dev server.
+---
 
-Before a refactor (a change that should look and behave exactly the same):
+## 4. Animation & Smooth Motion Guidelines
+
+Everything in the web interface runs on **one** unified GSAP instance and **one** Lenis inertia scroll instance (`import gsap from 'gsap'`). Never inject duplicate CDN copies of GSAP, Lenis, or Three.js.
+
+* **Scroll Management**: Control page scrolling exclusively via `glideTo()` / `topOf()` (`ui/src/story/scroll.ts`). This ensures full compatibility with the section pager and motion preferences.
+* **Ownership of Animated Properties**: Avoid animating a CSS property that another active timeline already controls.
+* **Hover State Restoration**: Always append `clearProps` at the conclusion of entrance animations to ensure CSS `:hover` states remain active.
+* **Calm / Reduced-Motion Mode**: When a user enables reduced motion (`prefers-reduced-motion` or `?motion=reduced`), disable all 3D camera swoops, traveling zooms, and blur filters, replacing them with simple crossfades. Check `prefersReducedMotion` (`core/env.ts`) and use the `.reduce-motion` CSS class.
+
+---
+
+## 5. Development & Testing Workflow
 
 ```bash
-npm run snapshot:save       # rendered HTML of every target/mode + computed styles on 11 screens (tests/.baselines/)
-# ... change things ...
-npm run snapshot:compare    # every difference is listed; 0 = nothing visible changed
+# 1. Install dependencies
+npm install
+pip install -r requirements.txt
+
+# 2. Run local development with Hot Module Replacement (HMR)
+npm run dev                 # Starts Python API (:8080) + Vite dev server (:5173)
+
+# 3. Run in Local VR mode with HTTPS SAN certificates
+SPX_HTTPS=1 python3 server.py 8080
+
+# 4. Run automated test suites
+npm test                    # Full E2E suite across full and reduced motion
+node tests/vr.mjs           # Automated WebXR headset test runner (18/18 checks)
+
+# 5. Build static distribution for GitHub Pages
+npm run build:pages         # Rebuilds bundle and packages into dist/
 ```
 
-Backend refactor: run the old and the new server side by side and
-`python tests/api_compare.py http://localhost:8080 http://localhost:8091` (all endpoints + a full cutout job).
-
-Finish with `npm run typecheck`, `npm run build`, bump the `?v=` of anything you changed in `index.html`, and
-`npm test` again.
-
-## 5. Merging another copy of the project
-
-Never copy files from an older copy over this structure (an old `app.js`, `style.css` or `data.js` would bring
-back the bugs and the leftovers). Instead:
-
-1. Find the version that copy started from (a git commit, ideally) and take **only its differences**
-   (`git diff <start>..<copy>`).
-2. Move each change to where it belongs today (table above): a change to the old `js/app.js` gallery code goes to
-   `ui/src/viewer/panels/gallery.js`, a new target in `js/data.js` goes to `ui/src/data/field/*.json`,
-   a rule from `css/style.css` goes to the matching `css/*.css` file, a change to `server.py` goes to `backend/`.
-3. `npm test`, the snapshots where relevant, then commit.
+Before committing code:
+- Run `npm run typecheck` to verify TypeScript types.
+- Run `node tests/vr.mjs` to ensure WebXR sessions and 3D controller interactions remain green.
+- Verify that all relative asset links resolve without HTTP 404 errors.

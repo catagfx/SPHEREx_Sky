@@ -2,6 +2,7 @@
   "name": "spherex-sky",
   "private": true,
   "version": "1.0.0",
+  "license": "(MIT OR Apache-2.0 OR GPL-3.0-or-later)",
   "description": "SPHEREx Sky: Python backend (backend/) + one Vite bundle (ui/src: React intro & story, the 3D viewer). `npm run dev` starts both.",
   "type": "module",
   "scripts": {
